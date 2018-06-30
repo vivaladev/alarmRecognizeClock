@@ -73,4 +73,8 @@ public class Alarm {
     public void setAlarmIncreaseVolume(boolean alarmIncreaseVolume) {
         this.alarmIncreaseVolume = alarmIncreaseVolume;
     }
+    public void setAlarmIncreaseVolume(String alarmIncreaseVolume) {
+        //TODO РЕАЛИЗОВАТЬ КОНВЕРТАЦИЮ
+        this.alarmIncreaseVolume = true;
+    }
 }

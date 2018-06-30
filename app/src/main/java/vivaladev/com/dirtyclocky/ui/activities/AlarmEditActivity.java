@@ -172,24 +172,28 @@ public class AlarmEditActivity extends AppCompatActivity {
                     .setNegativeButton(getResources().getString(R.string.en_alarm_ok), null).show();
             return;
         }
-
         try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
             String date = time_field.getText().toString();
             String title = name_field.getText().toString();
             String body = note_text_field.getText().toString();
 
+            String music = "";//TODO ЗАПОЛНИТЬ
+            String repeatTime = "";//TODO ЗАПОЛНИТЬ
+            String alarmOffMethod = "";//TODO ЗАПОЛНИТЬ
+            String alarmIncreaseVolume = "";//TODO ЗАПОЛНИТЬ
+
             if (clickedAlarmId != -1) {
-                dbw.updateNote(clickedAlarmId, date, title, body);
-                for (int i = 0; i < removalTags.size(); i++) {
-                    dbw.removeTagFromNote(removalTags.get(i), clickedAlarmId);
+                dbw.updateAlarm(clickedAlarmId, date, title, body, music, repeatTime, alarmOffMethod, alarmIncreaseVolume);
+                /*for (int i = 0; i < removalTags.size(); i++) {
+                    dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
                 }
                 for (int i = 0; i < additionTags.size(); i++) {
-                    dbw.addTagToNote(additionTags.get(i), clickedAlarmId);
-                }
+                    dbw.addTagToNote(additionTags.get(i), clickedNoteId);
+                }*/
             } else {
-                int noteId = dbw.addNote(date, title, body);
+                int alarmID = dbw.addAlarm(date, title, body, music, repeatTime, alarmOffMethod, alarmIncreaseVolume);
                 for (int i = 0; i < additionTags.size(); i++) {
-                    dbw.addTagToNote(additionTags.get(i), noteId);
+                    dbw.addTagToNote(additionTags.get(i), alarmID);
                 }
             }
             setInitialData();
