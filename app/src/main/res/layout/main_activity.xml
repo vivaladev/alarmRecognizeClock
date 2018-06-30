@@ -19,7 +19,7 @@
         android:layout_height="56dp"
         android:layout_width="match_parent"
         android:scaleType="fitXY"
-        android:src="@drawable/morning"/>
+        android:src="@drawable/night"/>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
