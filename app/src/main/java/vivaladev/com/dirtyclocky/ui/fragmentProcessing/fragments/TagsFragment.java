@@ -1,30 +1,20 @@
 package vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
-import android.util.TypedValue;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Tag;
 import vivaladev.com.dirtyclocky.ui.activities.MainActivity;
-import vivaladev.com.dirtyclocky.ui.activities.TagEditActivity;
+import vivaladev.com.dirtyclocky.ui.activities.SoundProcessingActivity;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories.TagsFactory;
 
 public class TagsFragment extends Fragment implements View.OnClickListener {
@@ -60,7 +50,7 @@ public class TagsFragment extends Fragment implements View.OnClickListener {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View currentView = inflater.inflate(R.layout.tags_fragment, null);
+        View currentView = inflater.inflate(R.layout.sound_fragment, null);
         LinearLayout tags_linearLayout = (LinearLayout) currentView.findViewById(R.id.tags_linearLayout);
         TagsFactory tf = new TagsFactory(this.getContext(), tags_linearLayout, this);
 
@@ -82,7 +72,7 @@ public class TagsFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         MainActivity.getInstance().initializeFragments();
         clickedTagId = view.getId();
-        Intent intent = new Intent(MainActivity.getInstance(), TagEditActivity.class);
+        Intent intent = new Intent(MainActivity.getInstance(), SoundProcessingActivity.class);
         startActivity(intent);
     }
 

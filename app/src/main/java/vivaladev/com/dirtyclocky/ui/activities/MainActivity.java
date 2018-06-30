@@ -23,9 +23,10 @@ import android.widget.Space;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import vivaladev.com.dirtyclocky.R;
-import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragmentAdapter.MyFragmentPagerAdapter;
+import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragmentAdapter.ImplFragmentPageAdapter;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.NotesFragment;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.TagsFragment;
 
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int screen_width;
     private ViewPager pager;
-    private MyFragmentPagerAdapter pagerAdapter;
+    private ImplFragmentPageAdapter pagerAdapter;
 
     private TagsFragment tagsFragment;
     private NotesFragment notesFragment;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout.LayoutParams left_space_params;
     private LinearLayout.LayoutParams right_space_param;
 
-    public MyFragmentPagerAdapter getPagerAdapter() {
+    public ImplFragmentPageAdapter getPagerAdapter() {
         return pagerAdapter;
     }
 
@@ -135,13 +136,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 switch (pager.getCurrentItem()) {
                     case 0: {
                         newNoteClick();
-                        Intent intent = new Intent(this, NoteEditActivity.class);
+                        Intent intent = new Intent(this, AlarmEditActivity.class);
                         startActivity(intent);
                         break;
                     }
                     case 1: {
                         newTagClick();
-                        Intent intent = new Intent(this, TagEditActivity.class);
+                        Intent intent = new Intent(this, SoundProcessingActivity.class);
                         startActivity(intent);
                         break;
                     }
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initializeFragmentAdapter() {
-        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        pagerAdapter = new ImplFragmentPageAdapter(getSupportFragmentManager());
         pager.setAdapter(pagerAdapter);
     }
 
@@ -204,8 +205,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             window.setFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS, WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(activity, android.R.color.black));
+
+            switch (getTimeInterval(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))){ //TODO: вернуть работоспособность свитчеру картинок
+                case Morning:
+                    window.setBackgroundDrawableResource(R.drawable.morning);
+                    break;
+                case Day:
+                    window.setBackgroundDrawableResource(R.drawable.day);
+                    break;
+                case Evening:
+                    window.setBackgroundDrawableResource(R.drawable.evening);
+                    break;
+                case Night:
+                    window.setBackgroundDrawableResource(R.drawable.night);
+                    break;
+                default:
+                    break;
+            }
         }
+    }
+
+    private static TimeInterval getTimeInterval(int hour){
+        if(hour >= 4 && hour < 10)
+            return TimeInterval.Morning;
+        if(hour >= 10 && hour < 16)
+            return TimeInterval.Day;
+        if(hour >= 16 && hour < 22)
+            return TimeInterval.Evening;
+        if(hour >= 22 || hour < 4)
+            return TimeInterval.Night;
+        return null;
     }
 
     private void setActivitiesItems() {
@@ -223,5 +252,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         left_space_params = (LinearLayout.LayoutParams) left_space.getLayoutParams();
         right_space_param = (LinearLayout.LayoutParams) right_space.getLayoutParams();
     }
+}
+
+enum TimeInterval{
+    Morning, Day, Evening, Night
 }
 

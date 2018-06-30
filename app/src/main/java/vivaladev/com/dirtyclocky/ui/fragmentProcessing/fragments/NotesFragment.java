@@ -14,7 +14,7 @@ import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Note;
 import vivaladev.com.dirtyclocky.ui.activities.MainActivity;
-import vivaladev.com.dirtyclocky.ui.activities.NoteEditActivity;
+import vivaladev.com.dirtyclocky.ui.activities.AlarmEditActivity;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories.NotesFactory;
 
 public class NotesFragment extends Fragment implements View.OnClickListener {
@@ -50,7 +50,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.M)//элемент должен вызываться только на данном уровне API или выше
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View currentView = inflater.inflate(R.layout.notes_fragment, null);
+        View currentView = inflater.inflate(R.layout.alarm_fragment, null);
         LinearLayout notes_linearLayout = (LinearLayout) currentView.findViewById(R.id.notes_linearLayout);
         NotesFactory nf = new NotesFactory(this.getContext(), notes_linearLayout, this);
 
@@ -71,7 +71,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         MainActivity.getInstance().initializeFragments();
         clickedNoteId = view.getId();
-        Intent intent = new Intent(MainActivity.getInstance(), NoteEditActivity.class);
+        Intent intent = new Intent(MainActivity.getInstance(), AlarmEditActivity.class);
         startActivity(intent);
     }
 }

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/black"
     android:descendantFocusability="beforeDescendants"
-    tools:context=".ui.activities.NoteEditActivity"
+    tools:context=".ui.activities.AlarmEditActivity"
     tools:layout_editor_absoluteY="25dp">
 
     <android.support.v7.widget.Toolbar
@@ -46,65 +46,62 @@
             card_view:layout_constraintTop_toTopOf="parent"
             card_view:layout_constraintVertical_bias="0.0">
 
-            <TextView
-                android:id="@+id/date_field"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="22dp"
-                android:layout_marginRight="25dp"
-                android:layout_marginTop="25dp"
-                android:layout_weight="0"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="@drawable/note_tag_ripple_effect"
-                android:gravity="left|center"
-                android:padding="3dp"
-                android:text="currentDate"
-                android:textColor="@color/theme_color"
-                android:textSize="14sp"
-                android:textStyle="italic"
-                card_view:layout_constraintEnd_toEndOf="parent"
-                card_view:layout_constraintHorizontal_bias="0.052"
-                card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintTop_toTopOf="parent" />
-
             <EditText
-                android:id="@+id/title_field"
-                android:layout_width="match_parent"
+                android:id="@+id/time_field"
+                android:layout_width="180dp"
                 android:layout_height="0dp"
                 android:layout_marginBottom="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_weight="15"
                 android:background="@android:color/white"
                 android:ems="10"
-                android:hint="Заголовок"
+                android:layout_marginLeft="100dp"
+                android:hint="@string/en_alarm_time"
                 android:inputType="textPersonName"
                 android:maxLength="30"
+                android:gravity="center"
                 android:paddingLeft="25dp"
                 android:paddingRight="25dp"
                 android:singleLine="false"
                 android:textSize="20sp"
-                android:textStyle="bold"
                 card_view:layout_constraintBottom_toTopOf="@+id/note_text_field"
                 card_view:layout_constraintEnd_toEndOf="parent"
                 card_view:layout_constraintStart_toStartOf="parent"
                 card_view:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/note_text_field"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:id="@+id/title_field"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="100dp"
+                android:layout_marginTop="10dp"
                 android:layout_weight="1"
                 android:background="@android:color/white"
                 android:ems="10"
-                android:gravity="top"
-                android:hint="Примечания"
-                android:inputType="textMultiLine"
-                android:paddingLeft="25dp"
-                android:paddingRight="25dp"
-                android:paddingTop="5dp"
+                android:hint="@string/en_alarm_name"
                 android:scrollbarThumbVertical="@drawable/my_scroll_style"
-                android:textSize="16sp"
+                android:textAlignment="center"
+                android:textSize="14sp"
+                card_view:layout_constraintBottom_toTopOf="@+id/scrollView2"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/note_text_field"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="100dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:ems="10"
+                android:hint="@string/en_alarm_description"
+                android:scrollbarThumbVertical="@drawable/my_scroll_style"
+                android:textAlignment="center"
+                android:textSize="14sp"
                 card_view:layout_constraintBottom_toTopOf="@+id/scrollView2"
                 card_view:layout_constraintEnd_toEndOf="parent"
                 card_view:layout_constraintStart_toStartOf="parent"
@@ -121,7 +118,7 @@
         card_view:layout_constraintEnd_toEndOf="parent"
         card_view:layout_constraintStart_toStartOf="parent">
 
-        <include layout="@layout/tags_sheet" />
+        <include layout="@layout/sounds_sheet" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/bottom_sheet_btn"

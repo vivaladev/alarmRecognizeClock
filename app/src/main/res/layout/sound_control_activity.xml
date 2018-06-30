@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    tools:context=".ui.activities.TagEditActivity">
+    tools:context=".ui.activities.SoundProcessingActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/edit_tag_tool_bar"
@@ -36,12 +36,12 @@
 
         <EditText
             android:id="@+id/tag_edit_field"
-            android:layout_width="match_parent"
+            android:layout_width="245dp"
             android:layout_height="match_parent"
             android:background="@drawable/note_tag_edit_fields"
             android:ems="10"
-            android:gravity="left|center"
-            android:hint="Наименование тега"
+            android:gravity="left"
+            android:hint="@string/en_alarm_music"
             android:inputType="textPersonName"
             android:maxLength="20"
             android:padding="5dp"

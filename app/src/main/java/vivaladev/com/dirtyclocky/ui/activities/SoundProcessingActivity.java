@@ -2,7 +2,6 @@ package vivaladev.com.dirtyclocky.ui.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -17,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,7 +27,7 @@ import vivaladev.com.dirtyclocky.databaseProcessing.entities.Note;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Tag;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories.NotesFactory;
 
-public class TagEditActivity extends AppCompatActivity implements View.OnClickListener {
+public class SoundProcessingActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String initialName;
 
@@ -39,17 +37,17 @@ public class TagEditActivity extends AppCompatActivity implements View.OnClickLi
     private EditText tag_edit_field;
     private Toolbar edit_tag_tool_bar;
 
-    private static TagEditActivity instance;
+    private static SoundProcessingActivity instance;
 
 
-    public static TagEditActivity getInstance() {
+    public static SoundProcessingActivity getInstance() {
         return instance;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tag_edit_activity);
+        setContentView(R.layout.sound_control_activity);
 
         instance = this;
         setActivitiesItems();
@@ -62,7 +60,7 @@ public class TagEditActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View view) {
         MainActivity.getInstance().initializeFragments();
         MainActivity.getInstance().getNotesFragment().setClickedNoteId(view.getId());
-        Intent intent = new Intent(MainActivity.getInstance(), NoteEditActivity.class);
+        Intent intent = new Intent(MainActivity.getInstance(), AlarmEditActivity.class);
         startActivity(intent);
     }
 

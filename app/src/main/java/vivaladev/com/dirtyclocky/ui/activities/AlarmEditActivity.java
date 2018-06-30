@@ -40,7 +40,7 @@ import vivaladev.com.dirtyclocky.databaseProcessing.entities.Note;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Tag;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories.TagsFactory;
 
-public class NoteEditActivity extends AppCompatActivity implements View.OnClickListener {
+public class AlarmEditActivity extends AppCompatActivity implements View.OnClickListener {
 
     String initialDate;
     String initialTitle;
@@ -51,7 +51,7 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
     int clickedNoteId;
 
     Menu toolbarMenu;
-    TextView date_field;
+    TextView time_field;
     EditText title_field;
     EditText note_text_field;
     LinearLayout llBottomSheet;
@@ -65,10 +65,23 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
 
     BottomSheetBehavior bottomSheetBehavior;
 
+    private void init(){
+        time_field = findViewById(R.id.time_field);
+        title_field = findViewById(R.id.title_field);
+        note_text_field = findViewById(R.id.note_text_field);
+    }
+
+    private void controlProcessing(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            time_field.setOnClickListener(view -> setDateDialog());
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.note_edit_activity);
+        setContentView(R.layout.alarm_edit_activity);
+        init();
         setActivitiesItems();
 
         buttonUp = findViewById(R.id.buttonUp);
@@ -109,10 +122,6 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         int viewId = view.getId();
         switch (viewId) {
-            case R.id.date_field: {
-                setDateDialog();
-                break;
-            }
             case R.id.bottom_sheet_btn: {
                 if (currentBottomSheetState == BottomSheetBehavior.STATE_EXPANDED) {
                     bottom_sheet_btn.animate().scaleX(0).scaleY(0).setDuration(140).start();
@@ -123,7 +132,7 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;
             }
-            case R.id.buttonUp:{
+            case R.id.buttonUp: {
                 currentBottomSheetState = BottomSheetBehavior.STATE_EXPANDED;
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 buttonUp.animate().alpha(0).setDuration(50).start();
@@ -235,7 +244,7 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
             return;
         }
         try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
-            String date = date_field.getText().toString();
+            String date = time_field.getText().toString();
             String title = title_field.getText().toString();
             String body = note_text_field.getText().toString();
 
@@ -257,9 +266,9 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
             showMessage("Изменения сохранены");
             MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
 
-            TagEditActivity tagEditActivity = TagEditActivity.getInstance();
-            if (tagEditActivity != null) {
-                tagEditActivity.reload();
+            SoundProcessingActivity soundProcessingActivity = SoundProcessingActivity.getInstance();
+            if (soundProcessingActivity != null) {
+                soundProcessingActivity.reload();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -267,7 +276,7 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private boolean isNeedSave() {
-        String date = date_field.getText().toString();
+        String date = time_field.getText().toString();
         String title = title_field.getText().toString();
         String body = note_text_field.getText().toString();
         if (initialDate.equals(date) &&
@@ -282,14 +291,14 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void setDateDialog() {
-        final Calendar date = getDateFromString(date_field.getText().toString());
+        final Calendar date = getDateFromString(time_field.getText().toString());
 
         DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 date.set(Calendar.YEAR, year);
                 date.set(Calendar.MONTH, monthOfYear);
                 date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                date_field.setText(getUnderlinedText(getStringFromDate(date)));
+                time_field.setText(getUnderlinedText(getStringFromDate(date)));
             }
         };
 
@@ -367,7 +376,7 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setInitialData() {
-        initialDate = date_field.getText().toString();
+        initialDate = time_field.getText().toString();
         initialTitle = title_field.getText().toString();
         initialBody = note_text_field.getText().toString();
         removalTags.clear();
@@ -387,7 +396,7 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
             toolbarMenu.findItem(R.id.remove_btn).setVisible(true);
             try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
                 note = dbw.getNote(clickedNoteId);
-                date_field.setText(getUnderlinedText(note.getDate()));
+                time_field.setText(getUnderlinedText(note.getDate()));
                 title_field.setText(note.getTitle());
                 note_text_field.setText(note.getBody());
 
@@ -408,7 +417,7 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
         } else {
             toolbarMenu.findItem(R.id.remove_btn).setVisible(false);
             try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
-                date_field.setText(getUnderlinedText(getCurrentDate()));
+                time_field.setText(getUnderlinedText(getCurrentDate()));
                 title_field.setText("");
                 note_text_field.setText("");
 
@@ -445,10 +454,7 @@ public class NoteEditActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setActivitiesItems() {
-        date_field = (TextView) findViewById(R.id.date_field);
-        date_field.setOnClickListener(this);
-        title_field = (EditText) findViewById(R.id.title_field);
-        note_text_field = (EditText) findViewById(R.id.note_text_field);
+        time_field.setOnClickListener(this);
         edit_note_tool_bar = (Toolbar) findViewById(R.id.edit_note_tool_bar);
         bottom_sheet_btn = (FloatingActionButton) findViewById(R.id.bottom_sheet_btn);
         bottom_sheet_btn.setOnClickListener(this);

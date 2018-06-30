@@ -16,8 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activities.NoteEditActivity"/>
-        <activity android:name=".ui.activities.TagEditActivity"/>
+        <activity android:name=".ui.activities.AlarmEditActivity"/>
+        <activity android:name=".ui.activities.SoundProcessingActivity"/>
 
     </application>
 

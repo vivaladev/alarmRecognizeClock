@@ -17,7 +17,7 @@
         android:background="@color/theme_color"
         android:foreground="@drawable/note_tag_ripple_effect"
         android:gravity="center"
-        android:text="Теги"
+        android:text="@string/en_sound_menu"
         android:textColor="@android:color/black" />
 
     <ScrollView
