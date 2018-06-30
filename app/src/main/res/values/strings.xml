@@ -21,6 +21,15 @@
     <string name="en_sound_menu">Recordings</string>
     <string name="en_sound_name">Music</string>
 
+    <!--Menu-->
+    <string name="en_alarm_del">Delete</string>
+    <string name="en_alarm_save">Save</string>
+    <string name="en_alarm_cancel">Cancel</string>
+    <string name="en_alarm_del_tag_message">Delete this tag?</string>
+    <string name="en_alarm_message_save_changes">Changes was saved</string>
+    <string name="en_alarm_message_back_btn">Do you want delete this alarm?</string>
+
+
     <!--Ru-->
     <string name="ru_alarm_name">Будильник</string>
     <string name="ru_alarm_menu">Будильники</string>

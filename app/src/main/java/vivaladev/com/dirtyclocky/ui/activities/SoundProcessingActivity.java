@@ -156,20 +156,12 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
     private void backBtnDialog() {
         if (isNeedSave()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Сохранить изменения или удалить их?");
-            builder.setNegativeButton("Удалить  ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-            builder.setPositiveButton("Сохранить",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            saveChanges();
-                        }
-                    });
-            builder.setNeutralButton("Отмена", null);
+            builder.setMessage(getResources().getString(R.string.en_alarm_message_back_btn));
+            builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
+                    (dialog, which) -> finish());
+            builder.setPositiveButton(getResources().getString(R.string.en_alarm_save),
+                    (dialog, which) -> saveChanges());
+            builder.setNeutralButton(getResources().getString(R.string.en_alarm_cancel), null);
             builder.show();
         } else {
             finish();
@@ -178,14 +170,12 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
 
     private void removeTagDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Удалить тег?")
-                .setPositiveButton("Удалить",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                removeTag();
-                                finish();
-                            }
-                        }).setNegativeButton("Отмена", null).show();
+        builder.setMessage(getResources().getString(R.string.en_alarm_del_tag_message))
+                .setPositiveButton(getResources().getString(R.string.en_alarm_del),
+                        (dialog, which) -> {
+                            removeTag();
+                            finish();
+                        }).setNegativeButton(getResources().getString(R.string.en_alarm_cancel), null).show();
     }
 
     private void removeTag() {

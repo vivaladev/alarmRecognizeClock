@@ -4,14 +4,14 @@
     <item
         android:id="@+id/save_btn"
         notes:showAsAction="always"
-        android:title="сохранить" />
+        android:title="@string/en_alarm_save" />
 
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
 
         android:id="@+id/remove_btn"
         android:icon="@drawable/ic_delete_note"
-        android:title="удалить"
+        android:title="@string/en_alarm_del"
         notes:showAsAction="always" />
 
     <!--&lt;!&ndash; Settings, should always be in the overflow &ndash;&gt;-->

@@ -108,14 +108,14 @@ public class AlarmEditActivity extends AppCompatActivity {
     private void backBtnDialog() {
         if (isNeedSave()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Сохранить изменения или удалить их?");
-            builder.setNegativeButton("Удалить  ",
+            builder.setMessage("Do you want to save or delete this alarm?");
+            builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
                     (dialog, which) -> finish());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                builder.setPositiveButton("Сохранить",
+                builder.setPositiveButton(getResources().getString(R.string.en_alarm_save),
                         (dialog, which) -> saveChanges());
             }
-            builder.setNeutralButton("Отмена", null);
+            builder.setNeutralButton(getResources().getString(R.string.en_alarm_cancel), null);
             builder.show();
         } else {
             if (getCurrentFocus() != null) {
@@ -211,12 +211,12 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     private void removeNoteDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Удалить заметку?")
-                .setPositiveButton("Удалить",
+        builder.setMessage(getResources().getString(R.string.en_alarm_message_back_btn))
+                .setPositiveButton(getResources().getString(R.string.en_alarm_del),
                         (dialog, which) -> {
                             removeNote();
                             finish();
-                        }).setNegativeButton("Отмена", null).show();
+                        }).setNegativeButton(getResources().getString(R.string.en_alarm_cancel), null).show();
     }
 
     private void removeNote() {
@@ -254,7 +254,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                 }
             }
             setInitialData();
-            showMessage("Изменения сохранены");
+            showMessage(getResources().getString(R.string.en_alarm_message_save_changes));
             MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
 
             SoundProcessingActivity soundProcessingActivity = SoundProcessingActivity.getInstance();
