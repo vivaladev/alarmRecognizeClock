@@ -40,7 +40,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     private String initialBody;
     private ArrayList<Integer> additionTags;
     private ArrayList<Integer> removalTags;
-    private int clickedNoteId;
+    private int clickedAlarmId;
     private Menu toolbarMenu;
     private TextView time_field;
     private EditText name_field;
@@ -68,8 +68,6 @@ public class AlarmEditActivity extends AppCompatActivity {
         buttonUp = findViewById(R.id.buttonUp);
         llBottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
-        additionTags = new ArrayList<>();
-        removalTags = new ArrayList<>();
     }
 
     private void setInitialData() {
@@ -149,19 +147,9 @@ public class AlarmEditActivity extends AppCompatActivity {
         }
     }
 
-    private void removeNoteDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getResources().getString(R.string.en_alarm_message_back_btn))
-                .setPositiveButton(getResources().getString(R.string.en_alarm_del),
-                        (dialog, which) -> {
-                            removeNote();
-                            finish();
-                        }).setNegativeButton(getResources().getString(R.string.en_alarm_cancel), null).show();
-    }
-
-    private void removeNote() {
+    private void removeActiveAlarm() {
         try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
-            dbw.removeNote(clickedNoteId);
+            dbw.removeNote(clickedAlarmId);
             MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
 
         } catch (Exception e) {
@@ -184,18 +172,19 @@ public class AlarmEditActivity extends AppCompatActivity {
                     .setNegativeButton(getResources().getString(R.string.en_alarm_ok), null).show();
             return;
         }
+
         try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
             String date = time_field.getText().toString();
             String title = name_field.getText().toString();
             String body = note_text_field.getText().toString();
 
-            if (clickedNoteId != -1) {
-                dbw.updateNote(clickedNoteId, date, title, body);
+            if (clickedAlarmId != -1) {
+                dbw.updateNote(clickedAlarmId, date, title, body);
                 for (int i = 0; i < removalTags.size(); i++) {
-                    dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
+                    dbw.removeTagFromNote(removalTags.get(i), clickedAlarmId);
                 }
                 for (int i = 0; i < additionTags.size(); i++) {
-                    dbw.addTagToNote(additionTags.get(i), clickedNoteId);
+                    dbw.addTagToNote(additionTags.get(i), clickedAlarmId);
                 }
             } else {
                 int noteId = dbw.addNote(date, title, body);
@@ -248,53 +237,6 @@ public class AlarmEditActivity extends AppCompatActivity {
         });
     }
 
-    private void additionTag(int tagId) {
-        TextView tag = (TextView) findViewById(tagId);
-        tag.setBackgroundColor(getResources().getColor(R.color.selected_tag));
-        tag.setTextColor(getResources().getColor(android.R.color.black));
-
-        for (int i = 0; i < removalTags.size(); i++) {
-            if (tagId == removalTags.get(i)) {
-                removalTags.remove(i);
-                return;
-            }
-        }
-        additionTags.add(tagId);
-    }
-
-    private void removalTag(int tagId) {
-        TextView tag = (TextView) findViewById(tagId);
-        tag.setBackground(null);
-        tag.setTextColor(getResources().getColor(android.R.color.black));
-
-        for (int i = 0; i < additionTags.size(); i++) {
-            if (tagId == additionTags.get(i)) {
-                additionTags.remove(i);
-                return;
-            }
-        }
-        removalTags.add(tagId);
-    }
-
-    private boolean isSelectedTag(View v) {
-        if (v.getBackground() != null) {
-            return true;
-        }
-        return false;
-    }
-
-    private String getCurrentDate() {
-        long curTime = System.currentTimeMillis();
-        return new SimpleDateFormat("dd.MM.yyyy").format(curTime);
-    }
-
-    private SpannableString getUnderlinedText(String text) {
-        SpannableString content = new SpannableString(text);
-        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-        return content;
-    }
-
-
     private void setToolBar() {
         setSupportActionBar(edit_note_tool_bar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -325,7 +267,13 @@ public class AlarmEditActivity extends AppCompatActivity {
                 break;
             }
             case R.id.remove_btn: {
-                removeNoteDialog();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getResources().getString(R.string.en_alarm_message_back_btn))
+                        .setPositiveButton(getResources().getString(R.string.en_alarm_del),
+                                (dialog, which) -> {
+                                    removeActiveAlarm();
+                                    finish();
+                                }).setNegativeButton(getResources().getString(R.string.en_alarm_cancel), null).show();
                 break;
             }
             case android.R.id.home: {
