@@ -1,17 +1,14 @@
 package vivaladev.com.dirtyclocky.ui.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -20,8 +17,6 @@ import android.text.style.UnderlineSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,7 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -49,7 +43,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     private int clickedNoteId;
     private Menu toolbarMenu;
     private TextView time_field;
-    private EditText title_field;
+    private EditText name_field;
     private EditText note_text_field;
     private LinearLayout llBottomSheet;
     private Toolbar edit_note_tool_bar;
@@ -61,13 +55,13 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     private int mHour, mMinute;
 
-    private void setDefaultData(){
+    private void setDefaultData() {
         //TODO: подтягивать аларм с бд
     }
 
     private void init() {
         time_field = findViewById(R.id.time_field);
-        title_field = findViewById(R.id.title_field);
+        name_field = findViewById(R.id.title_field);
         note_text_field = findViewById(R.id.note_text_field);
         edit_note_tool_bar = findViewById(R.id.edit_note_tool_bar);
         bottom_sheet_btn = findViewById(R.id.bottom_sheet_btn);
@@ -80,7 +74,7 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     private void setInitialData() {
         initialDate = time_field.getText().toString();
-        initialTitle = title_field.getText().toString();
+        initialTitle = name_field.getText().toString();
         initialBody = note_text_field.getText().toString();
         removalTags.clear();
         additionTags.clear();
@@ -175,14 +169,24 @@ public class AlarmEditActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isReadyToSave() {
+        if ("".equals(time_field.getText()) && "".equals(name_field.getText())) {
+            return true;
+        }
+        return false;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void saveChanges() {
-        if (!isNeedSave()) {
+        if (!isReadyToSave()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getResources().getString(R.string.en_alarm_message_fill_fields))
+                    .setNegativeButton(getResources().getString(R.string.en_alarm_ok), null).show();
             return;
         }
         try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
             String date = time_field.getText().toString();
-            String title = title_field.getText().toString();
+            String title = name_field.getText().toString();
             String body = note_text_field.getText().toString();
 
             if (clickedNoteId != -1) {
@@ -214,7 +218,7 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     private boolean isNeedSave() {
         String time = time_field.getText().toString();
-        String title = title_field.getText().toString();
+        String title = name_field.getText().toString();
         String body = note_text_field.getText().toString();
         if (time.equals(initialDate) &&
                 initialTitle.equals(title) &&
@@ -228,17 +232,15 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void setTimeDialog() {
+        final java.util.Calendar calendar = java.util.Calendar.getInstance();
 
         time_field.setInputType(InputType.TYPE_NULL);
         time_field.setOnClickListener(v -> {
-            final java.util.Calendar calendar = java.util.Calendar.getInstance();
             mHour = calendar.get(java.util.Calendar.HOUR_OF_DAY); // set default time by current time
             mMinute = calendar.get(java.util.Calendar.MINUTE);
 
             TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
-//                alarm.setHours(hourOfDay);
-//                alarm.setMinutes(minute);
-
+                alarm.setTime(String.valueOf(calendar.getTimeInMillis()));
                 time_field.setText(hourOfDay + " : " + minute);
             }, mHour, mMinute, true);
             timePickerDialog.show();

@@ -120,8 +120,8 @@ public class DatabaseWrapper implements AutoCloseable {
         if (cursor.moveToFirst()) {
             Alarm alarm;
             int idColIndex = cursor.getColumnIndex("id");
-            int dateColIndex = cursor.getColumnIndex("time");
-            int titleColIndex = cursor.getColumnIndex("name");
+            int dateColIndex = cursor.getColumnIndex("date");
+            int titleColIndex = cursor.getColumnIndex("title");
             int bodyColIndex = cursor.getColumnIndex("body");
             do {
                 alarm = new Alarm();
