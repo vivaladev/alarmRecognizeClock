@@ -2,5 +2,13 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#000000</color>
+    <color name="theme_color">#eaff00</color>
+    <color name="darker_gray">#AAA</color>
+    <color name="light_gray">#ebebeb</color>
+    <color name="middle_gray">#d6d6d6</color>
+    <color name="ripple_color">#ffbaaa</color>
+    <color name="selected_tag">#ff5c33</color>
+    <color name="red">#FF0000</color>
 </resources>
+    <!--#F97F01-->

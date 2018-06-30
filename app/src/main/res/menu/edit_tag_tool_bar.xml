@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:notes="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/save_btn"
+        notes:showAsAction="always"
+        android:title="сохранить" />
+
+    <!-- "Mark Favorite", should appear as action button if possible -->
+    <item
+
+        android:id="@+id/remove_btn"
+        android:icon="@drawable/ic_delete_note"
+        android:title="удалить"
+        notes:showAsAction="always" />
+
+    <!--&lt;!&ndash; Settings, should always be in the overflow &ndash;&gt;-->
+
+
+</menu>
+

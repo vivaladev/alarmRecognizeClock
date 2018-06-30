@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:descendantFocusability="beforeDescendants"
+    tools:context=".ui.activities.NoteEditActivity"
+    tools:layout_editor_absoluteY="25dp">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/edit_note_tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/black"
+        android:elevation="1dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <ScrollView
+        android:id="@+id/scrollView3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="25dp"
+        android:layout_marginTop="50dp"
+        android:scrollbarThumbVertical="@drawable/my_scroll_style"
+        card_view:layout_constraintBottom_toBottomOf="parent"
+        card_view:layout_constraintEnd_toEndOf="parent"
+        card_view:layout_constraintStart_toStartOf="parent"
+        card_view:layout_constraintTop_toTopOf="parent"
+        card_view:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:id="@+id/body_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:orientation="vertical"
+            android:visibility="visible"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintHorizontal_bias="0.0"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent"
+            card_view:layout_constraintVertical_bias="0.0">
+
+            <TextView
+                android:id="@+id/date_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="22dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="25dp"
+                android:layout_weight="0"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/note_tag_ripple_effect"
+                android:gravity="left|center"
+                android:padding="3dp"
+                android:text="currentDate"
+                android:textColor="@color/theme_color"
+                android:textSize="14sp"
+                android:textStyle="italic"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintHorizontal_bias="0.052"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/title_field"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="15"
+                android:background="@android:color/white"
+                android:ems="10"
+                android:hint="Заголовок"
+                android:inputType="textPersonName"
+                android:maxLength="30"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:singleLine="false"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                card_view:layout_constraintBottom_toTopOf="@+id/note_text_field"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/note_text_field"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:ems="10"
+                android:gravity="top"
+                android:hint="Примечания"
+                android:inputType="textMultiLine"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:paddingTop="5dp"
+                android:scrollbarThumbVertical="@drawable/my_scroll_style"
+                android:textSize="16sp"
+                card_view:layout_constraintBottom_toTopOf="@+id/scrollView2"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent" />
+        </LinearLayout>
+    </ScrollView>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout6"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:fitsSystemWindows="false"
+        card_view:layout_constraintBottom_toBottomOf="parent"
+        card_view:layout_constraintEnd_toEndOf="parent"
+        card_view:layout_constraintStart_toStartOf="parent">
+
+        <include layout="@layout/tags_sheet" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/bottom_sheet_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginRight="15dp"
+            android:foreground="@drawable/ic_close_white_24dp"
+            app:backgroundTint="@android:color/black"
+            app:fabSize="mini"
+            app:layout_anchor="@+id/sheet_tv"
+            app:layout_anchorGravity="center|right" />
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <Button
+        android:id="@+id/buttonUp"
+        android:layout_width="177dp"
+        android:layout_height="42dp"
+        android:layout_marginBottom="7dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/button_up"
+        android:text="Клац"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/coordinatorLayout6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/edit_note_tool_bar"
+        app:layout_constraintVertical_bias="0.984" />
+
+</android.support.constraint.ConstraintLayout>
