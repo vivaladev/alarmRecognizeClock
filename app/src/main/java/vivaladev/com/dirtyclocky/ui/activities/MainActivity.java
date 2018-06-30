@@ -241,14 +241,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         pager = findViewById(R.id.pager);
         tool_bar = findViewById(R.id.my_toolbar);
-        edit_note_or_tag = (FloatingActionButton) findViewById(R.id.edit_note_or_tag);
+        edit_note_or_tag = findViewById(R.id.edit_note_or_tag);
         edit_note_or_tag.setOnClickListener(this);
-        notes = (Button) findViewById(R.id.alarms);
+        notes = findViewById(R.id.alarms);
         notes.setOnClickListener(this);
-        tags = (Button) findViewById(R.id.tags);
+        tags = findViewById(R.id.tags);
         tags.setOnClickListener(this);
-        left_space = (Space) findViewById(R.id.left_space);
-        right_space = (Space) findViewById(R.id.right_space);
+        left_space = findViewById(R.id.left_space);
+        right_space = findViewById(R.id.right_space);
         left_space_params = (LinearLayout.LayoutParams) left_space.getLayoutParams();
         right_space_param = (LinearLayout.LayoutParams) right_space.getLayoutParams();
     }

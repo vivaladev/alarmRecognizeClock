@@ -35,32 +35,35 @@ import java.util.ArrayList;
 
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
+import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
+
+import static vivaladev.com.dirtyclocky.ui.activities.activityHelper.ActivityHelper.setStatusBar;
 
 public class AlarmEditActivity extends AppCompatActivity {
 
-    String initialDate;
-    String initialTitle;
-    String initialBody;
+    private String initialDate;
+    private String initialTitle;
+    private String initialBody;
+    private ArrayList<Integer> additionTags;
+    private ArrayList<Integer> removalTags;
+    private int clickedNoteId;
+    private Menu toolbarMenu;
+    private TextView time_field;
+    private EditText title_field;
+    private EditText note_text_field;
+    private LinearLayout llBottomSheet;
+    private Toolbar edit_note_tool_bar;
+    private Button buttonUp;
+    private FloatingActionButton bottom_sheet_btn;
+    private int currentBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED;
+    private BottomSheetBehavior bottomSheetBehavior;
+    private Alarm alarm;
 
-    ArrayList<Integer> additionTags;
-    ArrayList<Integer> removalTags;
-    int clickedNoteId;
+    private int mHour, mMinute;
 
-    Menu toolbarMenu;
-    TextView time_field;
-    EditText title_field;
-    EditText note_text_field;
-    LinearLayout llBottomSheet;
-    Toolbar edit_note_tool_bar;
-
-    Button buttonUp;
-
-    private int mYear, mMonth, mDay, mHour, mMinute;
-
-    FloatingActionButton bottom_sheet_btn;
-    int currentBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED;
-
-    BottomSheetBehavior bottomSheetBehavior;
+    private void setDefaultData(){
+        //TODO: подтягивать аларм с бд
+    }
 
     private void init() {
         time_field = findViewById(R.id.time_field);
@@ -102,6 +105,31 @@ public class AlarmEditActivity extends AppCompatActivity {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 buttonUp.animate().alpha(0).setDuration(50).start();
             });
+
+            bottom_sheet_btn.animate()
+                    .scaleX(0)
+                    .scaleY(0)
+                    .setDuration(0)
+                    .start();
+
+            bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+                    if (currentBottomSheetState == BottomSheetBehavior.STATE_EXPANDED && BottomSheetBehavior.STATE_DRAGGING == newState) {
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    } else if (BottomSheetBehavior.STATE_EXPANDED == newState) {
+                        buttonUp.setVisibility(View.INVISIBLE);
+                        bottom_sheet_btn.animate().scaleX(1).scaleY(1).setDuration(140).start();
+                        currentBottomSheetState = BottomSheetBehavior.STATE_EXPANDED;
+                    }
+
+                }
+
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                }
+            });
         }
     }
 
@@ -125,88 +153,6 @@ public class AlarmEditActivity extends AppCompatActivity {
             }
             finish();
         }
-    }
-
-    private static void setStatusBar(Activity activity) {
-        View someView = activity.findViewById(R.id.edit_note_tool_bar);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            someView.setSystemUiVisibility(someView.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            Window window = activity.getWindow();
-            window.setFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS, WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(activity, android.R.color.black));
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        backBtnDialog();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.alarm_edit_activity);
-        init();
-        controlProcessing();
-
-        setStatusBar(this);
-        setToolBar();
-
-        bottom_sheet_btn.animate()
-                .scaleX(0)
-                .scaleY(0)
-                .setDuration(0)
-                .start();
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-
-                if (currentBottomSheetState == BottomSheetBehavior.STATE_EXPANDED && BottomSheetBehavior.STATE_DRAGGING == newState) {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                } else if (BottomSheetBehavior.STATE_EXPANDED == newState) {
-                    buttonUp.setVisibility(View.INVISIBLE);
-                    bottom_sheet_btn.animate().scaleX(1).scaleY(1).setDuration(140).start();
-                    currentBottomSheetState = BottomSheetBehavior.STATE_EXPANDED;
-                }
-
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            }
-        });
-
-    }
-
-    @Override
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.edit_note_tool_bar, menu);
-        toolbarMenu = menu;
-        return true;
-    }
-
-
-    @Override
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.save_btn: {
-                saveChanges();
-                break;
-            }
-            case R.id.remove_btn: {
-                removeNoteDialog();
-                break;
-            }
-            case android.R.id.home: {
-                backBtnDialog();
-                break;
-            }
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void removeNoteDialog() {
@@ -357,6 +303,51 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     private void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_note_tool_bar, menu);
+        toolbarMenu = menu;
+        return true;
+    }
+
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_btn: {
+                saveChanges();
+                break;
+            }
+            case R.id.remove_btn: {
+                removeNoteDialog();
+                break;
+            }
+            case android.R.id.home: {
+                backBtnDialog();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        backBtnDialog();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.alarm_edit_activity);
+        init();
+        controlProcessing();
+        setDefaultData(); // default values
+
+        setStatusBar(this, findViewById(R.id.edit_note_tool_bar));
+        setToolBar();
     }
 }
 

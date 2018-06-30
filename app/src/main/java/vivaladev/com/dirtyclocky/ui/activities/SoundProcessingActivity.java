@@ -26,6 +26,8 @@ import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Tag;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories.NotesFactory;
 
+import static vivaladev.com.dirtyclocky.ui.activities.activityHelper.ActivityHelper.setStatusBar;
+
 public class SoundProcessingActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String initialName;
@@ -50,7 +52,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
 
         instance = this;
         setActivitiesItems();
-        setStatusBar(this);
+        setStatusBar(this, findViewById(R.id.edit_tag_tool_bar));
         setToolBar();
     }
 
@@ -221,19 +223,6 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
 
     private void setInitialData() {
         initialName = tag_edit_field.getText().toString();
-    }
-
-
-    private static void setStatusBar(Activity activity) {
-        View someView = activity.findViewById(R.id.edit_tag_tool_bar);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            someView.setSystemUiVisibility(someView.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            Window window = activity.getWindow();
-            window.setFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS, WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(activity, android.R.color.black));
-        }
     }
 
     private void setActivitiesItems() {
