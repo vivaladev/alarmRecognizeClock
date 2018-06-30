@@ -50,7 +50,7 @@ public class TagsFragment extends Fragment implements View.OnClickListener {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View currentView = inflater.inflate(R.layout.sound_fragment, null);
+        View currentView = inflater.inflate(R.layout.all_sound_fragment, null);
         LinearLayout tags_linearLayout = (LinearLayout) currentView.findViewById(R.id.tags_linearLayout);
         TagsFactory tf = new TagsFactory(this.getContext(), tags_linearLayout, this);
 

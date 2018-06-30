@@ -50,7 +50,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.M)//элемент должен вызываться только на данном уровне API или выше
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View currentView = inflater.inflate(R.layout.alarm_fragment, null);
+        View currentView = inflater.inflate(R.layout.all_alarm_fragment, null);
         LinearLayout notes_linearLayout = (LinearLayout) currentView.findViewById(R.id.notes_linearLayout);
         NotesFactory nf = new NotesFactory(this.getContext(), notes_linearLayout, this);
 

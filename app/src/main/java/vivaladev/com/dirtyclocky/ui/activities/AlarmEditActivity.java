@@ -267,10 +267,10 @@ public class AlarmEditActivity extends AppCompatActivity {
     }
 
     private boolean isNeedSave() {
-        String date = time_field.getText().toString();
+        String time = time_field.getText().toString();
         String title = title_field.getText().toString();
         String body = note_text_field.getText().toString();
-        if (initialDate.equals(date) &&
+        if (time.equals(initialDate) &&
                 initialTitle.equals(title) &&
                 initialBody.equals(body) &&
                 additionTags.size() == 0 &&

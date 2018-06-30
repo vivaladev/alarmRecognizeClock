@@ -1,6 +1,27 @@
 <resources>
     <string name="app_name">Dirty Clocky</string>
 
+    <!--En-->
+    <string name="en_alarm_name">Alarm</string>
+    <string name="en_alarm_menu">Alarms</string>
+    <string name="en_alarm_description">Description</string>
+    <string name="en_alarm_time">Time</string>
+    <string name="en_alarm_music">Music</string>
+    <string name="en_alarm_hold">Set aside</string>
+    <string name="en_alarm_days">Days</string>
+    <string name="en_alarm_settings">Advance settings</string>
+
+    <!--Advance settings-->
+    <string name="en_alarm_sound">Music</string>
+    <string name="en_alarm_repeat">Repeat time</string>
+    <string name="en_alarm_increase_volume">Volume increase</string>
+    <string name="en_alarm_shut_up">Method to stop</string>
+
+    <!--Recording-->
+    <string name="en_sound_menu">Recordings</string>
+    <string name="en_sound_name">Music</string>
+
+    <!--Ru-->
     <string name="ru_alarm_name">Будильник</string>
     <string name="ru_alarm_menu">Будильники</string>
     <string name="ru_alarm_description">Описание</string>
@@ -11,17 +32,4 @@
     <string name="ru_alarm_days">Дни</string>
     <string name="ru_sound_menu">Звукозаписи</string>
     <string name="ru_sound_name">Музыка</string>
-
-    <string name="en_alarm_name">Alarm</string>
-    <string name="en_alarm_menu">Alarms</string>
-    <string name="en_alarm_description">Description</string>
-    <string name="en_alarm_time">Time</string>
-    <string name="en_alarm_music">Music</string>
-    <string name="en_alarm_hold">Set aside</string>
-    <string name="en_alarm_repeat">Repeat time</string>
-    <string name="en_alarm_days">Days</string>
-    <string name="en_alarm_settings">Settings</string>
-    <string name="en_sound_menu">Recordings</string>
-    <string name="en_sound_name">Music</string>
-
 </resources>
