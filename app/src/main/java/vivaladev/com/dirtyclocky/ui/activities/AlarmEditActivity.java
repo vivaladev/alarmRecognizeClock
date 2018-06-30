@@ -128,7 +128,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     }
 
     private void backBtnDialog() {
-        if (isNeedSave()) {
+        if (isLastVersionActive()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Do you want to save or delete this alarm?");
             builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
@@ -216,13 +216,14 @@ public class AlarmEditActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isNeedSave() {
+    private boolean isLastVersionActive() {
         String time = time_field.getText().toString();
-        String title = name_field.getText().toString();
-        String body = note_text_field.getText().toString();
+        String name = name_field.getText().toString();
+        String description = note_text_field.getText().toString();
+
         if (time.equals(initialDate) &&
-                initialTitle.equals(title) &&
-                initialBody.equals(body) &&
+                initialTitle.equals(name) &&
+                initialBody.equals(description) &&
                 additionTags.size() == 0 &&
                 removalTags.size() == 0) {
             return false;
