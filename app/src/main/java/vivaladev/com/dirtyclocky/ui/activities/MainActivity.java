@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         instance = this;
         setActivitiesItems();
-        setStatusBar(this);
+//        setStatusBar(this);
         setSupportActionBar(tool_bar);
         initializeScreenSize();
         initializeFragmentAdapter();
@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         right_space_param.width = screen_width / 2;
     }
 
-    private static void setStatusBar(Activity activity) {
+    /*private static void setStatusBar(Activity activity) {
         View someView = activity.findViewById(R.id.my_toolbar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             someView.setSystemUiVisibility(someView.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
             }
         }
-    }
+    }*/
 
     private static TimeInterval getTimeInterval(int hour){
         if(hour >= 4 && hour < 10)
@@ -240,15 +240,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void setActivitiesItems() {
 
         pager = findViewById(R.id.pager);
-        tool_bar = findViewById(R.id.my_toolbar);
-        edit_note_or_tag = findViewById(R.id.edit_note_or_tag);
+        //tool_bar = findViewById(R.id.my_toolbar);
+        edit_note_or_tag = (FloatingActionButton) findViewById(R.id.edit_note_or_tag);
         edit_note_or_tag.setOnClickListener(this);
-        notes = findViewById(R.id.alarms);
+        notes = (Button) findViewById(R.id.alarms);
         notes.setOnClickListener(this);
-        tags = findViewById(R.id.tags);
+        tags = (Button) findViewById(R.id.tags);
         tags.setOnClickListener(this);
-        left_space = findViewById(R.id.left_space);
-        right_space = findViewById(R.id.right_space);
+        left_space = (Space) findViewById(R.id.left_space);
+        right_space = (Space) findViewById(R.id.right_space);
         left_space_params = (LinearLayout.LayoutParams) left_space.getLayoutParams();
         right_space_param = (LinearLayout.LayoutParams) right_space.getLayoutParams();
     }
