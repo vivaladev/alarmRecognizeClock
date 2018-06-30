@@ -126,7 +126,7 @@
         card_view:layout_constraintEnd_toEndOf="parent"
         card_view:layout_constraintStart_toStartOf="parent">
 
-        <include layout="@layout/advenced_alarm_settings" />
+        <include layout="@layout/advanced_alarm_settings" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/bottom_sheet_btn"
