@@ -2,7 +2,6 @@ package vivaladev.com.dirtyclocky.ui.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +22,7 @@ import android.widget.Toast;
 
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
-import vivaladev.com.dirtyclocky.databaseProcessing.entities.Note;
+import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Tag;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories.NotesFactory;
 
@@ -124,7 +123,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void setTagData() {
         Tag tag;
-        Note[] tagNotes;
+        Alarm[] tagAlarms;
         clickedTagId = MainActivity.getInstance().getTagsFragment().getClickedTagId();
         LinearLayout notes_linearLayout = (LinearLayout) findViewById(R.id.notes_linearLayout);
         NotesFactory nf = new NotesFactory(this, notes_linearLayout, this);
@@ -133,13 +132,13 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
             toolbarMenu.findItem(R.id.remove_btn).setVisible(true);
             try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
                 tag = dbw.getTag(clickedTagId);
-                tagNotes = dbw.getNotesByTagId(clickedTagId);
+                tagAlarms = dbw.getNotesByTagId(clickedTagId);
                 tag_edit_field.setText(tag.getName());
-                if (tagNotes.length == 0) {
+                if (tagAlarms.length == 0) {
                     notes_linearLayout.addView(createInfoTV("Заметок с этим тегом не найдено"));
                 } else {
-                    for (int i = 0; i < tagNotes.length; i++) {
-                        nf.addNoteToScreen(tagNotes[i].getId(), tagNotes[i].getDate(), tagNotes[i].getTitle(), tagNotes[i].getBody(), dbw.getTagsByNoteId(tagNotes[i].getId()));
+                    for (int i = 0; i < tagAlarms.length; i++) {
+                        nf.addNoteToScreen(tagAlarms[i].getId(), tagAlarms[i].getTime(), tagAlarms[i].getName(), tagAlarms[i].getBody(), dbw.getTagsByNoteId(tagAlarms[i].getId()));
                     }
                 }
             } catch (Exception e) {

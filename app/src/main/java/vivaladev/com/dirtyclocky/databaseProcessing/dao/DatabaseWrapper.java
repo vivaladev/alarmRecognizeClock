@@ -9,7 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import vivaladev.com.dirtyclocky.databaseProcessing.entities.Note;
+import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Tag;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.TagItem;
 
@@ -91,55 +91,55 @@ public class DatabaseWrapper implements AutoCloseable {
         return tagItems.toArray(new TagItem[tagItems.size()]);
     }
 
-    public Note getNote(int noteId) {
+    public Alarm getAlarm(int noteId) {
         Cursor cursor;
-        Note note = new Note();
-        cursor = db.query("Note", null, "id = " + noteId, null, null, null, null);
+        Alarm alarm = new Alarm();
+        cursor = db.query("Alarm", null, "id = " + noteId, null, null, null, null);
         if (cursor.moveToFirst()) {
 
             int idColIndex = cursor.getColumnIndex("id");
-            int dateColIndex = cursor.getColumnIndex("date");
-            int titleColIndex = cursor.getColumnIndex("title");
+            int dateColIndex = cursor.getColumnIndex("time");
+            int titleColIndex = cursor.getColumnIndex("name");
             int bodyColIndex = cursor.getColumnIndex("body");
-            note.setId(cursor.getInt(idColIndex));
-            note.setDate(cursor.getString(dateColIndex));
-            note.setTitle(cursor.getString(titleColIndex));
-            note.setBody(cursor.getString(bodyColIndex));
-            Log.d("Get note", String.format("Заметки с id = %1$s найдена", noteId));
+            alarm.setId(cursor.getInt(idColIndex));
+            alarm.setTime(cursor.getString(dateColIndex));
+            alarm.setName(cursor.getString(titleColIndex));
+            alarm.setBody(cursor.getString(bodyColIndex));
+            Log.d("Get alarm", String.format("Заметки с id = %1$s найдена", noteId));
         } else {
             cursor.close();
         }
-        return note;
+        return alarm;
     }
 
-    public Note[] getAllNotes() {
+    public Alarm[] getAllNotes() {
         Cursor cursor;
-        ArrayList<Note> notes = new ArrayList<Note>();
+        ArrayList<Alarm> alarms = new ArrayList<Alarm>();
 
-        cursor = db.query("Note", null, null, null, null, null, null);
+        cursor = db.query("Alarm", null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
-            Note note;
+            Alarm alarm;
             int idColIndex = cursor.getColumnIndex("id");
-            int dateColIndex = cursor.getColumnIndex("date");
-            int titleColIndex = cursor.getColumnIndex("title");
+            int dateColIndex = cursor.getColumnIndex("time");
+            int titleColIndex = cursor.getColumnIndex("name");
             int bodyColIndex = cursor.getColumnIndex("body");
             do {
-                note = new Note();
-                note.setId(cursor.getInt(idColIndex));
-                note.setDate(cursor.getString(dateColIndex));
-                note.setTitle(cursor.getString(titleColIndex));
-                note.setBody(cursor.getString(bodyColIndex));
-                notes.add(note);
+                alarm = new Alarm();
+                alarm.setId(cursor.getInt(idColIndex));
+                alarm.setTime(cursor.getString(dateColIndex));
+                alarm.setName(cursor.getString(titleColIndex));
+                alarm.setBody(cursor.getString(bodyColIndex));
+                alarms.add(alarm);
             } while (cursor.moveToNext());
         } else {
             cursor.close();
         }
-        Log.d("Get all notes", String.format("Найдено %1$s notes", notes.size()));
-        printLogAllNotes(notes);
-        return notes.toArray(new Note[notes.size()]);
+        Log.d("Get all alarms", String.format("Найдено %1$s alarms", alarms.size()));
+        printLogAllNotes(alarms);
+        return alarms.toArray(new Alarm[alarms.size()]);
     }
 
-    public Note[] getNotesByTagId(int tagId) {
+    public Alarm[] getNotesByTagId(int tagId) {
         Cursor cursor;
         String selectionTagItem = "tag_id = " + tagId;
         ArrayList<Integer> notesId = new ArrayList<Integer>();
@@ -152,21 +152,21 @@ public class DatabaseWrapper implements AutoCloseable {
         } else {
             cursor.close();
         }
-        Log.d("Get notes by tagId", String.format("Найдено %1$s noteId с тегом(tagId = %2$s)", notesId.size(), tagId));
+        Log.d("Get alarms by tagId", String.format("Найдено %1$s noteId с тегом(tagId = %2$s)", notesId.size(), tagId));
 
-        Note[] notes = getAllNotes();
-        ArrayList<Note> resNotes = new ArrayList<Note>();
-        for (int i = 0; i < notes.length; i++) {
+        Alarm[] alarms = getAllNotes();
+        ArrayList<Alarm> resAlarms = new ArrayList<Alarm>();
+        for (int i = 0; i < alarms.length; i++) {
             for (int j = 0; j < notesId.size(); j++) {
-                if (notes[i].getId() == notesId.get(j)) {
-                    resNotes.add(notes[i]);
+                if (alarms[i].getId() == notesId.get(j)) {
+                    resAlarms.add(alarms[i]);
                     break;
                 }
             }
         }
 
-        Log.d("Get notes by tagId", String.format("Найдено %1$s заметок с тегом(id = %2$s)", resNotes.size(), tagId));
-        return resNotes.toArray(new Note[resNotes.size()]);
+        Log.d("Get alarms by tagId", String.format("Найдено %1$s заметок с тегом(id = %2$s)", resAlarms.size(), tagId));
+        return resAlarms.toArray(new Alarm[resAlarms.size()]);
     }
 
     public Tag[] getAllTags() {
@@ -246,7 +246,7 @@ public class DatabaseWrapper implements AutoCloseable {
         cv.put("title", title);
         cv.put("body", body);
 
-        int noteId = (int) db.insert("Note", null, cv);
+        int noteId = (int) db.insert("Alarm", null, cv);
 
         if (noteId > 0) {
             Log.d("Add note", String.format("Заметка добавлена(noteId = %1$s)", noteId));
@@ -262,14 +262,14 @@ public class DatabaseWrapper implements AutoCloseable {
         cv.put("date", date);
         cv.put("title", title);
         cv.put("body", body);
-        int updCount = db.update("Note", cv, "id = " + noteId, null);
+        int updCount = db.update("Alarm", cv, "id = " + noteId, null);
         Log.d("Update note", String.format("Количество обновлённых строк %1$s", updCount));
     }
 
     public void removeNote(int noteId) {
         int delTagItemCount = db.delete("TagItem", "note_id = " + noteId, null);
-        int delNoteCount = db.delete("Note", "id = " + noteId, null);
-        Log.d("Remove note", String.format("Количество удалённых строк %1$s (Note)", delNoteCount));
+        int delNoteCount = db.delete("Alarm", "id = " + noteId, null);
+        Log.d("Remove note", String.format("Количество удалённых строк %1$s (Alarm)", delNoteCount));
         Log.d("Remove note", String.format("Количество удалённых строк %1$s (TagItem)", delTagItemCount));
     }
 
@@ -341,15 +341,15 @@ public class DatabaseWrapper implements AutoCloseable {
         Log.d("Tags", "-------------------------------------------------");
     }
 
-    private void printLogAllNotes(ArrayList<Note> arrN) {
+    private void printLogAllNotes(ArrayList<Alarm> arrN) {
         Log.d("Notes", "-------------------------------------------------");
         Log.d("Notes", "id    date    title    body");
         for (int i = 0; i < arrN.size(); i++) {
             Log.d("Notes", String.format(
                     "%1$s    %2$s    %3$s    %4$s",
                     arrN.get(i).getId(),
-                    arrN.get(i).getDate(),
-                    arrN.get(i).getTitle(),
+                    arrN.get(i).getTime(),
+                    arrN.get(i).getName(),
                     arrN.get(i).getBody())
             );
         }

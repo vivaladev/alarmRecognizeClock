@@ -282,7 +282,6 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void setTimeDialog() {
-//        Alarm alarm = new Alarm();
 
         time_field.setInputType(InputType.TYPE_NULL);
         time_field.setOnClickListener(v -> {

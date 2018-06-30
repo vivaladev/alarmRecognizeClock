@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             }
-            case R.id.notes: {
+            case R.id.alarms: {
                 try {
                     pager.setCurrentItem(0, true);
                 } catch (Exception e) {
@@ -239,11 +239,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setActivitiesItems() {
 
-        pager = (ViewPager) findViewById(R.id.pager);
-        tool_bar = (Toolbar) findViewById(R.id.my_toolbar);
+        pager = findViewById(R.id.pager);
+        tool_bar = findViewById(R.id.my_toolbar);
         edit_note_or_tag = (FloatingActionButton) findViewById(R.id.edit_note_or_tag);
         edit_note_or_tag.setOnClickListener(this);
-        notes = (Button) findViewById(R.id.notes);
+        notes = (Button) findViewById(R.id.alarms);
         notes.setOnClickListener(this);
         tags = (Button) findViewById(R.id.tags);
         tags.setOnClickListener(this);
