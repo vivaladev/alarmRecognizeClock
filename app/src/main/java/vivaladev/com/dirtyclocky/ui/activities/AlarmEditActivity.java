@@ -62,9 +62,13 @@ public class AlarmEditActivity extends AppCompatActivity {
     private FloatingActionButton bottom_sheet_btn;
     private BottomSheetBehavior bottomSheetBehavior;
 
-    private String initialDate;
-    private String initialTitle;
+    private String initialTime;
+    private String initialName;
     private String initialBody;
+    private String initialMusic;
+    private String initialRepeatDays;
+    private String initialOffMethod;
+    private String initialIsIncrease;
 
     private int clickedAlarmId;
     private Alarm alarm;
@@ -127,7 +131,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                     .setNeutralButton("Cancel",
                             (dialog, id) -> dialog.cancel())
                     .setPositiveButton("Done", (dialog, id) -> {
-                        alarmOffMusic.setText("Record №" + alarm.getId());
+                        alarmOffMusic.setText("Record");
                         dialog.cancel();
                     })
                     // добавляем переключатели
@@ -259,12 +263,14 @@ public class AlarmEditActivity extends AppCompatActivity {
         //TODO: подтягивать аларм с бд
     }
 
-    private void setInitialData() {
-        initialDate = time_field.getText().toString();
-        initialTitle = name_field.getText().toString();
-        initialBody = note_text_field.getText().toString();
-        removalTags.clear();
-        additionTags.clear();
+    private void setInitialData(String time, String name, String description, String musicName, String days, String offMethod, String isIncreases) {
+        initialTime = time;
+        initialName = name;
+        initialBody = description;
+        initialMusic = musicName;
+        initialRepeatDays = days;
+        initialOffMethod = offMethod;
+        initialIsIncrease = isIncreases;
     }
 
     private void upSheetControl() {
@@ -387,7 +393,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     }
 
     private void backBtnDialog() {
-        if (isLastVersionActive()) {
+        if (!isLastVersionActive()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Do you want to save or delete this alarm?");
             builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
@@ -420,9 +426,9 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     private boolean isReadyToSave() {
         if ("".equals(time_field.getText()) && "".equals(name_field.getText())) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -434,66 +440,64 @@ public class AlarmEditActivity extends AppCompatActivity {
             return;
         }
 
-        String time = millisecondsTime;
-        String name = name_field.getText().toString();
-        String body = note_text_field.getText().toString();
-        String musicNameOnSDCard = fileName;
-        String repeatDaysState = alarmRepeat.getText().toString();
-        String offMethod = alarmOffMethod.getText().toString();
-        boolean isIncrease = isIncreaseVolume.isChecked();
+        Toast.makeText(this, "Saving", Toast.LENGTH_SHORT).show();
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
 
-        alarm.setTime(time);
-        alarm.setName(name);
-        alarm.setBody(body);
+            String time = millisecondsTime;
+            String name = name_field.getText().toString();
+            String body = note_text_field.getText().toString();
+            String music = fileName;
+            String repeatTime = alarmRepeat.getText().toString();
+            String offMethod = alarmOffMethod.getText().toString();
+            String alarmIncreaseVolume = isIncreaseVolume.isChecked() ? "1" : "0";
 
+            if (clickedAlarmId != -1) {
+                dbw.updateAlarm(clickedAlarmId, time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
+                /*for (int i = 0; i < removalTags.size(); i++) {
+                    dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
+                }
+                for (int i = 0; i < additionTags.size(); i++) {
+                    dbw.addTagToNote(additionTags.get(i), clickedNoteId);
+                }*/
+            } else {
+                int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
+                for (int i = 0; i < additionTags.size(); i++) {
+                    dbw.addTagToNote(additionTags.get(i), alarmID);
+                }
+            }
+            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
 
-//        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
-//
-//            String music = "";//TODO ЗАПОЛНИТЬ
-//            String repeatTime = "";//TODO ЗАПОЛНИТЬ
-//            String alarmOffMethod = "";//TODO ЗАПОЛНИТЬ
-//            String alarmIncreaseVolume = "";//TODO ЗАПОЛНИТЬ
-//
-//            if (clickedAlarmId != -1) {
-//                dbw.updateAlarm(clickedAlarmId, date, title, body, music, repeatTime, alarmOffMethod, alarmIncreaseVolume);
-//                /*for (int i = 0; i < removalTags.size(); i++) {
-//                    dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
-//                }
-//                for (int i = 0; i < additionTags.size(); i++) {
-//                    dbw.addTagToNote(additionTags.get(i), clickedNoteId);
-//                }*/
-//            } else {
-//                int alarmID = dbw.addAlarm(date, title, body, music, repeatTime, alarmOffMethod, alarmIncreaseVolume);
-//                for (int i = 0; i < additionTags.size(); i++) {
-//                    dbw.addTagToNote(additionTags.get(i), alarmID);
-//                }
-//            }
-//            setInitialData();
-//            showMessage(getResources().getString(R.string.en_alarm_message_save_changes));
-//            MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
-//
-//            SoundProcessingActivity soundProcessingActivity = SoundProcessingActivity.getInstance();
-//            if (soundProcessingActivity != null) {
-//                soundProcessingActivity.reload();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+            setInitialData(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
+            showMessage(getResources().getString(R.string.en_alarm_message_save_changes));
+            MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
+
+            SoundProcessingActivity soundProcessingActivity = SoundProcessingActivity.getInstance();
+            if (soundProcessingActivity != null) {
+                soundProcessingActivity.reload();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isLastVersionActive() {
         String time = time_field.getText().toString();
         String name = name_field.getText().toString();
         String description = note_text_field.getText().toString();
+        String music = alarmOffMusic.getText().toString();
+        String repeatDays = alarmRepeat.getText().toString();
+        String offMethod = alarmOffMethod.getText().toString();
+//        String isIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
 
-        if (time.equals(initialDate) &&
-                initialTitle.equals(name) &&
-                initialBody.equals(description) &&
-                additionTags.size() == 0 &&
-                removalTags.size() == 0) {
-            return false;
+        if (time.equals(initialTime) &&
+                name.equals(initialName) &&
+                description.equals(initialBody) &&
+                music.equals(initialMusic) &&
+                repeatDays.equals(initialRepeatDays) &&
+                offMethod.equals(initialOffMethod)) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
