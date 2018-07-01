@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
+import vivaladev.com.dirtyclocky.databaseProcessing.entities.Tag;
 import vivaladev.com.dirtyclocky.ui.activities.MainActivity;
 import vivaladev.com.dirtyclocky.ui.activities.AlarmEditActivity;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories.NotesFactory;
@@ -56,8 +57,14 @@ public class NotesFragment extends Fragment implements View.OnClickListener {
 
         try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
             Alarm[] alarms = dbw.getAllAlarms();
+            try{
+                throw new RuntimeException("noteId = " + alarms.length);
+            }
+            catch (RuntimeException e){
+                e.printStackTrace();
+            }
             for (int i = 0; i < alarms.length; i++) {
-                nf.addNoteToScreen(alarms[i].getId(), alarms[i].getTime(), alarms[i].getName(), alarms[i].getBody(), dbw.getTagsByNoteId(alarms[i].getId()));
+                nf.addNoteToScreen(alarms[i].getId(), alarms[i].getTime(), alarms[i].getName(), alarms[i].getBody(), /*dbw.getTagsByNoteId(alarms[i].getId())*/ new Tag[]{});
             }
 
         } catch (Exception e) {

@@ -283,12 +283,6 @@ public class AlarmEditActivity extends AppCompatActivity {
 
             if (clickedAlarmId != -1) {
                 dbw.updateAlarm(clickedAlarmId, time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
-                try{
-                    throw new RuntimeException("noteId = ");
-                }
-                catch (RuntimeException e){
-                    e.printStackTrace();
-                }
                 /*for (int i = 0; i < removalTags.size(); i++) {
                     dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
                 }
