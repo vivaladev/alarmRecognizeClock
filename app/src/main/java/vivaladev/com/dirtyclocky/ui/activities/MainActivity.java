@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(getApplicationContext(), AlarmService.class);
         startService(intent);
 
-        AlarmHandler.loadAlarms((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext());
+        //AlarmHandler.loadAlarms((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext());//TODO ВКЛЮЧИТЬ
 
         /*try {
             throw new UnsupportedOperationException("Create AlarmService");

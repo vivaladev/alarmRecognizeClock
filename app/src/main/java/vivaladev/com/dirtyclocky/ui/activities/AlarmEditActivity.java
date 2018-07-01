@@ -65,7 +65,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     private String initialTime;
     private String initialName;
     private String initialBody;
-    //private String initialMusic;
+    private String initialMusic;
     private String initialRepeatDays;
     private String initialOffMethod;
     private String initialIsIncrease;
@@ -107,7 +107,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         initialTime = time;
         initialName = name;
         initialBody = description;
-        //initialMusic = musicName;
+        initialMusic = musicName;
         initialRepeatDays = days;
         initialOffMethod = offMethod;
         initialIsIncrease = isIncreases;
@@ -117,7 +117,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         initialTime = time_field.getText().toString();
         initialName = name_field.getText().toString();
         initialBody = note_text_field.getText().toString();
-        //initialMusic = alarmOffMusic.toString(); //TODO: вернуть музыку
+        initialMusic = alarmOffMusic.getText().toString(); //TODO: вернуть музыку
         initialRepeatDays = alarmRepeat.getText().toString();
         initialOffMethod = alarmOffMethod.getText().toString();
         initialIsIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
@@ -369,7 +369,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             String time = time_field.getText().toString();
             String name = name_field.getText().toString();
             String body = note_text_field.getText().toString();
-            String music = alarmOffMusic.toString(); //TODO: вернуть музыку
+            String music = alarmOffMusic.getText().toString(); //TODO: вернуть музыку
             String repeatTime = alarmRepeat.getText().toString();
             String offMethod = alarmOffMethod.getText().toString();
             String alarmIncreaseVolume = isIncreaseVolume.isChecked() ? "1" : "0";
@@ -412,7 +412,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         String time = time_field.getText().toString();
         String name = name_field.getText().toString();
         String description = note_text_field.getText().toString();
-        //String music = alarmOffMusic.getText().toString();
+        String music = alarmOffMusic.getText().toString();
         String repeatDays = alarmRepeat.getText().toString();
         String offMethod = alarmOffMethod.getText().toString();
 //        String isIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
@@ -422,7 +422,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                     "time = " + time.equals(initialTime) +
                             "name = " + name.equals(initialName) +
                             "description = " + description.equals(initialBody) +
-                            //"music = " + music.equals(initialMusic) +
+                            "music = " + music.equals(initialMusic) +
                             "repeatDays = " + repeatDays.equals(initialRepeatDays) +
                             "offMethod = " + offMethod.equals(initialOffMethod)
             );
@@ -433,7 +433,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         if (time.equals(initialTime) &&
                 name.equals(initialName) &&
                 description.equals(initialBody) &&
-                //music.equals(initialMusic) &&
+                music.equals(initialMusic) &&
                 repeatDays.equals(initialRepeatDays) &&
                 offMethod.equals(initialOffMethod)) {
             return true;
@@ -482,7 +482,7 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void setAlarmData() {
-        Alarm note;
+        Alarm alarm;
         //Tag[] allTags;
         //Tag[] noteTags;
         clickedAlarmId = MainActivity.getInstance().getNotesFragment().getClickedNoteId();//TODO переименовать в Note Handler
@@ -492,14 +492,20 @@ public class AlarmEditActivity extends AppCompatActivity {
         if (clickedAlarmId != -1) {
             toolbarMenu.findItem(R.id.remove_btn).setVisible(true);
             try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
-                note = dbw.getAlarm(clickedAlarmId);
-                time_field.setText(getUnderlinedText(note.getTime()));
-                name_field.setText(note.getName());
-                note_text_field.setText(note.getBody());
+                alarm = dbw.getAlarm(clickedAlarmId);
+                time_field.setText(getUnderlinedText(alarm.getTime()));
+                name_field.setText(alarm.getName());
+                note_text_field.setText(alarm.getBody());
+                //repeatDaysState.append();//TODO ЧЕКНУТЬ
+                alarmOffMusic.setText(alarm.getMusic());
+                alarmRepeat.setText(alarm.getRepeatTime());
+                alarmOffMethod.setText(alarm.getAlarmOffMethod());
+                isIncreaseVolume.setText(String.valueOf(alarm.isAlarmIncreaseVolume()));
+
                 //TODO
 
                 /*allTags = dbw.getAllTags();
-                noteTags = dbw.getTagsByNoteId(note.getId());
+                noteTags = dbw.getTagsByNoteId(alarm.getId());
 
                 for (int i = 0; i < allTags.length; i++) {
                     if (isTagBelongNote(allTags[i].getId(), noteTags)) {
