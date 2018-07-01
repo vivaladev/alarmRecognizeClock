@@ -3,6 +3,9 @@ package vivaladev.com.dirtyclocky.ui.activities;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,17 +22,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import vivaladev.com.dirtyclocky.R;
@@ -138,6 +145,10 @@ public class AlarmEditActivity extends AppCompatActivity {
         return new File(filename);
     }
 
+    private String getFileName(String userInputName) {
+        return Environment.getExternalStorageDirectory() + "/" + userInputName;
+    }
+
     private void upSheetControl() {
         bottom_sheet_btn.setOnClickListener(view -> {
             if (currentBottomSheetState == BottomSheetBehavior.STATE_EXPANDED) {
@@ -200,10 +211,28 @@ public class AlarmEditActivity extends AppCompatActivity {
                     })
                     // добавляем переключатели
                     .setSingleChoiceItems(filenames, -1,
-                            (dialog, item) -> {
-                                choosenFile[0] = filenames[item];
-                            });
+                            (dialog, item) -> choosenFile[0] = filenames[item]);
+
             AlertDialog alert = builder.create();
+            alert.setOnShowListener((dialogInterface) ->{
+                ListView lv = alert.getListView();
+                lv.setOnItemLongClickListener((adapterView, thisView, pos, id) -> {
+                    showMessage("Вьюха: " + thisView.toString() + " с id "+ id);
+                    try {
+                        MediaPlayer mediaPlayer;
+                        mediaPlayer = new MediaPlayer();
+                        File file = new File(getFileName(choosenFile[0]));
+                        mediaPlayer.setDataSource(file.getPath());
+                        mediaPlayer.prepare();
+                        mediaPlayer.start();
+                    } catch (IOException e) {
+                        showMessage("Please, specify needed file");
+                        e.printStackTrace();
+                    }
+
+                    return true;
+                });
+            });
             alert.show();
         });
 
@@ -224,7 +253,9 @@ public class AlarmEditActivity extends AppCompatActivity {
                     })
                     // добавляем переключатели
                     .setSingleChoiceItems(methodsOff, -1,
-                            (dialog, item) -> choise.set(0, methodsOff[item]));
+                            (dialog, item) -> {
+                        choise.set(0, methodsOff[item]);
+                            });
             AlertDialog alert = builder.create();
             alert.show();
         });
@@ -563,5 +594,3 @@ public class AlarmEditActivity extends AppCompatActivity {
         return true;
     }
 }
-
-
