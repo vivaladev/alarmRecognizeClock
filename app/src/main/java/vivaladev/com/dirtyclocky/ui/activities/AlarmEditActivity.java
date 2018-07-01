@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
@@ -23,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -103,6 +105,19 @@ public class AlarmEditActivity extends AppCompatActivity {
         initialIsIncrease = isIncreases;
     }
 
+    private String[] getConvertedFileName(File[] filenames) {
+        String[] res = new String[filenames.length];
+        for (int i = 0; i < filenames.length; i++) {
+            res[i] = filenames[i].getName();
+        }
+
+        return res;
+    }
+
+    private File getFileByName(String filename) {
+        return new File(filename);
+    }
+
     private void upSheetControl() {
         bottom_sheet_btn.setOnClickListener(view -> {
             if (currentBottomSheetState == BottomSheetBehavior.STATE_EXPANDED) {
@@ -143,6 +158,44 @@ public class AlarmEditActivity extends AppCompatActivity {
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
+        });
+
+        alarmOffMusic.setOnClickListener(view -> {
+            final List<String> musicFiles = new ArrayList<>();
+            final List<String> choise = Arrays.asList("");
+            File rootFolder = Environment.getExternalStorageDirectory();
+            File[] filesArray = rootFolder.listFiles();
+            System.out.println("файлов: " + filesArray.length);
+
+            for (File f : filesArray) {
+                if (f.isFile()) {
+                    System.out.println("File: " + f);
+                    musicFiles.add(f.getName());
+                }
+            }
+
+            String[] filenames = getConvertedFileName(filesArray);
+
+            final String[] choosenFile = {""};
+            AlertDialog.Builder builder;
+            builder = new AlertDialog.Builder(this);
+            builder.setTitle("Choose method of alarm stopping")
+                    .setCancelable(false)
+                    // добавляем одну кнопку для закрытия диалога
+                    .setNeutralButton("Cancel",
+                            (dialog, id) -> dialog.cancel())
+                    .setPositiveButton("Done", (dialog, id) -> {
+                        alarmOffMusic.setText(choosenFile[0]);
+                        dialog.cancel();
+                    })
+                    // добавляем переключатели
+                    .setSingleChoiceItems(filenames, -1,
+                            (dialog, item) -> {
+                                showMessage("Тут все файлы были бы");
+                                choosenFile[0] = filenames[item];
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
         });
 
         alarmOffMethod.setOnClickListener(view -> {
@@ -291,10 +344,9 @@ public class AlarmEditActivity extends AppCompatActivity {
                 }*/
             } else {
                 int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
-                try{
+                try {
                     throw new RuntimeException("noteId = " + alarmID);
-                }
-                catch (RuntimeException e){
+                } catch (RuntimeException e) {
                     e.printStackTrace();
                 }
                 /*for (int i = 0; i < additionTags.size(); i++) {
@@ -325,17 +377,16 @@ public class AlarmEditActivity extends AppCompatActivity {
         String offMethod = alarmOffMethod.getText().toString();
 //        String isIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
 
-        try{
+        try {
             throw new RuntimeException(
-                            "time = " + time.equals(initialTime) +
+                    "time = " + time.equals(initialTime) +
                             "name = " + name.equals(initialName) +
                             "description = " + description.equals(initialBody) +
                             //"music = " + music.equals(initialMusic) +
                             "repeatDays = " + repeatDays.equals(initialRepeatDays) +
                             "offMethod = " + offMethod.equals(initialOffMethod)
             );
-        }
-        catch (RuntimeException e){
+        } catch (RuntimeException e) {
             e.printStackTrace();
         }
 
