@@ -30,6 +30,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
@@ -118,12 +119,19 @@ public class AlarmEditActivity extends AppCompatActivity {
     }
 
     private String[] getConvertedFileName(File[] filenames) {
-        String[] res = new String[filenames.length];
+        List<String> res = new ArrayList<>();
         for (int i = 0; i < filenames.length; i++) {
-            res[i] = filenames[i].getName();
+            if (isValidateMusicFile(filenames[i])) {
+                if(filenames[i].isFile()){
+                    res.add(filenames[i].getName());
+                }
+            }
         }
+        return res.toArray(new String[res.size()]);
+    }
 
-        return res;
+    private boolean isValidateMusicFile(File file) {
+        return Pattern.matches(".*\\.amr_nb", file.getName());
     }
 
     private File getFileByName(String filename) {
@@ -174,18 +182,8 @@ public class AlarmEditActivity extends AppCompatActivity {
 
         alarmOffMusic.setOnClickListener(view -> {
             final List<String> musicFiles = new ArrayList<>();
-            final List<String> choise = Arrays.asList("");
             File rootFolder = Environment.getExternalStorageDirectory();
             File[] filesArray = rootFolder.listFiles();
-            System.out.println("файлов: " + filesArray.length);
-
-            for (File f : filesArray) {
-                if (f.isFile()) {
-                    System.out.println("File: " + f);
-                    musicFiles.add(f.getName());
-                }
-            }
-
             String[] filenames = getConvertedFileName(filesArray);
 
             final String[] choosenFile = {""};
@@ -203,7 +201,6 @@ public class AlarmEditActivity extends AppCompatActivity {
                     // добавляем переключатели
                     .setSingleChoiceItems(filenames, -1,
                             (dialog, item) -> {
-                                showMessage("Тут все файлы были бы");
                                 choosenFile[0] = filenames[item];
                             });
             AlertDialog alert = builder.create();
