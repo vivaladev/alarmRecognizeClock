@@ -54,7 +54,7 @@ public class TagsFragment extends Fragment implements View.OnClickListener {
         LinearLayout tags_linearLayout = (LinearLayout) currentView.findViewById(R.id.tags_linearLayout);
         TagsFactory tf = new TagsFactory(this.getContext(), tags_linearLayout, this);
 
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
             //Tag[] tags = dbw.getAllTags();
             /*for (int i = 0; i < tags.length; i++) {
                // tf.addTagToScreen(tags[i].getId(), tags[i].getName(), false);

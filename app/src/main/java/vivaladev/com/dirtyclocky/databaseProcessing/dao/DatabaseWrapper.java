@@ -48,6 +48,7 @@ public class DatabaseWrapper implements AutoCloseable {
             int repeatTimeColIndex = cursor.getColumnIndex("repeatTime");
             int alarmOffMethodColIndex = cursor.getColumnIndex("alarmOffMethod");
             int alarmIncreaseVolumeColIndex = cursor.getColumnIndex("alarmIncreaseVolume");
+            int alarmOnOffColIndex = cursor.getColumnIndex("alarmOnOff");
             alarm.setId(cursor.getInt(idColIndex));
             alarm.setTime(cursor.getString(timeColIndex));
             alarm.setName(cursor.getString(nameColIndex));
@@ -56,6 +57,7 @@ public class DatabaseWrapper implements AutoCloseable {
             alarm.setRepeatTime(cursor.getString(repeatTimeColIndex));
             alarm.setAlarmOffMethod(cursor.getString(alarmOffMethodColIndex));
             alarm.setAlarmIncreaseVolume(cursor.getString(alarmIncreaseVolumeColIndex));
+            alarm.setAlarmOnOff(cursor.getString(alarmOnOffColIndex));
             Log.d("Get alarm", String.format("Заметки с id = %1$s найдена", alarmId));
         } else {
             cursor.close();
@@ -78,6 +80,8 @@ public class DatabaseWrapper implements AutoCloseable {
             int repeatTimeColIndex = cursor.getColumnIndex("repeatTime");
             int alarmOffMethodColIndex = cursor.getColumnIndex("alarmOffMethod");
             int alarmIncreaseVolumeColIndex = cursor.getColumnIndex("alarmIncreaseVolume");
+            int alarmOnOffColIndex = cursor.getColumnIndex("alarmOnOff");
+
             do {
                 alarm = new Alarm();
                 alarm.setId(cursor.getInt(idColIndex));
@@ -88,6 +92,7 @@ public class DatabaseWrapper implements AutoCloseable {
                 alarm.setRepeatTime(cursor.getString(repeatTimeColIndex));
                 alarm.setAlarmOffMethod(cursor.getString(alarmOffMethodColIndex));
                 alarm.setAlarmIncreaseVolume(cursor.getString(alarmIncreaseVolumeColIndex));
+                alarm.setAlarmOnOff(cursor.getString(alarmOnOffColIndex));
                 alarms.add(alarm);
             } while (cursor.moveToNext());
         } else {
@@ -98,7 +103,7 @@ public class DatabaseWrapper implements AutoCloseable {
         return alarms.toArray(new Alarm[alarms.size()]);
     }
 
-    public int addAlarm(String time, String name, String body, String music, String repeatTime, String alarmOffMethod, String alarmIncreaseVolume) {
+    public int addAlarm(String time, String name, String body, String music, String repeatTime, String alarmOffMethod, String alarmIncreaseVolume, String alarmOnOff) {
         ContentValues cv = new ContentValues();
 
         cv.put("time", time);
@@ -108,6 +113,7 @@ public class DatabaseWrapper implements AutoCloseable {
         cv.put("repeatTime", repeatTime);
         cv.put("alarmOffMethod", alarmOffMethod);
         cv.put("alarmIncreaseVolume", alarmIncreaseVolume);
+        cv.put("alarmOnOff", alarmOnOff);
 
         int noteId = (int) db.insert("Alarms", null, cv);
 
@@ -119,7 +125,7 @@ public class DatabaseWrapper implements AutoCloseable {
         return noteId;
     }
 
-    public void updateAlarm(int alarmID, String time, String name, String body, String music, String repeatTime, String alarmOffMethod, String alarmIncreaseVolume) {
+    public void updateAlarm(int alarmID, String time, String name, String body, String music, String repeatTime, String alarmOffMethod, String alarmIncreaseVolume, String alarmOnOff) {
         ContentValues cv = new ContentValues();
 
         cv.put("time", time);
@@ -129,6 +135,7 @@ public class DatabaseWrapper implements AutoCloseable {
         cv.put("repeatTime", repeatTime);
         cv.put("alarmOffMethod", alarmOffMethod);
         cv.put("alarmIncreaseVolume", alarmIncreaseVolume);
+        cv.put("alarmOnOff", alarmOnOff);
 
         int updCount = db.update("Alarms", cv, "id = " + alarmID, null);
         Log.d("Update alarms", getAlarm(alarmID).getMusic());

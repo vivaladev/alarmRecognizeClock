@@ -13,8 +13,9 @@
 
     <!--Advance settings-->
     <string name="en_alarm_sound">Music</string>
-    <string name="en_alarm_repeat">Repeat time, ms</string>
+    <string name="en_alarm_repeat">Repeat days</string>
     <string name="en_alarm_increase_volume">Volume increase</string>
+    <string name="en_alarm_on_off">Alarm on/off</string>
     <string name="en_alarm_shut_up">Method to stop</string>
 
     <!--Recording-->

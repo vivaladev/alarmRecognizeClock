@@ -41,6 +41,7 @@ public class AlarmClockActivity extends Activity {
     private Vibrator vibrator;
     private MediaPlayer mMediaPlayer;
     private int alarmID = -1;
+    private Alarm alarm;
 
     private final static int MAX_VOLUME = 100;
     private final static int VOLUME_STEP = 15;//Шаг увеличения
@@ -70,6 +71,14 @@ public class AlarmClockActivity extends Activity {
             alarmID = -1;
         }
 
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
+            alarm = dbw.getAlarm(alarmID);
+            soundIncrease = alarm.isAlarmIncreaseVolume();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
 
         PowerManager pm=(PowerManager) getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
@@ -94,7 +103,7 @@ public class AlarmClockActivity extends Activity {
         findViewById(R.id.buttonOff).setOnClickListener((buttonOffAlarm)->{
             if(alarmID != -1){
                 sendToBroadcastReceiver(alarmID);
-                try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+                try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
                     Alarm alarm = dbw.getAlarm(alarmID);
                     AlarmHandler.unRegisterAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), alarm, getApplicationContext());
                 } catch (Exception e) {

@@ -9,6 +9,7 @@ public class Alarm {
     private String repeatTime;
     private String alarmOffMethod;
     private boolean alarmIncreaseVolume;
+    private boolean alarmOnOff;
 
     public int getId() {
         return id;
@@ -73,8 +74,28 @@ public class Alarm {
     public void setAlarmIncreaseVolume(boolean alarmIncreaseVolume) {
         this.alarmIncreaseVolume = alarmIncreaseVolume;
     }
+
+    public boolean isAlarmOnOff() {
+        return alarmOnOff;
+    }
+
+    public void setAlarmOnOff(boolean alarmOnOff) {
+        this.alarmOnOff = alarmOnOff;
+    }
     public void setAlarmIncreaseVolume(String alarmIncreaseVolume) {
         //TODO РЕАЛИЗОВАТЬ КОНВЕРТАЦИЮ
-        this.alarmIncreaseVolume = true;
+        if("1".equals(alarmIncreaseVolume)){
+            this.alarmIncreaseVolume = true;
+        }else{
+            this.alarmIncreaseVolume = false;
+        }
+    }
+    public void setAlarmOnOff(String alarmOnOff) {
+        //TODO РЕАЛИЗОВАТЬ КОНВЕРТАЦИЮ
+        if("1".equals(alarmOnOff)){
+            this.alarmOnOff = true;
+        } else{
+            this.alarmOnOff = false;
+        }
     }
 }
