@@ -65,8 +65,10 @@ public class AlarmEditActivity extends AppCompatActivity {
     private String initialDate;
     private String initialTitle;
     private String initialBody;
+
     private int clickedAlarmId;
     private Alarm alarm;
+    private String millisecondsTime;
     private int alarmHour, alarmMinute;
     private int currentBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED;
     private boolean[] mCheckedDays = {false, false, false, false, false, false, false};
@@ -103,7 +105,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     //perm granted
-                    fileName = Environment.getExternalStorageDirectory() + "/record.3gpp";
+                    fileName = Environment.getExternalStorageDirectory() + "/record.amr_nb";
                     recordingControls();
                 } else {
                     getPermission();
@@ -363,7 +365,6 @@ public class AlarmEditActivity extends AppCompatActivity {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < daysToRepeat.length; i++) {
             if (choosenDays[i] == '1') {
-//                Toast.makeText(this, daysToRepeat[i], Toast.LENGTH_SHORT).show();
                 result.append(getAbbreviationDay(daysToRepeat[i].toCharArray())).append(" ");
             }
         }
@@ -433,7 +434,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             return;
         }
 
-        String time = time_field.getText().toString();
+        String time = millisecondsTime;
         String name = name_field.getText().toString();
         String body = note_text_field.getText().toString();
         String musicNameOnSDCard = fileName;
@@ -505,7 +506,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             alarmMinute = calendar.get(java.util.Calendar.MINUTE);
 
             TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
-                alarm.setTime(String.valueOf(calendar.getTimeInMillis()));
+                millisecondsTime = String.valueOf(calendar.getTimeInMillis());
                 time_field.setText(hourOfDay + " : " + minute);
             }, alarmHour, alarmMinute, true);
             timePickerDialog.show();
