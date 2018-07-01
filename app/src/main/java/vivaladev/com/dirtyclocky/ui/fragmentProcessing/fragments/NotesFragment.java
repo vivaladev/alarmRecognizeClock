@@ -55,7 +55,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener {
         LinearLayout notes_linearLayout = (LinearLayout) currentView.findViewById(R.id.notes_linearLayout);
         NotesFactory nf = new NotesFactory(this.getContext(), notes_linearLayout, this);
 
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
             Alarm[] alarms = dbw.getAllAlarms();
             /*try{
                 throw new RuntimeException("noteId = " + alarms.length);

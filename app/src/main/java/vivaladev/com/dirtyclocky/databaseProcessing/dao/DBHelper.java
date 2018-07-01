@@ -39,7 +39,8 @@ class DBHelper extends SQLiteOpenHelper {
                 + "music text,"
                 + "repeatTime text,"
                 + "alarmOffMethod text,"
-                + "alarmIncreaseVolume text" + ");"
+                + "alarmIncreaseVolume text,"
+                + "alarmOnOff text" + ");"
 
         );
     }

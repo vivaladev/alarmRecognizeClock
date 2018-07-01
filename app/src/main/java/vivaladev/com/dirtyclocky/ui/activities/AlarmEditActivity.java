@@ -62,6 +62,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     private EditText alarmRepeat;
     private EditText alarmOffMethod;
     private CheckBox isIncreaseVolume;
+    private CheckBox isAlarmOnOff;
     private Toolbar edit_note_tool_bar;
     private FloatingActionButton bottom_sheet_btn;
     private BottomSheetBehavior bottomSheetBehavior;
@@ -73,6 +74,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     private String initialRepeatDays;
     private String initialOffMethod;
     private String initialIsIncrease;
+    private String initialalarmOnOff;
 
     private int clickedAlarmId;
     private Alarm alarm;
@@ -97,6 +99,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         alarmRepeat = findViewById(R.id.alarmRepeat);
         alarmOffMethod = findViewById(R.id.alarmOffMethod);
         isIncreaseVolume = findViewById(R.id.alarmIncreaseVolume);
+        isAlarmOnOff = findViewById(R.id.alarmOnOff);
         repeatDaysState = new StringBuilder();
 
         //clickedAlarmId = -1;
@@ -107,7 +110,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         //TODO: подтягивать аларм с бд
     }
 
-    private void setInitialData(String time, String name, String description, String musicName, String days, String offMethod, String isIncreases) {
+    private void setInitialData(String time, String name, String description, String musicName, String days, String offMethod, String isIncreases, String isOn) {
         initialTime = time;
         initialName = name;
         initialBody = description;
@@ -115,6 +118,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         initialRepeatDays = days;
         initialOffMethod = offMethod;
         initialIsIncrease = isIncreases;
+        initialalarmOnOff = isOn;
     }
 
     private void setInitialData() {
@@ -125,6 +129,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         initialRepeatDays = alarmRepeat.getText().toString();
         initialOffMethod = alarmOffMethod.getText().toString();
         initialIsIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
+        initialalarmOnOff = isAlarmOnOff.isChecked() ? "1" : "0";
     }
 
     private String[] getConvertedFileName(File[] filenames) {
@@ -404,7 +409,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             }
 
         Toast.makeText(this, "Saving", Toast.LENGTH_SHORT).show();
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
 
             String time = time_field.getText().toString();
             String name = name_field.getText().toString();
@@ -413,9 +418,10 @@ public class AlarmEditActivity extends AppCompatActivity {
             String repeatTime = alarmRepeat.getText().toString();
             String offMethod = alarmOffMethod.getText().toString();
             String alarmIncreaseVolume = isIncreaseVolume.isChecked() ? "1" : "0";
+            String alarmOnOff = isAlarmOnOff.isChecked() ? "1" : "0";
 
             if (clickedAlarmId != -1) {
-                dbw.updateAlarm(clickedAlarmId, time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
+                dbw.updateAlarm(clickedAlarmId, time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume, alarmOnOff);
                 /*for (int i = 0; i < removalTags.size(); i++) {
                     dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
                 }
@@ -423,7 +429,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                     dbw.addTagToNote(additionTags.get(i), clickedNoteId);
                 }*/
             } else {
-                int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
+                int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume, alarmOnOff);
                 try {
                     throw new RuntimeException("noteId = " + alarmID);
                 } catch (RuntimeException e) {
@@ -435,7 +441,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             }
             Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
 
-            setInitialData(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
+            setInitialData(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume, alarmOnOff);
             showMessage(getResources().getString(R.string.en_alarm_message_save_changes));
             MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
 
@@ -455,27 +461,18 @@ public class AlarmEditActivity extends AppCompatActivity {
         String music = alarmOffMusic.getText().toString();
         String repeatDays = alarmRepeat.getText().toString();
         String offMethod = alarmOffMethod.getText().toString();
-//        String isIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
+        String isIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
+        String isOn = isAlarmOnOff.isChecked() ? "1" : "0";
 
-        try {
-            throw new RuntimeException(
-                    "time = " + time.equals(initialTime) +
-                            "name = " + name.equals(initialName) +
-                            "description = " + description.equals(initialBody) +
-                            "music = " + music.equals(initialMusic) +
-                            "repeatDays = " + repeatDays.equals(initialRepeatDays) +
-                            "offMethod = " + offMethod.equals(initialOffMethod)
-            );
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-        }
 
         if (time.equals(initialTime) &&
                 name.equals(initialName) &&
                 description.equals(initialBody) &&
                 music.equals(initialMusic) &&
                 repeatDays.equals(initialRepeatDays) &&
-                offMethod.equals(initialOffMethod)) {
+                offMethod.equals(initialOffMethod) &&
+                isIncrease.equals(initialIsIncrease)&&
+                isOn.equals(initialalarmOnOff)) {
             return true;
         }
         return false;
@@ -531,7 +528,7 @@ public class AlarmEditActivity extends AppCompatActivity {
 
         if (clickedAlarmId != -1) {
             toolbarMenu.findItem(R.id.remove_btn).setVisible(true);
-            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
                 alarm = dbw.getAlarm(clickedAlarmId);
                 time_field.setText(getUnderlinedText(alarm.getTime()));
                 name_field.setText(alarm.getName());
@@ -540,7 +537,8 @@ public class AlarmEditActivity extends AppCompatActivity {
                 alarmOffMusic.setText(alarm.getMusic());
                 alarmRepeat.setText(alarm.getRepeatTime());
                 alarmOffMethod.setText(alarm.getAlarmOffMethod());
-                isIncreaseVolume.setText(String.valueOf(alarm.isAlarmIncreaseVolume()));
+                isIncreaseVolume.setChecked(alarm.isAlarmIncreaseVolume());
+                isAlarmOnOff.setChecked(alarm.isAlarmOnOff());
 
                 //TODO
 
@@ -560,7 +558,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             }
         } else {
             toolbarMenu.findItem(R.id.remove_btn).setVisible(false);
-            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
                 time_field.setText("");
                 name_field.setText("");
                 note_text_field.setText("");
