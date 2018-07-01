@@ -131,6 +131,7 @@ public class DatabaseWrapper implements AutoCloseable {
         cv.put("alarmIncreaseVolume", alarmIncreaseVolume);
 
         int updCount = db.update("Alarms", cv, "id = " + alarmID, null);
+        Log.d("Update alarms", getAlarm(alarmID).getMusic());
         Log.d("Update alarm", String.format("Количество обновлённых строк %1$s", updCount));
     }
 

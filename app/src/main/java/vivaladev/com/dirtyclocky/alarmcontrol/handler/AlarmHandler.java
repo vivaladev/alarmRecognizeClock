@@ -67,13 +67,6 @@ public abstract class AlarmHandler {
         intent.putExtra("requestCode", alarm.getId());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
         alarmMgr.cancel(pendingIntent);
-
-        try{
-            throw new RuntimeException("unRegisterAlarm = " + ""+ alarm.getId());
-        }
-        catch (RuntimeException e){
-            e.printStackTrace();
-        }
     }
 
     public static void loadAlarms(AlarmManager alarmMgr, Context context) {

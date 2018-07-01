@@ -1,6 +1,5 @@
 package vivaladev.com.dirtyclocky.ui.activities;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -28,10 +27,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,7 +69,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     private String initialTime;
     private String initialName;
     private String initialBody;
-    //private String initialMusic;
+    private String initialMusic;
     private String initialRepeatDays;
     private String initialOffMethod;
     private String initialIsIncrease;
@@ -114,7 +111,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         initialTime = time;
         initialName = name;
         initialBody = description;
-        //initialMusic = musicName;
+        initialMusic = musicName;
         initialRepeatDays = days;
         initialOffMethod = offMethod;
         initialIsIncrease = isIncreases;
@@ -124,7 +121,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         initialTime = time_field.getText().toString();
         initialName = name_field.getText().toString();
         initialBody = note_text_field.getText().toString();
-        //initialMusic = alarmOffMusic.toString(); //TODO: вернуть музыку
+        initialMusic = alarmOffMusic.getText().toString(); //TODO: вернуть музыку
         initialRepeatDays = alarmRepeat.getText().toString();
         initialOffMethod = alarmOffMethod.getText().toString();
         initialIsIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
@@ -256,7 +253,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                             (dialog, id) -> dialog.cancel())
                     .setPositiveButton("Done", (dialog, id) -> {
                         dialog.cancel();
-                        if (choise.get(0).equals("Image")) {
+                        if (choise.get(0).equals("Image")){
                             prepareToRecognizeImage();
                         }
                         alarmOffMethod.setText(choise.get(0));
@@ -406,143 +403,149 @@ public class AlarmEditActivity extends AppCompatActivity {
                 return;
             }
 
-            Toast.makeText(this, "Saving", Toast.LENGTH_SHORT).show();
-            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+        Toast.makeText(this, "Saving", Toast.LENGTH_SHORT).show();
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
 
-                String time = time_field.getText().toString();
-                String name = name_field.getText().toString();
-                String body = note_text_field.getText().toString();
-                String music = alarmOffMusic.toString(); //TODO: вернуть музыку
-                String repeatTime = alarmRepeat.getText().toString();
-                String offMethod = alarmOffMethod.getText().toString();
-                String alarmIncreaseVolume = isIncreaseVolume.isChecked() ? "1" : "0";
+            String time = time_field.getText().toString();
+            String name = name_field.getText().toString();
+            String body = note_text_field.getText().toString();
+            String music = alarmOffMusic.getText().toString(); //TODO: вернуть музыку
+            String repeatTime = alarmRepeat.getText().toString();
+            String offMethod = alarmOffMethod.getText().toString();
+            String alarmIncreaseVolume = isIncreaseVolume.isChecked() ? "1" : "0";
 
-                if (clickedAlarmId != -1) {
-                    dbw.updateAlarm(clickedAlarmId, time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
+            if (clickedAlarmId != -1) {
+                dbw.updateAlarm(clickedAlarmId, time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
                 /*for (int i = 0; i < removalTags.size(); i++) {
                     dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
                 }
                 for (int i = 0; i < additionTags.size(); i++) {
                     dbw.addTagToNote(additionTags.get(i), clickedNoteId);
                 }*/
-                } else {
-                    int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
-                    try {
-                        throw new RuntimeException("noteId = " + alarmID);
-                    } catch (RuntimeException e) {
-                        e.printStackTrace();
-                    }
+            } else {
+                int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
+                try {
+                    throw new RuntimeException("noteId = " + alarmID);
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                }
                 /*for (int i = 0; i < additionTags.size(); i++) {
                     dbw.addTagToNote(additionTags.get(i), alarmID);//TODO добавление тегов к аларму
                 }*/
-                }
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-
-                setInitialData(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
-                showMessage(getResources().getString(R.string.en_alarm_message_save_changes));
-                MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
-
-                SoundProcessingActivity soundProcessingActivity = SoundProcessingActivity.getInstance();
-                if (soundProcessingActivity != null) {
-                    soundProcessingActivity.reload();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }
+            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
 
-        private boolean isLastVersionActive () {
-            String time = time_field.getText().toString();
-            String name = name_field.getText().toString();
-            String description = note_text_field.getText().toString();
-            //String music = alarmOffMusic.getText().toString();
-            String repeatDays = alarmRepeat.getText().toString();
-            String offMethod = alarmOffMethod.getText().toString();
+            setInitialData(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
+            showMessage(getResources().getString(R.string.en_alarm_message_save_changes));
+            MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
+
+            SoundProcessingActivity soundProcessingActivity = SoundProcessingActivity.getInstance();
+            if (soundProcessingActivity != null) {
+                soundProcessingActivity.reload();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isLastVersionActive() {
+        String time = time_field.getText().toString();
+        String name = name_field.getText().toString();
+        String description = note_text_field.getText().toString();
+        String music = alarmOffMusic.getText().toString();
+        String repeatDays = alarmRepeat.getText().toString();
+        String offMethod = alarmOffMethod.getText().toString();
 //        String isIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
 
-            try {
-                throw new RuntimeException(
-                        "time = " + time.equals(initialTime) +
-                                "name = " + name.equals(initialName) +
-                                "description = " + description.equals(initialBody) +
-                                //"music = " + music.equals(initialMusic) +
-                                "repeatDays = " + repeatDays.equals(initialRepeatDays) +
-                                "offMethod = " + offMethod.equals(initialOffMethod)
-                );
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-            }
-
-            if (time.equals(initialTime) &&
-                    name.equals(initialName) &&
-                    description.equals(initialBody) &&
-                    //music.equals(initialMusic) &&
-                    repeatDays.equals(initialRepeatDays) &&
-                    offMethod.equals(initialOffMethod)) {
-                return true;
-            }
-            return false;
+        try {
+            throw new RuntimeException(
+                    "time = " + time.equals(initialTime) +
+                            "name = " + name.equals(initialName) +
+                            "description = " + description.equals(initialBody) +
+                            "music = " + music.equals(initialMusic) +
+                            "repeatDays = " + repeatDays.equals(initialRepeatDays) +
+                            "offMethod = " + offMethod.equals(initialOffMethod)
+            );
+        } catch (RuntimeException e) {
+            e.printStackTrace();
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        private void setTimeDialog () {
-            final java.util.Calendar calendar = java.util.Calendar.getInstance();
-
-            time_field.setInputType(InputType.TYPE_NULL);
-            time_field.setOnClickListener(v -> {
-                alarmHour = calendar.get(java.util.Calendar.HOUR_OF_DAY); // set default time by current time
-                alarmMinute = calendar.get(java.util.Calendar.MINUTE);
-
-                TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
-                    millisecondsTime = String.valueOf(calendar.getTimeInMillis());
-                    time_field.setText(hourOfDay + " : " + minute);
-                }, alarmHour, alarmMinute, true);
-                timePickerDialog.show();
-            });
-        }
-
-        private void setToolBar () {
-            setSupportActionBar(edit_note_tool_bar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
-            edit_note_tool_bar.setSubtitleTextColor(getResources().getColor(R.color.theme_color));
-        }
-
-        private void showMessage (String message){
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        @RequiresApi(api = Build.VERSION_CODES.M)
-        public boolean onCreateOptionsMenu (Menu menu){
-            getMenuInflater().inflate(R.menu.edit_note_tool_bar, menu);
-            toolbarMenu = menu;
-            setAlarmData();
+        if (time.equals(initialTime) &&
+                name.equals(initialName) &&
+                description.equals(initialBody) &&
+                music.equals(initialMusic) &&
+                repeatDays.equals(initialRepeatDays) &&
+                offMethod.equals(initialOffMethod)) {
             return true;
         }
+        return false;
+    }
 
-        @RequiresApi(api = Build.VERSION_CODES.M)
-        private void setAlarmData () {
-            Alarm note;
-            //Tag[] allTags;
-            //Tag[] noteTags;
-            clickedAlarmId = MainActivity.getInstance().getNotesFragment().getClickedNoteId();//TODO переименовать в Note Handler
-            LinearLayout tags_linearLayout = (LinearLayout) findViewById(R.id.tags_linearLayout);
-            //TagsFactory tg = new TagsFactory(this, tags_linearLayout, this);
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void setTimeDialog() {
+        final java.util.Calendar calendar = java.util.Calendar.getInstance();
 
-            if (clickedAlarmId != -1) {
-                toolbarMenu.findItem(R.id.remove_btn).setVisible(true);
-                try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
-                    note = dbw.getAlarm(clickedAlarmId);
-                    time_field.setText(getUnderlinedText(note.getTime()));
-                    name_field.setText(note.getName());
-                    note_text_field.setText(note.getBody());
-                    //TODO
+        time_field.setInputType(InputType.TYPE_NULL);
+        time_field.setOnClickListener(v -> {
+            alarmHour = calendar.get(java.util.Calendar.HOUR_OF_DAY); // set default time by current time
+            alarmMinute = calendar.get(java.util.Calendar.MINUTE);
+
+            TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+                millisecondsTime = String.valueOf(calendar.getTimeInMillis());
+                time_field.setText(hourOfDay + " : " + minute);
+            }, alarmHour, alarmMinute, true);
+            timePickerDialog.show();
+        });
+    }
+
+    private void setToolBar() {
+        setSupportActionBar(edit_note_tool_bar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
+        edit_note_tool_bar.setSubtitleTextColor(getResources().getColor(R.color.theme_color));
+    }
+
+    private void showMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_note_tool_bar, menu);
+        toolbarMenu = menu;
+        setAlarmData();
+        return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void setAlarmData() {
+        Alarm alarm;
+        //Tag[] allTags;
+        //Tag[] noteTags;
+        clickedAlarmId = MainActivity.getInstance().getNotesFragment().getClickedNoteId();//TODO переименовать в Note Handler
+        LinearLayout tags_linearLayout = (LinearLayout) findViewById(R.id.tags_linearLayout);
+        //TagsFactory tg = new TagsFactory(this, tags_linearLayout, this);
+
+        if (clickedAlarmId != -1) {
+            toolbarMenu.findItem(R.id.remove_btn).setVisible(true);
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+                alarm = dbw.getAlarm(clickedAlarmId);
+                time_field.setText(getUnderlinedText(alarm.getTime()));
+                name_field.setText(alarm.getName());
+                note_text_field.setText(alarm.getBody());
+                //repeatDaysState.append();//TODO ЧЕКНУТЬ
+                alarmOffMusic.setText(alarm.getMusic());
+                alarmRepeat.setText(alarm.getRepeatTime());
+                alarmOffMethod.setText(alarm.getAlarmOffMethod());
+                isIncreaseVolume.setText(String.valueOf(alarm.isAlarmIncreaseVolume()));
+
+                //TODO
 
                 /*allTags = dbw.getAllTags();
-                noteTags = dbw.getTagsByNoteId(note.getId());
+                noteTags = dbw.getTagsByNoteId(alarm.getId());
 
                 for (int i = 0; i < allTags.length; i++) {
                     if (isTagBelongNote(allTags[i].getId(), noteTags)) {
@@ -552,88 +555,88 @@ public class AlarmEditActivity extends AppCompatActivity {
                     }
                 }*/
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                toolbarMenu.findItem(R.id.remove_btn).setVisible(false);
-                try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
-                    time_field.setText("");
-                    name_field.setText("");
-                    note_text_field.setText("");
-                    //TODO
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            toolbarMenu.findItem(R.id.remove_btn).setVisible(false);
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+                time_field.setText("");
+                name_field.setText("");
+                note_text_field.setText("");
+                //TODO
 
                 /*allTags = dbw.getAllTags();
                 for (int i = 0; i < allTags.length; i++) {
                     tg.addTagToScreen(allTags[i].getId(), allTags[i].getName(), false);
                 }*/
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            setInitialData();
         }
-
-        private SpannableString getUnderlinedText (String text){
-            SpannableString content = new SpannableString(text);
-            content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-            return content;
-        }
-
-        @Override
-        @RequiresApi(api = Build.VERSION_CODES.M)
-        public boolean onOptionsItemSelected (MenuItem item){
-            switch (item.getItemId()) {
-                case R.id.save_btn: {
-                    saveChanges();
-                    break;
-                }
-                case R.id.remove_btn: {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage(getResources().getString(R.string.en_alarm_message_back_btn))
-                            .setPositiveButton(getResources().getString(R.string.en_alarm_del),
-                                    (dialog, which) -> {
-                                        removeActiveAlarm();
-                                        finish();
-                                    }).setNegativeButton(getResources().getString(R.string.en_alarm_cancel), null).show();
-                    break;
-                }
-                case android.R.id.home: {
-                    backBtnDialog();
-                    break;
-                }
-            }
-            return super.onOptionsItemSelected(item);
-        }
-
-        @Override
-        public void onBackPressed () {
-            backBtnDialog();
-        }
-
-        @Override
-        protected void onCreate (Bundle savedInstanceState){
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.alarm_edit_activity);
-            init();
-            setDefaultData(); // default values
-            setStatusBar(this, findViewById(R.id.edit_note_tool_bar));
-            setToolBar();
-            controlProcessing();
-
-        }
-
-        private static boolean isEmpty (EditText etText){
-            if (etText.getText().toString().trim().length() > 0)
-                return false;
-
-            return true;
-        }
-
-        private static boolean isEmpty (TextView etText){
-            if (etText.getText().toString().trim().length() > 0)
-                return false;
-
-            return true;
-        }
+        setInitialData();
     }
+
+    private SpannableString getUnderlinedText(String text) {
+        SpannableString content = new SpannableString(text);
+        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+        return content;
+    }
+
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_btn: {
+                saveChanges();
+                break;
+            }
+            case R.id.remove_btn: {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getResources().getString(R.string.en_alarm_message_back_btn))
+                        .setPositiveButton(getResources().getString(R.string.en_alarm_del),
+                                (dialog, which) -> {
+                                    removeActiveAlarm();
+                                    finish();
+                                }).setNegativeButton(getResources().getString(R.string.en_alarm_cancel), null).show();
+                break;
+            }
+            case android.R.id.home: {
+                backBtnDialog();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        backBtnDialog();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.alarm_edit_activity);
+        init();
+        setDefaultData(); // default values
+        setStatusBar(this, findViewById(R.id.edit_note_tool_bar));
+        setToolBar();
+        controlProcessing();
+
+    }
+
+    private static boolean isEmpty(EditText etText) {
+        if (etText.getText().toString().trim().length() > 0)
+            return false;
+
+        return true;
+    }
+
+    private static boolean isEmpty(TextView etText) {
+        if (etText.getText().toString().trim().length() > 0)
+            return false;
+
+        return true;
+    }
+}
