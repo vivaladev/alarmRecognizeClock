@@ -5,7 +5,10 @@ import android.app.AlarmManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
+import vivaladev.com.dirtyclocky.databaseProcessing.entities.Tag;
+import vivaladev.com.dirtyclocky.ui.activities.MainActivity;
 
 
 public abstract class AlarmHandler {
@@ -34,6 +37,14 @@ public abstract class AlarmHandler {
     public static void loadAlarms() {
         // Загрузка будильников из базы
 
-        throw new UnsupportedOperationException("Метод не реализован!");// Загрузка будильников из базы
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+            Alarm[] alarms = dbw.getAllAlarms();
+            for (int i = 0; i < alarms.length; i++) {
+                //registerAlarm(, alarms[i]);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
