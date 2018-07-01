@@ -174,8 +174,9 @@ public class AlarmClockActivity extends Activity {
                     try {
                         Thread.sleep(3000);
                     } catch (InterruptedException e) {
-                        System.out.println("Thread disable");
-                        Toast.makeText(AlarmClockActivity.this,"Поток завершен аварийно", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                        //System.out.println("Thread disable");
+                        //Toast.makeText(AlarmClockActivity.this,"Поток завершен аварийно", Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
