@@ -73,6 +73,7 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     final int REQUEST_AUDIO_PERMISSION_RESULT = 1; // requestCode
     private String fileName;
+    private StringBuilder repeatDaysState;
 
 
     //    Recording
@@ -248,6 +249,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         alarmRepeat = findViewById(R.id.alarmRepeat);
         alarmOffMethod = findViewById(R.id.alarmOffMethod);
         isIncreaseVolume = findViewById(R.id.alarmIncreaseVolume);
+        repeatDaysState = new StringBuilder();
 
     }
 
@@ -339,14 +341,15 @@ public class AlarmEditActivity extends AppCompatActivity {
                     // Добавляем кнопки
                     .setPositiveButton("Done",
                             (dialog, id) -> {
-                                StringBuilder state = new StringBuilder();
+                                repeatDaysState = new StringBuilder();
                                 for (int i = 0; i < daysToRepeat.length; i++) {
                                     if (mCheckedDays[i])
-                                        state.append(1);
+                                        repeatDaysState.append(1);
                                     else
-                                        state.append(0);
+                                        repeatDaysState.append(0);
                                 }
-                                alarmRepeat.setText(formatRepeatDaysString(daysToRepeat, state.toString().toCharArray()));
+                                alarmRepeat.setText("");
+                                alarmRepeat.setText(formatRepeatDaysString(daysToRepeat, repeatDaysState.toString().toCharArray()));
                             })
 
                     .setNegativeButton("Cancel",
@@ -358,8 +361,9 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     private String formatRepeatDaysString(String[] daysToRepeat, char[] choosenDays) {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < choosenDays.length; i++) {
+        for (int i = 0; i < daysToRepeat.length; i++) {
             if (choosenDays[i] == '1') {
+//                Toast.makeText(this, daysToRepeat[i], Toast.LENGTH_SHORT).show();
                 result.append(getAbbreviationDay(daysToRepeat[i].toCharArray())).append(" ");
             }
         }
@@ -428,41 +432,52 @@ public class AlarmEditActivity extends AppCompatActivity {
                     .setNegativeButton(getResources().getString(R.string.en_alarm_ok), null).show();
             return;
         }
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
-            String date = time_field.getText().toString();
-            String title = name_field.getText().toString();
-            String body = note_text_field.getText().toString();
 
-            String music = "";//TODO ЗАПОЛНИТЬ
-            String repeatTime = "";//TODO ЗАПОЛНИТЬ
-            String alarmOffMethod = "";//TODO ЗАПОЛНИТЬ
-            String alarmIncreaseVolume = "";//TODO ЗАПОЛНИТЬ
+        String time = time_field.getText().toString();
+        String name = name_field.getText().toString();
+        String body = note_text_field.getText().toString();
+        String musicNameOnSDCard = fileName;
+        String repeatDaysState = alarmRepeat.getText().toString();
+        String offMethod = alarmOffMethod.getText().toString();
+        boolean isIncrease = isIncreaseVolume.isChecked();
 
-            if (clickedAlarmId != -1) {
-                dbw.updateAlarm(clickedAlarmId, date, title, body, music, repeatTime, alarmOffMethod, alarmIncreaseVolume);
-                /*for (int i = 0; i < removalTags.size(); i++) {
-                    dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
-                }
-                for (int i = 0; i < additionTags.size(); i++) {
-                    dbw.addTagToNote(additionTags.get(i), clickedNoteId);
-                }*/
-            } else {
-                int alarmID = dbw.addAlarm(date, title, body, music, repeatTime, alarmOffMethod, alarmIncreaseVolume);
-                for (int i = 0; i < additionTags.size(); i++) {
-                    dbw.addTagToNote(additionTags.get(i), alarmID);
-                }
-            }
-            setInitialData();
-            showMessage(getResources().getString(R.string.en_alarm_message_save_changes));
-            MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
+        alarm.setTime(time);
+        alarm.setName(name);
+        alarm.setBody(body);
 
-            SoundProcessingActivity soundProcessingActivity = SoundProcessingActivity.getInstance();
-            if (soundProcessingActivity != null) {
-                soundProcessingActivity.reload();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+//        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
+//
+//            String music = "";//TODO ЗАПОЛНИТЬ
+//            String repeatTime = "";//TODO ЗАПОЛНИТЬ
+//            String alarmOffMethod = "";//TODO ЗАПОЛНИТЬ
+//            String alarmIncreaseVolume = "";//TODO ЗАПОЛНИТЬ
+//
+//            if (clickedAlarmId != -1) {
+//                dbw.updateAlarm(clickedAlarmId, date, title, body, music, repeatTime, alarmOffMethod, alarmIncreaseVolume);
+//                /*for (int i = 0; i < removalTags.size(); i++) {
+//                    dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
+//                }
+//                for (int i = 0; i < additionTags.size(); i++) {
+//                    dbw.addTagToNote(additionTags.get(i), clickedNoteId);
+//                }*/
+//            } else {
+//                int alarmID = dbw.addAlarm(date, title, body, music, repeatTime, alarmOffMethod, alarmIncreaseVolume);
+//                for (int i = 0; i < additionTags.size(); i++) {
+//                    dbw.addTagToNote(additionTags.get(i), alarmID);
+//                }
+//            }
+//            setInitialData();
+//            showMessage(getResources().getString(R.string.en_alarm_message_save_changes));
+//            MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
+//
+//            SoundProcessingActivity soundProcessingActivity = SoundProcessingActivity.getInstance();
+//            if (soundProcessingActivity != null) {
+//                soundProcessingActivity.reload();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     private boolean isLastVersionActive() {
