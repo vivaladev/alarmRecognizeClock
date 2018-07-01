@@ -1,23 +1,14 @@
 package vivaladev.com.dirtyclocky.ui.activities;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -32,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -77,170 +67,8 @@ public class AlarmEditActivity extends AppCompatActivity {
     private int currentBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED;
     private boolean[] mCheckedDays = {false, false, false, false, false, false, false};
 
-    final int REQUEST_AUDIO_PERMISSION_RESULT = 1; // requestCode
-    private String fileName;
+
     private StringBuilder repeatDaysState;
-
-
-    //    Recording
-    private AudioRecord audioRecord;
-    private MediaRecorder mediaRecorder;
-    private MediaPlayer mediaPlayer;
-
-
-    /* CHECK PERMISSION MODULE */
-    int checkPermRecord() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-    }
-
-    int checkWriteSD() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-
-    void getPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                REQUEST_AUDIO_PERMISSION_RESULT);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_AUDIO_PERMISSION_RESULT:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    //perm granted
-                    fileName = Environment.getExternalStorageDirectory() + "/record.amr_nb";
-                    recordingControls();
-                } else {
-                    getPermission();
-                }
-                return;
-        }
-    }
-
-    private void recordingControls() {
-        alarmOffMusic.setOnClickListener(view -> {
-            AlertDialog.Builder builder;
-            final String[] controls = {"Start Recording", "Stop Recording", "Play record", "Stop playing"};
-
-            builder = new AlertDialog.Builder(this);
-            builder.setTitle("Choose method of alarm stopping")
-                    .setCancelable(false)
-
-                    // добавляем одну кнопку для закрытия диалога
-                    .setNeutralButton("Cancel",
-                            (dialog, id) -> dialog.cancel())
-                    .setPositiveButton("Done", (dialog, id) -> {
-                        alarmOffMusic.setText("Record");
-                        dialog.cancel();
-                    })
-                    // добавляем переключатели
-                    .setSingleChoiceItems(controls, -1,
-                            (dialog, item) -> {
-                                if (controls[item].equals("Start Recording")) {
-                                    mediaStartRec();
-                                }
-                                if (controls[item].equals("Stop Recording")) {
-                                    mediaStopRec();
-                                }
-                                if (controls[item].equals("Play record")) {
-                                    mediaStartRead();
-                                }
-                                if (controls[item].equals("Stop playing")) {
-                                    mediaStopRead();
-                                }
-                            });
-            AlertDialog alert = builder.create();
-            alert.show();
-        });
-    }
-
-
-    void createAudioRecorder() {
-        int sampleRate = 8000;
-        int channelConfig = AudioFormat.CHANNEL_IN_MONO;
-        int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
-
-        int minInternalBufferSize = AudioRecord.getMinBufferSize(sampleRate,
-                channelConfig, audioFormat);
-        int internalBufferSize = minInternalBufferSize * 4;
-
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,
-                sampleRate, channelConfig, audioFormat, internalBufferSize);
-    }
-
-
-    private void mediaStartRec() {
-        try {
-            releaseRecorder();
-
-            File outFile = new File(fileName);
-            if (outFile.exists()) {
-                outFile.delete();
-            }
-
-            mediaRecorder = new MediaRecorder();
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            mediaRecorder.setOutputFile(fileName);
-            mediaRecorder.prepare();
-            mediaRecorder.start();
-            Toast.makeText(this, "Recording started", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void mediaStopRec() {
-        if (mediaRecorder != null) {
-            mediaRecorder.stop();
-            Toast.makeText(this, "Recording stoped", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void mediaStartRead() {
-        try {
-            releasePlayer();
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(fileName);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-            Toast.makeText(this, "Playing started", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void mediaStopRead() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            Toast.makeText(this, "Playing stoped", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void releaseRecorder() {
-        if (mediaRecorder != null) {
-            mediaRecorder.release();
-            mediaRecorder = null;
-        }
-    }
-
-    private void releasePlayer() {
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        releasePlayer();
-        releaseRecorder();
-    }
-
-    /*END PERMISSION MODULE*/
 
     private void init() {
         time_field = findViewById(R.id.time_field);
@@ -425,7 +253,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     }
 
     private boolean isReadyToSave() {
-        if ("".equals(time_field.getText()) && "".equals(name_field.getText())) {
+        if ("".equals(time_field.getText()) || "".equals(name_field.getText())) {
             return false;
         }
         return true;
@@ -446,7 +274,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             String time = millisecondsTime;
             String name = name_field.getText().toString();
             String body = note_text_field.getText().toString();
-            String music = fileName;
+            String music = ""; //TODO: вернуть музыку
             String repeatTime = alarmRepeat.getText().toString();
             String offMethod = alarmOffMethod.getText().toString();
             String alarmIncreaseVolume = isIncreaseVolume.isChecked() ? "1" : "0";
@@ -575,18 +403,10 @@ public class AlarmEditActivity extends AppCompatActivity {
         setContentView(R.layout.alarm_edit_activity);
         init();
         setDefaultData(); // default values
-        createAudioRecorder();
         setStatusBar(this, findViewById(R.id.edit_note_tool_bar));
         setToolBar();
         controlProcessing();
-        if (checkPermRecord() == PackageManager.PERMISSION_GRANTED && checkWriteSD() == PackageManager.PERMISSION_GRANTED) {
-            // perm granted
-            fileName = Environment.getExternalStorageDirectory() + "/record.amr_nb";
-            recordingControls();
-        } else {
-            Toast.makeText(this, "Permission is not granted. Some function may have errors", Toast.LENGTH_LONG).show();
-            getPermission();
-        }
+
     }
 }
 
