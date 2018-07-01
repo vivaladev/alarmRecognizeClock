@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
@@ -12,8 +13,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -87,7 +87,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         isIncreaseVolume = findViewById(R.id.alarmIncreaseVolume);
         repeatDaysState = new StringBuilder();
 
-        //clickedAlarmId = -1;
+        clickedAlarmId = -1;
 
     }
 
@@ -105,14 +105,17 @@ public class AlarmEditActivity extends AppCompatActivity {
         initialIsIncrease = isIncreases;
     }
 
-    private void setInitialData() {
-        initialTime = time_field.getText().toString();
-        initialName = name_field.getText().toString();
-        initialBody = note_text_field.getText().toString();
-        //initialMusic = alarmOffMusic.toString(); //TODO: вернуть музыку
-        initialRepeatDays = alarmRepeat.getText().toString();
-        initialOffMethod = alarmOffMethod.getText().toString();
-        initialIsIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
+    private String[] getConvertedFileName(File[] filenames) {
+        String[] res = new String[filenames.length];
+        for (int i = 0; i < filenames.length; i++) {
+            res[i] = filenames[i].getName();
+        }
+
+        return res;
+    }
+
+    private File getFileByName(String filename) {
+        return new File(filename);
     }
 
     private void upSheetControl() {
@@ -155,6 +158,44 @@ public class AlarmEditActivity extends AppCompatActivity {
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
+        });
+
+        alarmOffMusic.setOnClickListener(view -> {
+            final List<String> musicFiles = new ArrayList<>();
+            final List<String> choise = Arrays.asList("");
+            File rootFolder = Environment.getExternalStorageDirectory();
+            File[] filesArray = rootFolder.listFiles();
+            System.out.println("файлов: " + filesArray.length);
+
+            for (File f : filesArray) {
+                if (f.isFile()) {
+                    System.out.println("File: " + f);
+                    musicFiles.add(f.getName());
+                }
+            }
+
+            String[] filenames = getConvertedFileName(filesArray);
+
+            final String[] choosenFile = {""};
+            AlertDialog.Builder builder;
+            builder = new AlertDialog.Builder(this);
+            builder.setTitle("Choose method of alarm stopping")
+                    .setCancelable(false)
+                    // добавляем одну кнопку для закрытия диалога
+                    .setNeutralButton("Cancel",
+                            (dialog, id) -> dialog.cancel())
+                    .setPositiveButton("Done", (dialog, id) -> {
+                        alarmOffMusic.setText(choosenFile[0]);
+                        dialog.cancel();
+                    })
+                    // добавляем переключатели
+                    .setSingleChoiceItems(filenames, -1,
+                            (dialog, item) -> {
+                                showMessage("Тут все файлы были бы");
+                                choosenFile[0] = filenames[item];
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
         });
 
         alarmOffMethod.setOnClickListener(view -> {
@@ -303,10 +344,9 @@ public class AlarmEditActivity extends AppCompatActivity {
                 }*/
             } else {
                 int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
-                try{
+                try {
                     throw new RuntimeException("noteId = " + alarmID);
-                }
-                catch (RuntimeException e){
+                } catch (RuntimeException e) {
                     e.printStackTrace();
                 }
                 /*for (int i = 0; i < additionTags.size(); i++) {
@@ -337,17 +377,16 @@ public class AlarmEditActivity extends AppCompatActivity {
         String offMethod = alarmOffMethod.getText().toString();
 //        String isIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
 
-        try{
+        try {
             throw new RuntimeException(
-                            "time = " + time.equals(initialTime) +
+                    "time = " + time.equals(initialTime) +
                             "name = " + name.equals(initialName) +
                             "description = " + description.equals(initialBody) +
                             //"music = " + music.equals(initialMusic) +
                             "repeatDays = " + repeatDays.equals(initialRepeatDays) +
                             "offMethod = " + offMethod.equals(initialOffMethod)
             );
-        }
-        catch (RuntimeException e){
+        } catch (RuntimeException e) {
             e.printStackTrace();
         }
 
@@ -397,65 +436,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_note_tool_bar, menu);
         toolbarMenu = menu;
-        setNoteData();
         return true;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void setNoteData() {
-        Alarm note;
-        //Tag[] allTags;
-        //Tag[] noteTags;
-        clickedAlarmId = MainActivity.getInstance().getNotesFragment().getClickedNoteId();//TODO переименовать в Note Handler
-        LinearLayout tags_linearLayout = (LinearLayout) findViewById(R.id.tags_linearLayout);
-        //TagsFactory tg = new TagsFactory(this, tags_linearLayout, this);
-
-        if (clickedAlarmId != -1) {
-            toolbarMenu.findItem(R.id.remove_btn).setVisible(true);
-            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
-                note = dbw.getAlarm(clickedAlarmId);
-                time_field.setText(getUnderlinedText(note.getTime()));
-                name_field.setText(note.getName());
-                note_text_field.setText(note.getBody());
-                //TODO
-
-                /*allTags = dbw.getAllTags();
-                noteTags = dbw.getTagsByNoteId(note.getId());
-
-                for (int i = 0; i < allTags.length; i++) {
-                    if (isTagBelongNote(allTags[i].getId(), noteTags)) {
-                        tg.addTagToScreen(allTags[i].getId(), allTags[i].getName(), true);
-                    } else {
-                        tg.addTagToScreen(allTags[i].getId(), allTags[i].getName(), false);
-                    }
-                }*/
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            toolbarMenu.findItem(R.id.remove_btn).setVisible(false);
-            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
-                time_field.setText("");
-                name_field.setText("");
-                note_text_field.setText("");
-                //TODO
-
-                /*allTags = dbw.getAllTags();
-                for (int i = 0; i < allTags.length; i++) {
-                    tg.addTagToScreen(allTags[i].getId(), allTags[i].getName(), false);
-                }*/
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        setInitialData();
-    }
-
-    private SpannableString getUnderlinedText(String text) {
-        SpannableString content = new SpannableString(text);
-        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-        return content;
     }
 
     @Override
