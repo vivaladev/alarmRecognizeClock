@@ -13,20 +13,35 @@ public class SoundRecognize {
     private static byte[] dbFileByte;
     private static byte[] newRecByte;
 
-    private static int errorFullCoincidence = 20; //ошибка полного сравнения
-    private static int errorComparisonOfHalves = 20; // ошибка сравнение половин
-    private static int errorComprassionOfTree = 20; // ошибка сравнение по 3
-    private static int errorComprassionOfFiveGroup = 20; // ошибка сравнение по 4
-    private static int errorSearchCoincidenceByte = 20; // ошибка поиска похожих
+    private static int errorFullCoincidence; //ошибка полного сравнения
+    private static int errorComparisonOfHalves; // ошибка сравнение половин
+    private static int errorComprassionOfTree; // ошибка сравнение по 3
+    private static int errorComprassionOfFiveGroup; // ошибка сравнение по 4
+    private static int coincedenceCountOfSearchCoincidenceByte; // ошибка поиска похожих
     private static int sizeCoincidenceByteGroup = 20; // ошибка поиска похожих
-
 
     public static void setErrorConstant(int erFull, int erHal, int erTree, int erFive, int erGroup) {
         errorFullCoincidence = erFull; //ошибка полного сравнения
         errorComparisonOfHalves = erHal; // ошибка сравнение половин
         errorComprassionOfTree = erTree; // ошибка сравнение по 3
         errorComprassionOfFiveGroup = erFive; // ошибка сравнение по 4
-        errorSearchCoincidenceByte = erGroup; // ошибка поиска похожих
+        coincedenceCountOfSearchCoincidenceByte = erGroup; // ошибка поиска похожих
+    }
+
+    public static int getSizeCoincidenceByteGroup() {
+        return sizeCoincidenceByteGroup;
+    }
+
+    public static void setSizeCoincidenceByteGroup(int sizeCoincidenceByteGroup) {
+        SoundRecognize.sizeCoincidenceByteGroup = sizeCoincidenceByteGroup;
+    }
+
+    public static int getCoincedenceCountOfSearchCoincidenceByte() {
+        return coincedenceCountOfSearchCoincidenceByte;
+    }
+
+    public static void setCoincedenceCountOfSearchCoincidenceByte(int coincedenceCountOfSearchCoincidenceByte) {
+        SoundRecognize.coincedenceCountOfSearchCoincidenceByte = coincedenceCountOfSearchCoincidenceByte;
     }
 
     /**
@@ -38,30 +53,26 @@ public class SoundRecognize {
         dbFileByte = convertFileToByteArray(dbFile);
         newRecByte = convertFileToByteArray(newRec);
 
-        //TODO: распознавать тут
-        return true;
-    }
+        setCoincedenceCountOfSearchCoincidenceByte(dbFileByte.length / 1000);
 
-    private static byte[] convertFileToByteArray(File f) {
-        byte[] byteArray = null;
-        try {
-            InputStream inputStream = new FileInputStream(f);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] b = new byte[1024 * 8];
-            int bytesRead;
+        int countError = 0;
+        boolean res = true;
 
-            while ((bytesRead = inputStream.read(b)) != -1) {
-                bos.write(b, 0, bytesRead);
-            }
-
-            byteArray = bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!firstCompareOnFullCoincidence()) {
+            return false;
         }
-        return byteArray;
+
+        if (!checkCoincedenceByte()) {
+            return false; //TODO: не работают цепочки
+        }
+
+//        if (!(countError < 2)){
+//            return false;
+//        }
+        return res;
     }
 
-    private boolean firstCompareOnFullCoincidence() {
+    private static boolean firstCompareOnFullCoincidence() {
         int countError = 0;
         if (dbFileByte.length == newRecByte.length) {   //равная длина, просто пошаговое сравнение байтов
             for (int i = 0; i < dbFileByte.length; i++) {
@@ -98,18 +109,10 @@ public class SoundRecognize {
         return true;
     }
 
-    private List<Byte> getByteList(byte[] array) {
-        List<Byte> res = new ArrayList<>();
-        for (byte b : array) {
-            res.add(b);
-        }
-        return res;
-    }
-
-    private boolean searchCoincedenceByte() {
+    private static boolean checkCoincedenceByte() {
         List<Byte> dbFileList = getByteList(dbFileByte);
         List<Byte> newRecList = getByteList(newRecByte);
-        int errorCount = 0;
+        int coincedenceCount = 0;
         //получили байт листы
 
         if (dbFileList.size() > newRecList.size()) {
@@ -119,10 +122,10 @@ public class SoundRecognize {
                 if (dbFileList.contains(item)) { // чекаем этот байт в другом листе
                     boolean compareRes = compareTwoGroupOfByte(newRecList.subList(i, newRecList.size()),
                             dbFileList.subList(dbFileList.indexOf(item), dbFileList.size())); // вызываем проверку группы одинаковых байтов
-                    if (!compareRes) {
-                        errorCount++;
-                        if (errorCount >= errorSearchCoincidenceByte) {
-                            return false;
+                    if (compareRes) {
+                        coincedenceCount++;
+                        if (coincedenceCount >= coincedenceCountOfSearchCoincidenceByte) {
+                            return true;
                         }
                     }
                 }
@@ -134,27 +137,54 @@ public class SoundRecognize {
                 if (newRecList.contains(item)) { // чекаем этот байт в другом листе
                     boolean compareRes = compareTwoGroupOfByte(dbFileList.subList(i, dbFileList.size()),
                             newRecList.subList(newRecList.indexOf(item), newRecList.size())); // вызываем проверку группы одинаковых байтов
-                    if (!compareRes) {
-                        errorCount++;
-                        if (errorCount >= errorSearchCoincidenceByte) {
-                            return false;
+                    if (compareRes) {
+                        coincedenceCount++;
+                        if (coincedenceCount >= coincedenceCountOfSearchCoincidenceByte) {
+                            return true;
                         }
                     }
                 }
             }
         }
-        return true;
+        return false;
     }
 
-    private boolean compareTwoGroupOfByte(List<Byte> mainList, List<Byte> list2) {
-        if(!(mainList.size() >= sizeCoincidenceByteGroup && list2.size() >= sizeCoincidenceByteGroup)){
+    private static List<Byte> getByteList(byte[] array) {
+        List<Byte> res = new ArrayList<>();
+        for (byte b : array) {
+            res.add(b);
+        }
+        return res;
+    }
+
+    private static boolean compareTwoGroupOfByte(List<Byte> mainList, List<Byte> list2) {
+        if (!(mainList.size() >= sizeCoincidenceByteGroup && list2.size() >= sizeCoincidenceByteGroup)) {
             return false;
         }
         for (int i = 0; i < sizeCoincidenceByteGroup; i++) {
-            if(!mainList.get(i).equals(list2.get(i))){
+            if (!mainList.get(i).equals(list2.get(i))) {
                 return false;
             }
         }
         return true;
+    }
+
+    private static byte[] convertFileToByteArray(File f) {
+        byte[] byteArray = null;
+        try {
+            InputStream inputStream = new FileInputStream(f);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] b = new byte[1024 * 8];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(b)) != -1) {
+                bos.write(b, 0, bytesRead);
+            }
+
+            byteArray = bos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return byteArray;
     }
 }

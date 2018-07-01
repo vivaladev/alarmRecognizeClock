@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.Random;
 
 import vivaladev.com.dirtyclocky.R;
+import vivaladev.com.dirtyclocky.recognizeProcessing.SoundRecognize;
 
 import static vivaladev.com.dirtyclocky.ui.activities.activityHelper.ActivityHelper.setStatusBar;
 
@@ -289,6 +290,8 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
             Toast.makeText(this, "Permission is not granted. Some function may have errors", Toast.LENGTH_LONG).show();
             getPermission();
         }
+
+
     }
 
 
