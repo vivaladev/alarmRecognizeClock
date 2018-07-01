@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -25,8 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import vivaladev.com.dirtyclocky.R;
@@ -49,7 +46,6 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
     //    Recording
     private String fileNameInCD;
     private String userInputName;
-    private AudioRecord audioRecord;
     private MediaRecorder mediaRecorder;
     private MediaPlayer mediaPlayer;
     final int REQUEST_AUDIO_PERMISSION_RESULT = 1; // requestCode
@@ -92,10 +88,6 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         }
     }
 
-    private void test() {
-
-    }
-
     private void recordingControls() {
         musicEditField.setOnClickListener(view -> {
             AlertDialog.Builder builder;
@@ -125,7 +117,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         });
     }
 
-    private String getFileName(String userInputName){
+    private String getFileName(String userInputName) {
         return Environment.getExternalStorageDirectory() + "/" + userInputName + ".amr_nb";
     }
 
@@ -135,7 +127,6 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(this);
         mDialogBuilder.setView(promptsView);
         final EditText userInput = promptsView.findViewById(R.id.input_text);
-        List<String> newRecordName = Arrays.asList("");
         mDialogBuilder
                 .setCancelable(false)
                 .setPositiveButton("Done",
@@ -342,7 +333,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
 
     private void removeRecord() {
         File filename = new File(getFileName(fileNameInCD));
-        if(filename.exists()){
+        if (filename.exists()) {
             filename.delete();
         }
     }
