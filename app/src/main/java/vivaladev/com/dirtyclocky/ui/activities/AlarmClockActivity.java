@@ -62,10 +62,15 @@ public class AlarmClockActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            alarmID = Integer.valueOf(savedInstanceState.getString("requestCode"));
-            Toast.makeText(this, ""+alarmID, Toast.LENGTH_SHORT).show();
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            alarmID = Integer.parseInt(extras.getString("requestCode"));
         }
+        else {
+            alarmID = -1;
+        }
+
+
         PowerManager pm=(PowerManager) getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
         //Осуществляем блокировку
@@ -88,7 +93,7 @@ public class AlarmClockActivity extends Activity {
 
         findViewById(R.id.buttonOff).setOnClickListener((buttonOffAlarm)->{
             if(alarmID != -1){
-                AlarmReceiver.setAlarmsOffByID(alarmID);
+                sendToBroadcastReceiver(alarmID);
                 try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
                     Alarm alarm = dbw.getAlarm(alarmID);
                     AlarmHandler.unRegisterAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), alarm, getApplicationContext());
@@ -98,7 +103,7 @@ public class AlarmClockActivity extends Activity {
             }
             TextView textView = findViewById(R.id.textView);
             textView.setText("Ты проклят");
-            cancelAlarm();
+            //cancelAlarm();
             vibrator.vibrate(1000);
             if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
                 mMediaPlayer.stop();
@@ -109,7 +114,7 @@ public class AlarmClockActivity extends Activity {
 
         findViewById(R.id.buttonDefer).setOnClickListener((buttonIgnor)->{
             if(alarmID != -1){
-                AlarmReceiver.setAlarmsOffByID(alarmID);
+                sendToBroadcastReceiver(alarmID);
             }
             TextView textView = findViewById(R.id.textView);
             textView.setText("Игнор");
@@ -164,6 +169,12 @@ public class AlarmClockActivity extends Activity {
         }
     }
 
+    private void sendToBroadcastReceiver(int alarmID){
+        Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
+        intent.putExtra("offAlarm", String.valueOf(alarmID));
+        sendBroadcast(intent);
+    }
+
     private Uri getAlarmUri() {
         Uri alert = RingtoneManager
                 .getDefaultUri(RingtoneManager.TYPE_ALARM);
@@ -206,7 +217,7 @@ public class AlarmClockActivity extends Activity {
                 mMediaPlayer.stop();
             }
             if(alarmID != -1){
-                AlarmReceiver.setAlarmsOffByID(alarmID);
+                sendToBroadcastReceiver(alarmID);
             }
             finish();
         }
