@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
+import vivaladev.com.dirtyclocky.recognizeProcessing.SoundRecognize;
 
 import static vivaladev.com.dirtyclocky.ui.activities.activityHelper.ActivityHelper.setStatusBar;
 
@@ -214,7 +215,6 @@ public class AlarmEditActivity extends AppCompatActivity {
             alert.setOnShowListener((dialogInterface) -> {
                 ListView lv = alert.getListView();
                 lv.setOnItemLongClickListener((adapterView, thisView, pos, id) -> {
-                    showMessage("Вьюха: " + thisView.toString() + " с id " + id);
                     try {
                         MediaPlayer mediaPlayer;
                         mediaPlayer = new MediaPlayer();
@@ -230,7 +230,6 @@ public class AlarmEditActivity extends AppCompatActivity {
                         showMessage("Please, specify needed file");
                         e.printStackTrace();
                     }
-
                     return true;
                 });
             });

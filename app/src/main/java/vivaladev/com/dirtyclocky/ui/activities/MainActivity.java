@@ -30,6 +30,7 @@ import java.util.Calendar;
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.alarmcontrol.handler.AlarmHandler;
 import vivaladev.com.dirtyclocky.alarmcontrol.service.AlarmService;
+import vivaladev.com.dirtyclocky.recognizeProcessing.SoundRecognize;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragmentAdapter.ImplFragmentPageAdapter;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.NotesFragment;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.TagsFragment;
