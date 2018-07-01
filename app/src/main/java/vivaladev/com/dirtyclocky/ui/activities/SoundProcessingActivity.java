@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -17,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import vivaladev.com.dirtyclocky.R;
 
@@ -44,7 +47,8 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
 
 
     //    Recording
-    private String fileName;
+    private String fileNameInCD;
+    private String userInputName;
     private AudioRecord audioRecord;
     private MediaRecorder mediaRecorder;
     private MediaPlayer mediaPlayer;
@@ -64,8 +68,12 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
+    int checkReadSD() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
+
     void getPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
                 REQUEST_AUDIO_PERMISSION_RESULT);
     }
 
@@ -74,15 +82,18 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         switch (requestCode) {
             case REQUEST_AUDIO_PERMISSION_RESULT:
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && checkReadSD() == PackageManager.PERMISSION_DENIED) {
                     //perm granted
-                    fileName = Environment.getExternalStorageDirectory() + "/record.amr_nb";
                     recordingControls();
                 } else {
                     getPermission();
                 }
                 return;
         }
+    }
+
+    private void test() {
+
     }
 
     private void recordingControls() {
@@ -93,19 +104,13 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
             builder = new AlertDialog.Builder(this);
             builder.setTitle("Choose method of alarm stopping")
                     .setCancelable(false)
-
-                    // добавляем одну кнопку для закрытия диалога
                     .setNeutralButton("Cancel",
                             (dialog, id) -> dialog.cancel())
-                    .setPositiveButton("Done", (dialog, id) -> {
-                        musicEditField.setText("Record");
-                        dialog.cancel();
-                    })
-                    // добавляем переключатели
+                    .setPositiveButton("Done", (dialog, id) -> dialog.cancel())
                     .setSingleChoiceItems(controls, -1,
                             (dialog, item) -> {
                                 if (controls[item].equals("Start Recording")) {
-                                    mediaStartRec();
+                                    getFileName();
                                 }
                                 if (controls[item].equals("Stop Recording")) {
                                     mediaStopRec();
@@ -122,7 +127,43 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         });
     }
 
-    private void mediaStartRec() {
+    private String getFileName(String userInputName){
+        return Environment.getExternalStorageDirectory() + "/" + userInputName + ".amr_nb";
+    }
+
+    private void getFileName() {
+        LayoutInflater li = LayoutInflater.from(this);
+        View promptsView = li.inflate(R.layout.alert_music_get_name, null);
+        AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(this);
+        mDialogBuilder.setView(promptsView);
+        final EditText userInput = promptsView.findViewById(R.id.input_text);
+        List<String> newRecordName = Arrays.asList("");
+        mDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("Done",
+                        (dialog1, id1) -> {
+                            userInputName = userInput.getText().toString();
+                            musicEditField.setText(userInputName);
+                            mediaStartRec(getFileName(userInputName));
+                            fileNameInCD = userInputName;
+                        })
+                .setNegativeButton("Cancel",
+                        (dialog2, id2) -> {
+                            userInputName = "Record" + new Random().nextInt(100000);
+                            Toast.makeText(this, "Recording will be save with default name " + userInputName,
+                                    Toast.LENGTH_LONG).show();
+                            musicEditField.setText(userInputName);
+                            dialog2.cancel();
+                            mediaStartRec(getFileName(userInputName));
+                            fileNameInCD = userInputName;
+                        });
+        //Создаем AlertDialog:
+        AlertDialog alertDialog = mDialogBuilder.create();
+        //и отображаем его:
+        alertDialog.show();
+    }
+
+    private void mediaStartRec(String fileName) {
         try {
             releaseRecorder();
 
@@ -155,11 +196,12 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         try {
             releasePlayer();
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(fileName);
+            mediaPlayer.setDataSource(getFileName(fileNameInCD));
             mediaPlayer.prepare();
             mediaPlayer.start();
             Toast.makeText(this, "Playing started", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
+            Toast.makeText(this, "Nothing to played. Record something :)", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
@@ -260,9 +302,8 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         setStatusBar(this, findViewById(R.id.edit_tag_tool_bar));
         setToolBar();
 
-        if (checkPermRecord() == PackageManager.PERMISSION_GRANTED && checkWriteSD() == PackageManager.PERMISSION_GRANTED) {
+        if (checkPermRecord() == PackageManager.PERMISSION_GRANTED && checkWriteSD() == PackageManager.PERMISSION_GRANTED && checkReadSD() == PackageManager.PERMISSION_GRANTED) {
             // perm granted
-            fileName = Environment.getExternalStorageDirectory() + "/record.amr_nb";
             recordingControls();
         } else {
             Toast.makeText(this, "Permission is not granted. Some function may have errors", Toast.LENGTH_LONG).show();
@@ -273,7 +314,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void reload() {
-        LinearLayout notes_linearLayout = (LinearLayout) findViewById(R.id.notes_linearLayout);
+        LinearLayout notes_linearLayout = findViewById(R.id.notes_linearLayout);
         notes_linearLayout.removeAllViews();
         setRecordData();
     }
@@ -289,8 +330,8 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
 
     private void setActivitiesItems() {
 
-        musicEditField = (EditText) findViewById(R.id.tag_edit_field);
-        edit_tag_tool_bar = (Toolbar) findViewById(R.id.edit_tag_tool_bar);
+        musicEditField = findViewById(R.id.tag_edit_field);
+        edit_tag_tool_bar = findViewById(R.id.edit_tag_tool_bar);
     }
 
     private void setToolBar() {
@@ -367,9 +408,6 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
 //        }
 //        setInitialData();
     }
-
-
-
 
 
 //    private void removeTag() {
