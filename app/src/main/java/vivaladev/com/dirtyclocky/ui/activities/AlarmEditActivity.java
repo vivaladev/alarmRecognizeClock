@@ -3,10 +3,14 @@ package vivaladev.com.dirtyclocky.ui.activities;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
@@ -248,8 +252,11 @@ public class AlarmEditActivity extends AppCompatActivity {
                     .setNeutralButton("Cancel",
                             (dialog, id) -> dialog.cancel())
                     .setPositiveButton("Done", (dialog, id) -> {
-                        alarmOffMethod.setText(choise.get(0));
                         dialog.cancel();
+                        if (choise.get(0).equals("Image")){
+                            prepareToRecognizeImage();
+                        }
+                        alarmOffMethod.setText(choise.get(0));
                     })
                     // добавляем переключатели
                     .setSingleChoiceItems(methodsOff, -1,
@@ -288,6 +295,35 @@ public class AlarmEditActivity extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.show();
         });
+    }
+
+    /**
+     * Image processing
+     * */
+
+    private static final int SELECT_PICTURE = 1;
+    private String selectedImagePath;
+
+    private void prepareToRecognizeImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,
+                "Select Picture"), SELECT_PICTURE);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECT_PICTURE) {
+                Uri selectedImageUri = data.getData();
+                selectedImagePath = getPath(selectedImageUri);
+                showMessage("Путь к картинке: " + selectedImagePath);
+            }
+        }
+    }
+
+    public String getPath(Uri uri) {
+        return uri.getPath();
     }
 
     private String formatRepeatDaysString(String[] daysToRepeat, char[] choosenDays) {
