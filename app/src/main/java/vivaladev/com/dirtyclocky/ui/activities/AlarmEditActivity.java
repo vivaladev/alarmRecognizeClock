@@ -304,8 +304,7 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     /**
      * Image processing
-     * */
-
+     */
     private static final int SELECT_PICTURE = 1;
     private String selectedImagePath;
 
@@ -331,78 +330,83 @@ public class AlarmEditActivity extends AppCompatActivity {
         return uri.getPath();
     }
 
-    private String formatRepeatDaysString(String[] daysToRepeat, char[] choosenDays) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < daysToRepeat.length; i++) {
-            if (choosenDays[i] == '1') {
-                result.append(getAbbreviationDay(daysToRepeat[i].toCharArray())).append(" ");
+        /**
+         * DONE
+         * */
+
+
+        private String formatRepeatDaysString (String[]daysToRepeat,char[] choosenDays){
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < daysToRepeat.length; i++) {
+                if (choosenDays[i] == '1') {
+                    result.append(getAbbreviationDay(daysToRepeat[i].toCharArray())).append(" ");
+                }
+            }
+            return result.toString();
+        }
+
+        private String getAbbreviationDay ( char[] day){
+            StringBuilder res = new StringBuilder();
+            for (int i = 0; i < 3; i++) {
+                res.append(day[i]);
+            }
+            return res.toString();
+        }
+
+        private void controlProcessing () {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                setTimeDialog();
+                upSheetControl();
             }
         }
-        return result.toString();
-    }
 
-    private String getAbbreviationDay(char[] day) {
-        StringBuilder res = new StringBuilder();
-        for (int i = 0; i < 3; i++) {
-            res.append(day[i]);
-        }
-        return res.toString();
-    }
-
-    private void controlProcessing() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            setTimeDialog();
-            upSheetControl();
-        }
-    }
-
-    private void backBtnDialog() {
-        if (!isLastVersionActive()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Do you want to save or delete this alarm?");
-            builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
-                    (dialog, which) -> finish());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                builder.setPositiveButton(getResources().getString(R.string.en_alarm_save),
-                        (dialog, which) -> saveChanges());
+        private void backBtnDialog () {
+            if (!isLastVersionActive()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Do you want to save or delete this alarm?");
+                builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
+                        (dialog, which) -> finish());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    builder.setPositiveButton(getResources().getString(R.string.en_alarm_save),
+                            (dialog, which) -> saveChanges());
+                }
+                builder.setNeutralButton(getResources().getString(R.string.en_alarm_cancel), null);
+                builder.show();
+            } else {
+                if (getCurrentFocus() != null) {
+                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(getCurrentFocus().
+                                    getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+                finish();
             }
-            builder.setNeutralButton(getResources().getString(R.string.en_alarm_cancel), null);
-            builder.show();
-        } else {
-            if (getCurrentFocus() != null) {
-                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                        .hideSoftInputFromWindow(getCurrentFocus().
-                                getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+
+        private void removeActiveAlarm () {
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+                dbw.removeNote(clickedAlarmId);
+                MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            finish();
         }
-    }
 
-    private void removeActiveAlarm() {
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
-            dbw.removeNote(clickedAlarmId);
-            MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        private boolean isReadyToSave () {
+            if (isEmpty(time_field) || isEmpty(name_field)) {
+                return false;
+            }
+            return true;
         }
-    }
 
-    private boolean isReadyToSave() {
-        if (isEmpty(time_field) || isEmpty(name_field)) {
-            return false;
-        }
-        return true;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void saveChanges() {
-        if (!isReadyToSave()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getResources().getString(R.string.en_alarm_message_fill_fields))
-                    .setNegativeButton(getResources().getString(R.string.en_alarm_ok), null).show();
-            return;
-        }
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        private void saveChanges () {
+            if (!isReadyToSave()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getResources().getString(R.string.en_alarm_message_fill_fields))
+                        .setNegativeButton(getResources().getString(R.string.en_alarm_ok), null).show();
+                return;
+            }
 
         Toast.makeText(this, "Saving", Toast.LENGTH_SHORT).show();
         try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
