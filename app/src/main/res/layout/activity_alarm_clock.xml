@@ -4,48 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/cardview_shadow_start_color"
     tools:context=".ui.activities.AlarmClockActivity">
 
-    <Button
-        android:id="@+id/buttonDefer"
 
-        android:layout_width="250dp"
-        android:layout_height="40dp"
-
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/button_defer_shape"
-        android:text="@string/en_alarm_clock_activity_button_set_aside"
-        android:textColor="#121212"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.863" />
-
-    <Button
-        android:id="@+id/buttonOff"
-
-        android:layout_width="213dp"
-        android:layout_height="40dp"
-
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="74dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/button_off_shape"
-        android:text="@string/en_alarm_clock_activity_button_off"
-        android:textColor="#191919"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.982" />
 
     <TextView
         android:id="@+id/textView"
@@ -58,6 +20,7 @@
         android:text="@string/ru_alarm_clock_activity_text_wake_up"
         android:textAlignment="center"
         android:textSize="36sp"
+        android:textColor="@color/colorPrimaryDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,4 +41,47 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonDefer"
+
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/button_defer_shape"
+        android:text="@string/en_alarm_clock_activity_button_set_aside"
+        android:textColor="#121212"
+        android:textSize="14sp"
+        android:backgroundTint="@color/theme_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.851" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/buttonOff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:width="150dp"
+        android:height="50dp"
+        android:background="@drawable/button_off_shape"
+        android:text="Off"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18dp"
+        android:backgroundTint="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.984"
+        tools:ignore="MissingConstraints" />
+
 </android.support.constraint.ConstraintLayout>

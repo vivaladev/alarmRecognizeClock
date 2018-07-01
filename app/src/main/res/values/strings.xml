@@ -51,7 +51,7 @@
 
 
 
-    <string name="en_alarm_clock_activity_text_picture">Here can be placed your picture</string>
+    <string name="en_alarm_clock_activity_text_picture">Here could be your advertisement</string>
     <string name="ru_alarm_clock_activity_text_wake_up">Wake up</string>
     <string name="en_alarm_clock_activity_button_off">Off</string>
     <string name="en_alarm_clock_activity_button_set_aside">Set aside</string>

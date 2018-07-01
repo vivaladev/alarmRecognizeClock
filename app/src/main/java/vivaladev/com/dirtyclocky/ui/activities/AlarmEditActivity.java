@@ -4,8 +4,6 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -129,7 +126,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         List<String> res = new ArrayList<>();
         for (int i = 0; i < filenames.length; i++) {
             if (isValidateMusicFile(filenames[i])) {
-                if(filenames[i].isFile()){
+                if (filenames[i].isFile()) {
                     res.add(filenames[i].getName());
                 }
             }
@@ -214,10 +211,10 @@ public class AlarmEditActivity extends AppCompatActivity {
                             (dialog, item) -> choosenFile[0] = filenames[item]);
 
             AlertDialog alert = builder.create();
-            alert.setOnShowListener((dialogInterface) ->{
+            alert.setOnShowListener((dialogInterface) -> {
                 ListView lv = alert.getListView();
                 lv.setOnItemLongClickListener((adapterView, thisView, pos, id) -> {
-                    showMessage("Вьюха: " + thisView.toString() + " с id "+ id);
+                    showMessage("Вьюха: " + thisView.toString() + " с id " + id);
                     try {
                         MediaPlayer mediaPlayer;
                         mediaPlayer = new MediaPlayer();
@@ -225,7 +222,11 @@ public class AlarmEditActivity extends AppCompatActivity {
                         mediaPlayer.setDataSource(file.getPath());
                         mediaPlayer.prepare();
                         mediaPlayer.start();
-                    } catch (IOException e) {
+                        TimeUnit.SECONDS.sleep(5);
+                        if (mediaPlayer != null) {
+                            mediaPlayer.stop();
+                        }
+                    } catch (IOException | InterruptedException e) {
                         showMessage("Please, specify needed file");
                         e.printStackTrace();
                     }
@@ -254,7 +255,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                     // добавляем переключатели
                     .setSingleChoiceItems(methodsOff, -1,
                             (dialog, item) -> {
-                        choise.set(0, methodsOff[item]);
+                                choise.set(0, methodsOff[item]);
                             });
             AlertDialog alert = builder.create();
             alert.show();
