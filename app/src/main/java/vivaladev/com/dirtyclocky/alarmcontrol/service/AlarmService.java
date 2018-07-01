@@ -1,5 +1,6 @@
 package vivaladev.com.dirtyclocky.alarmcontrol.service;
 
+import android.app.AlarmManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +36,7 @@ public class AlarmService extends Service {
         alarmReceiver = new AlarmReceiver();
         registerReceiver(alarmReceiver, intentFilter);
         Toast.makeText(this, "service onCreate", Toast.LENGTH_SHORT).show();
-        AlarmHandler.loadAlarms();
+        //AlarmHandler.loadAlarms((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext());
     }
 
     @Override
