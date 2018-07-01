@@ -12,6 +12,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -85,7 +87,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         isIncreaseVolume = findViewById(R.id.alarmIncreaseVolume);
         repeatDaysState = new StringBuilder();
 
-        clickedAlarmId = -1;
+        //clickedAlarmId = -1;
 
     }
 
@@ -101,6 +103,16 @@ public class AlarmEditActivity extends AppCompatActivity {
         initialRepeatDays = days;
         initialOffMethod = offMethod;
         initialIsIncrease = isIncreases;
+    }
+
+    private void setInitialData() {
+        initialTime = time_field.getText().toString();
+        initialName = name_field.getText().toString();
+        initialBody = note_text_field.getText().toString();
+        //initialMusic = alarmOffMusic.toString(); //TODO: вернуть музыку
+        initialRepeatDays = alarmRepeat.getText().toString();
+        initialOffMethod = alarmOffMethod.getText().toString();
+        initialIsIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
     }
 
     private void upSheetControl() {
@@ -385,7 +397,65 @@ public class AlarmEditActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_note_tool_bar, menu);
         toolbarMenu = menu;
+        setNoteData();
         return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void setNoteData() {
+        Alarm note;
+        //Tag[] allTags;
+        //Tag[] noteTags;
+        clickedAlarmId = MainActivity.getInstance().getNotesFragment().getClickedNoteId();//TODO переименовать в Note Handler
+        LinearLayout tags_linearLayout = (LinearLayout) findViewById(R.id.tags_linearLayout);
+        //TagsFactory tg = new TagsFactory(this, tags_linearLayout, this);
+
+        if (clickedAlarmId != -1) {
+            toolbarMenu.findItem(R.id.remove_btn).setVisible(true);
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+                note = dbw.getAlarm(clickedAlarmId);
+                time_field.setText(getUnderlinedText(note.getTime()));
+                name_field.setText(note.getName());
+                note_text_field.setText(note.getBody());
+                //TODO
+
+                /*allTags = dbw.getAllTags();
+                noteTags = dbw.getTagsByNoteId(note.getId());
+
+                for (int i = 0; i < allTags.length; i++) {
+                    if (isTagBelongNote(allTags[i].getId(), noteTags)) {
+                        tg.addTagToScreen(allTags[i].getId(), allTags[i].getName(), true);
+                    } else {
+                        tg.addTagToScreen(allTags[i].getId(), allTags[i].getName(), false);
+                    }
+                }*/
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            toolbarMenu.findItem(R.id.remove_btn).setVisible(false);
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+                time_field.setText("");
+                name_field.setText("");
+                note_text_field.setText("");
+                //TODO
+
+                /*allTags = dbw.getAllTags();
+                for (int i = 0; i < allTags.length; i++) {
+                    tg.addTagToScreen(allTags[i].getId(), allTags[i].getName(), false);
+                }*/
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        setInitialData();
+    }
+
+    private SpannableString getUnderlinedText(String text) {
+        SpannableString content = new SpannableString(text);
+        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+        return content;
     }
 
     @Override
