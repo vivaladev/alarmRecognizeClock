@@ -16,7 +16,7 @@ class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        /*db.execSQL("create table Alarm ("
+        db.execSQL("create table Alarm ("
                 + "id integer primary key autoincrement,"
                 + "time text,"
                 + "name text,"
@@ -27,11 +27,13 @@ class DBHelper extends SQLiteOpenHelper {
         db.execSQL("create table TagItem ("
                 + "id integer primary key autoincrement,"
                 + "note_id integer,"
-                + "tag_id integer" + ");");*/
+                + "tag_id integer" + ");");
+
+
 
         db.execSQL("create table Alarms ("
                 + "id integer primary key autoincrement,"
-                + "date text,"
+                + "time text,"
                 + "name text,"
                 + "body text,"
                 + "music text,"

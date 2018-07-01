@@ -98,11 +98,11 @@ public class DatabaseWrapper implements AutoCloseable {
         return alarms.toArray(new Alarm[alarms.size()]);
     }
 
-    public int addAlarm(String date, String title, String body, String music, String repeatTime, String alarmOffMethod, String alarmIncreaseVolume) {
+    public int addAlarm(String time, String name, String body, String music, String repeatTime, String alarmOffMethod, String alarmIncreaseVolume) {
         ContentValues cv = new ContentValues();
 
-        cv.put("date", date);
-        cv.put("title", title);
+        cv.put("time", time);
+        cv.put("name", name);
         cv.put("body", body);
         cv.put("music", music);
         cv.put("repeatTime", repeatTime);
@@ -119,11 +119,11 @@ public class DatabaseWrapper implements AutoCloseable {
         return noteId;
     }
 
-    public void updateAlarm(int alarmID, String date, String title, String body, String music, String repeatTime, String alarmOffMethod, String alarmIncreaseVolume) {
+    public void updateAlarm(int alarmID, String time, String name, String body, String music, String repeatTime, String alarmOffMethod, String alarmIncreaseVolume) {
         ContentValues cv = new ContentValues();
 
-        cv.put("date", date);
-        cv.put("title", title);
+        cv.put("time", time);
+        cv.put("name", name);
         cv.put("body", body);
         cv.put("music", music);
         cv.put("repeatTime", repeatTime);

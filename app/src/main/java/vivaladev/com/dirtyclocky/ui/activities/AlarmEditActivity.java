@@ -55,7 +55,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     private String initialTime;
     private String initialName;
     private String initialBody;
-    private String initialMusic;
+    //private String initialMusic;
     private String initialRepeatDays;
     private String initialOffMethod;
     private String initialIsIncrease;
@@ -85,6 +85,8 @@ public class AlarmEditActivity extends AppCompatActivity {
         isIncreaseVolume = findViewById(R.id.alarmIncreaseVolume);
         repeatDaysState = new StringBuilder();
 
+        clickedAlarmId = -1;
+
     }
 
     private void setDefaultData() {
@@ -95,7 +97,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         initialTime = time;
         initialName = name;
         initialBody = description;
-        initialMusic = musicName;
+        //initialMusic = musicName;
         initialRepeatDays = days;
         initialOffMethod = offMethod;
         initialIsIncrease = isIncreases;
@@ -243,7 +245,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     }
 
     private void removeActiveAlarm() {
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
             dbw.removeNote(clickedAlarmId);
             MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
 
@@ -253,7 +255,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     }
 
     private boolean isReadyToSave() {
-        if ("".equals(time_field.getText()) || "".equals(name_field.getText())) {
+        if (isEmpty(time_field) || isEmpty(name_field)) {
             return false;
         }
         return true;
@@ -269,18 +271,24 @@ public class AlarmEditActivity extends AppCompatActivity {
         }
 
         Toast.makeText(this, "Saving", Toast.LENGTH_SHORT).show();
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
 
-            String time = millisecondsTime;
+            String time = time_field.getText().toString();
             String name = name_field.getText().toString();
             String body = note_text_field.getText().toString();
-            String music = ""; //TODO: вернуть музыку
+            String music = alarmOffMusic.toString(); //TODO: вернуть музыку
             String repeatTime = alarmRepeat.getText().toString();
             String offMethod = alarmOffMethod.getText().toString();
             String alarmIncreaseVolume = isIncreaseVolume.isChecked() ? "1" : "0";
 
             if (clickedAlarmId != -1) {
                 dbw.updateAlarm(clickedAlarmId, time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
+                try{
+                    throw new RuntimeException("noteId = ");
+                }
+                catch (RuntimeException e){
+                    e.printStackTrace();
+                }
                 /*for (int i = 0; i < removalTags.size(); i++) {
                     dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
                 }
@@ -289,9 +297,15 @@ public class AlarmEditActivity extends AppCompatActivity {
                 }*/
             } else {
                 int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume);
-                for (int i = 0; i < additionTags.size(); i++) {
-                    dbw.addTagToNote(additionTags.get(i), alarmID);
+                try{
+                    throw new RuntimeException("noteId = " + alarmID);
                 }
+                catch (RuntimeException e){
+                    e.printStackTrace();
+                }
+                /*for (int i = 0; i < additionTags.size(); i++) {
+                    dbw.addTagToNote(additionTags.get(i), alarmID);//TODO добавление тегов к аларму
+                }*/
             }
             Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
 
@@ -312,15 +326,29 @@ public class AlarmEditActivity extends AppCompatActivity {
         String time = time_field.getText().toString();
         String name = name_field.getText().toString();
         String description = note_text_field.getText().toString();
-        String music = alarmOffMusic.getText().toString();
+        //String music = alarmOffMusic.getText().toString();
         String repeatDays = alarmRepeat.getText().toString();
         String offMethod = alarmOffMethod.getText().toString();
 //        String isIncrease = isIncreaseVolume.isChecked() ? "1" : "0";
 
+        try{
+            throw new RuntimeException(
+                            "time = " + time.equals(initialTime) +
+                            "name = " + name.equals(initialName) +
+                            "description = " + description.equals(initialBody) +
+                            //"music = " + music.equals(initialMusic) +
+                            "repeatDays = " + repeatDays.equals(initialRepeatDays) +
+                            "offMethod = " + offMethod.equals(initialOffMethod)
+            );
+        }
+        catch (RuntimeException e){
+            e.printStackTrace();
+        }
+
         if (time.equals(initialTime) &&
                 name.equals(initialName) &&
                 description.equals(initialBody) &&
-                music.equals(initialMusic) &&
+                //music.equals(initialMusic) &&
                 repeatDays.equals(initialRepeatDays) &&
                 offMethod.equals(initialOffMethod)) {
             return true;
@@ -407,6 +435,20 @@ public class AlarmEditActivity extends AppCompatActivity {
         setToolBar();
         controlProcessing();
 
+    }
+
+    private static boolean isEmpty(EditText etText) {
+        if (etText.getText().toString().trim().length() > 0)
+            return false;
+
+        return true;
+    }
+
+    private static boolean isEmpty(TextView etText) {
+        if (etText.getText().toString().trim().length() > 0)
+            return false;
+
+        return true;
     }
 }
 

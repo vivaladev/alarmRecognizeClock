@@ -54,7 +54,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener {
         LinearLayout notes_linearLayout = (LinearLayout) currentView.findViewById(R.id.notes_linearLayout);
         NotesFactory nf = new NotesFactory(this.getContext(), notes_linearLayout, this);
 
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "myDB")) {
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
             Alarm[] alarms = dbw.getAllAlarms();
             for (int i = 0; i < alarms.length; i++) {
                 nf.addNoteToScreen(alarms[i].getId(), alarms[i].getTime(), alarms[i].getName(), alarms[i].getBody(), dbw.getTagsByNoteId(alarms[i].getId()));
