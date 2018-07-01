@@ -75,7 +75,7 @@ public class Alarm {
         this.alarmIncreaseVolume = alarmIncreaseVolume;
     }
 
-    public boolean isAlarmOnOff() {
+    public boolean isAlarmOn() {
         return alarmOnOff;
     }
 
