@@ -1,8 +1,5 @@
 package vivaladev.com.dirtyclocky.ui.activities;
 
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -17,23 +14,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import vivaladev.com.dirtyclocky.R;
-import vivaladev.com.dirtyclocky.alarmcontrol.handler.AlarmHandler;
 import vivaladev.com.dirtyclocky.alarmcontrol.service.AlarmService;
-import vivaladev.com.dirtyclocky.recognizeProcessing.SoundRecognize;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragmentAdapter.ImplFragmentPageAdapter;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.NotesFragment;
-import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.TagsFragment;
+import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.RecordFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -43,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ViewPager pager;
     private ImplFragmentPageAdapter pagerAdapter;
 
-    private TagsFragment tagsFragment;
+    private RecordFragment recordFragment;
     private NotesFragment notesFragment;
 
     private Toolbar tool_bar;
@@ -64,8 +56,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return instance;
     }
 
-    public TagsFragment getTagsFragment() {
-        return tagsFragment;
+    public RecordFragment getRecordFragment() {
+        return recordFragment;
     }
 
     public NotesFragment getNotesFragment() {
@@ -192,14 +184,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void newTagClick() {
-        tagsFragment.setClickedTagId(-1);
+        recordFragment.setClickedFileName(-1);
     }
 
     public void initializeFragments() {
-        if (notesFragment == null && tagsFragment == null) {
+        if (notesFragment == null && recordFragment == null) {
             ArrayList<Fragment> tmp = pagerAdapter.getFragmentsList();
             notesFragment = (NotesFragment) tmp.get(0);
-            tagsFragment = (TagsFragment) tmp.get(1);
+            recordFragment = (RecordFragment) tmp.get(1);
         }
     }
 
@@ -243,14 +235,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }*/
 
-    private static TimeInterval getTimeInterval(int hour){
-        if(hour >= 4 && hour < 10)
+    private static TimeInterval getTimeInterval(int hour) {
+        if (hour >= 4 && hour < 10)
             return TimeInterval.Morning;
-        if(hour >= 10 && hour < 16)
+        if (hour >= 10 && hour < 16)
             return TimeInterval.Day;
-        if(hour >= 16 && hour < 22)
+        if (hour >= 16 && hour < 22)
             return TimeInterval.Evening;
-        if(hour >= 22 || hour < 4)
+        if (hour >= 22 || hour < 4)
             return TimeInterval.Night;
         return null;
     }
@@ -272,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 }
 
-enum TimeInterval{
+enum TimeInterval {
     Morning, Day, Evening, Night
 }
 

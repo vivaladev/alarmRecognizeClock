@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.NotesFragment;
-import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.TagsFragment;
+import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.RecordFragment;
 
 public class ImplFragmentPageAdapter extends FragmentPagerAdapter {
     static final int PAGE_COUNT = 2;
@@ -51,7 +51,7 @@ public class ImplFragmentPageAdapter extends FragmentPagerAdapter {
                 break;
             }
             case 1: {
-                fragment = (Fragment) TagsFragment.newInstance(position);
+                fragment = (Fragment) RecordFragment.newInstance(position);
                 break;
             }
             default: {

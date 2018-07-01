@@ -24,10 +24,12 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import vivaladev.com.dirtyclocky.R;
-import vivaladev.com.dirtyclocky.recognizeProcessing.SoundRecognize;
 
 import static vivaladev.com.dirtyclocky.ui.activities.activityHelper.ActivityHelper.setStatusBar;
 
@@ -35,7 +37,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
 
     private String initialName;
 
-    private int clickedTagId;
+    private int clickedFileName;
 
     private Menu toolbarMenu;
     private EditText musicEditField;
@@ -228,7 +230,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         if (isNeedSave()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Do you want save or delete this record?");
-            builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
+            builder.setPositiveButton(getResources().getString(R.string.en_alarm_done),
                     (dialog, which) -> finish());
             builder.setNeutralButton(getResources().getString(R.string.en_alarm_cancel), null);
             builder.show();
@@ -269,6 +271,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
     @RequiresApi(api = Build.VERSION_CODES.M)
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_tag_tool_bar, menu);
+        setTagData();
         toolbarMenu = menu;
         return true;
     }
@@ -339,6 +342,39 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         if (filename.exists()) {
             filename.delete();
         }
+    }
+
+    private String[] getConvertedFileName(File[] filenames) {
+        List<String> res = new ArrayList<>();
+        for (int i = 0; i < filenames.length; i++) {
+            if (isValidateMusicFile(filenames[i])) {
+                if (filenames[i].isFile()) {
+                    res.add(filenames[i].getName());
+                }
+            }
+        }
+        return res.toArray(new String[res.size()]);
+    }
+
+    private boolean isValidateMusicFile(File file) {
+        return Pattern.matches(".*\\.amr_nb", file.getName());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void setTagData() {
+        clickedFileName = MainActivity.getInstance().getRecordFragment().getClickedFileName();
+
+        if (clickedFileName != -1){
+            try {
+                musicEditField.setText(clickedFileName);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else{
+            musicEditField.setText("");
+        }
+        setInitialData();
     }
 
     private void setInitialData() {

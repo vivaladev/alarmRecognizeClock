@@ -33,7 +33,7 @@ public class TagsFactory {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void addTagToScreen(int id, String tag, boolean selected) {
+    public void addTagToScreen(String tag, boolean selected) {
         final int tag_left_marginDP = 5;
         final int tag_right_marginDP = 5;
         final int tag_left_paddingDP = 5;
@@ -46,7 +46,7 @@ public class TagsFactory {
             tags_linearLayout.addView(currentLinearLayout);
         }
 
-        TextView newTV = createTextView(id, tag, selected);
+        TextView newTV = createTextView(tag, selected);
         CardView cardView = createCardView();
         cardView.addView(newTV);
 
@@ -92,7 +92,7 @@ public class TagsFactory {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private TextView createTextView(int id, String text, boolean selected) {
+    private TextView createTextView(String text, boolean selected) {
         int PXpadding = convertDpToPixel(5);
         TextView newTextView = new TextView(context);
         RelativeLayout.LayoutParams newTextView_params =
@@ -106,7 +106,6 @@ public class TagsFactory {
         } else {
             newTextView.setTextColor(ContextCompat.getColor(context, android.R.color.black));
         }
-        newTextView.setId(id);
         newTextView.setFocusable(true);
         newTextView.setClickable(true);
         newTextView.setGravity(Gravity.CENTER | Gravity.LEFT);

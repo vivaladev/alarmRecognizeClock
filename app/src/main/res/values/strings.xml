@@ -26,6 +26,7 @@
     <string name="en_alarm_save">Save</string>
     <string name="en_alarm_cancel">Cancel</string>
     <string name="en_alarm_ok">Okay</string>
+    <string name="en_alarm_done">Done</string>
     <string name="en_alarm_del_tag_message">Delete this record?</string>
     <string name="en_alarm_message_save_changes">Changes was saved</string>
     <string name="en_alarm_message_back_btn">Do you want delete this alarm?</string>

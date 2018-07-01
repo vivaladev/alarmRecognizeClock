@@ -3,6 +3,7 @@ package vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,31 +11,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import vivaladev.com.dirtyclocky.R;
-import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
-import vivaladev.com.dirtyclocky.databaseProcessing.entities.Tag;
 import vivaladev.com.dirtyclocky.ui.activities.MainActivity;
 import vivaladev.com.dirtyclocky.ui.activities.SoundProcessingActivity;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories.TagsFactory;
 
-public class TagsFragment extends Fragment implements View.OnClickListener {
+public class RecordFragment extends Fragment implements View.OnClickListener {
 
     private static final String ARGUMENT_PAGE_NUMBER = "page_number";
 
-    private int clickedTagId = -1;
+    private int clickedFileName = -1;
+
+    private List<String> filenames = new ArrayList<>();
 
     private int pageNumber;
 
-    public int getClickedTagId() {
-        return clickedTagId;
+    public int getClickedFileName() {
+        return clickedFileName;
     }
 
-    public void setClickedTagId(int clickedTagId) {
-        this.clickedTagId = clickedTagId;
+    public void setClickedFileName(int clickedFileName) {
+        this.clickedFileName = clickedFileName;
     }
 
-    public static TagsFragment newInstance(int pageNum) {
-        TagsFragment pageFragment = new TagsFragment();
+    public static RecordFragment newInstance(int pageNum) {
+        RecordFragment pageFragment = new RecordFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(ARGUMENT_PAGE_NUMBER, pageNum);
         pageFragment.setArguments(arguments);
@@ -54,24 +61,44 @@ public class TagsFragment extends Fragment implements View.OnClickListener {
         LinearLayout tags_linearLayout = (LinearLayout) currentView.findViewById(R.id.tags_linearLayout);
         TagsFactory tf = new TagsFactory(this.getContext(), tags_linearLayout, this);
 
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
-            //Tag[] tags = dbw.getAllTags();
-            /*for (int i = 0; i < tags.length; i++) {
-               // tf.addTagToScreen(tags[i].getId(), tags[i].getName(), false);
-            }*/
+        File rootFolder = Environment.getExternalStorageDirectory();
+        File[] filesArray = rootFolder.listFiles();
+        filenames = Arrays.asList(getConvertedFileName(filesArray));
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (String filename : filenames) {
+            tf.addTagToScreen(filename, false);
         }
-
         return currentView;
     }
 
+    private String[] getConvertedFileName(File[] filenames) {
+        List<String> res = new ArrayList<>();
+        for (int i = 0; i < filenames.length; i++) {
+            if (isValidateMusicFile(filenames[i])) {
+                if (filenames[i].isFile()) {
+                    res.add(getRecordName(filenames[i].getName().toCharArray()));
+                }
+            }
+        }
+        return res.toArray(new String[res.size()]);
+    }
+
+    private boolean isValidateMusicFile(File file) {
+        return Pattern.matches(".*\\.amr_nb", file.getName());
+    }
+
+    private String getRecordName(char[] name) {
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < name.length - 7; i++) {
+            res.append(name[i]);
+        }
+        return res.toString();
+    }
 
     @Override
     public void onClick(View view) {
         MainActivity.getInstance().initializeFragments();
-        clickedTagId = view.getId();
+        clickedFileName = view.getId();
         Intent intent = new Intent(MainActivity.getInstance(), SoundProcessingActivity.class);
         startActivity(intent);
     }
