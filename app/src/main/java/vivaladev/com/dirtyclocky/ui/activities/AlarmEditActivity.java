@@ -12,20 +12,20 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
@@ -42,9 +42,16 @@ public class AlarmEditActivity extends AppCompatActivity {
     private ArrayList<Integer> removalTags;
     private int clickedAlarmId;
     private Menu toolbarMenu;
+
     private TextView time_field;
     private EditText name_field;
     private EditText note_text_field;
+    private EditText alarmOffMusic;
+    private EditText alarmRepeat;
+    private EditText alarmOffMethod;
+    private CheckBox isIncreaseVolume;
+    private boolean[] mCheckedDays = {false, false, false, false, false, false, false};
+
     private LinearLayout llBottomSheet;
     private Toolbar edit_note_tool_bar;
     private Button buttonUp;
@@ -52,6 +59,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     private int currentBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED;
     private BottomSheetBehavior bottomSheetBehavior;
     private Alarm alarm;
+
 
     private int mHour, mMinute;
 
@@ -68,6 +76,11 @@ public class AlarmEditActivity extends AppCompatActivity {
         buttonUp = findViewById(R.id.buttonUp);
         llBottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
+        alarmOffMusic = findViewById(R.id.alarmOffMusic);
+        alarmRepeat = findViewById(R.id.alarmRepeat);
+        alarmOffMethod = findViewById(R.id.alarmOffMethod);
+        isIncreaseVolume = findViewById(R.id.alarmIncreaseVolume);
+
     }
 
     private void setInitialData() {
@@ -78,50 +91,124 @@ public class AlarmEditActivity extends AppCompatActivity {
         additionTags.clear();
     }
 
+    private void upSheetControl() {
+        bottom_sheet_btn.setOnClickListener(view -> {
+            if (currentBottomSheetState == BottomSheetBehavior.STATE_EXPANDED) {
+                bottom_sheet_btn.animate().scaleX(0).scaleY(0).setDuration(140).start();
+                buttonUp.animate().alpha(1).setDuration(400).start();
+                buttonUp.setVisibility(View.VISIBLE);
+                currentBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED;
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
+        buttonUp.setOnClickListener(view -> {
+            currentBottomSheetState = BottomSheetBehavior.STATE_EXPANDED;
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            buttonUp.animate().alpha(0).setDuration(50).start();
+        });
+
+        bottom_sheet_btn.animate()
+                .scaleX(0)
+                .scaleY(0)
+                .setDuration(0)
+                .start();
+
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+                if (currentBottomSheetState == BottomSheetBehavior.STATE_EXPANDED && BottomSheetBehavior.STATE_DRAGGING == newState) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                } else if (BottomSheetBehavior.STATE_EXPANDED == newState) {
+                    buttonUp.setVisibility(View.INVISIBLE);
+                    bottom_sheet_btn.animate().scaleX(1).scaleY(1).setDuration(140).start();
+                    currentBottomSheetState = BottomSheetBehavior.STATE_EXPANDED;
+                }
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+
+        alarmOffMusic.setOnClickListener(view -> {
+
+        });
+        alarmOffMethod.setOnClickListener(view -> {
+            AlertDialog.Builder builder;
+            final String[] methodsOff = {"Image", "Sound"};
+            final List<String> choise = Arrays.asList("");
+            builder = new AlertDialog.Builder(this);
+            builder.setTitle("Choose method of alarm stopping")
+                    .setCancelable(false)
+
+                    // добавляем одну кнопку для закрытия диалога
+                    .setNeutralButton("Cancel",
+                            (dialog, id) -> dialog.cancel())
+                    .setPositiveButton("Done", (dialog, id) -> {
+                        alarmOffMethod.setText(choise.get(0));
+                        dialog.cancel();
+                    })
+                    // добавляем переключатели
+                    .setSingleChoiceItems(methodsOff, -1,
+                            (dialog, item) -> choise.set(0, methodsOff[item]));
+            AlertDialog alert = builder.create();
+            alert.show();
+        });
+
+        alarmRepeat.setOnClickListener(view -> { //выбор дней повторений
+            AlertDialog.Builder builder;
+            final String[] daysToRepeat = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+            builder = new AlertDialog.Builder(this);
+            builder.setTitle("Choose days for repeat alarm")
+                    .setCancelable(false)
+                    .setMultiChoiceItems(daysToRepeat, mCheckedDays,
+                            (dialog, which, isChecked) -> mCheckedDays[which] = isChecked)
+                    // Добавляем кнопки
+                    .setPositiveButton("Done",
+                            (dialog, id) -> {
+                                StringBuilder state = new StringBuilder();
+                                for (int i = 0; i < daysToRepeat.length; i++) {
+                                    if (mCheckedDays[i])
+                                        state.append(1);
+                                    else
+                                        state.append(0);
+                                }
+                                alarmRepeat.setText(formatRepeatDaysString(daysToRepeat, state.toString().toCharArray()));
+                            })
+
+                    .setNegativeButton("Cancel",
+                            (dialog, id) -> dialog.cancel());
+            AlertDialog alert = builder.create();
+            alert.show();
+        });
+    }
+
+    private String formatRepeatDaysString(String[] daysToRepeat, char[] choosenDays) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < choosenDays.length; i++) {
+            if (choosenDays[i] == '1') {
+                result.append(getAbbreviationDay(daysToRepeat[i].toCharArray())).append(" ");
+            }
+        }
+        return result.toString();
+    }
+
+    private String getAbbreviationDay(char[] day) {
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < 3; i++) {
+            res.append(day[i]);
+        }
+        return res.toString();
+    }
+
     private void controlProcessing() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             setTimeDialog();
-
-            bottom_sheet_btn.setOnClickListener(view -> {
-                if (currentBottomSheetState == BottomSheetBehavior.STATE_EXPANDED) {
-                    bottom_sheet_btn.animate().scaleX(0).scaleY(0).setDuration(140).start();
-                    buttonUp.animate().alpha(1).setDuration(400).start();
-                    buttonUp.setVisibility(View.VISIBLE);
-                    currentBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED;
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
-            });
-
-            buttonUp.setOnClickListener(view -> {
-                currentBottomSheetState = BottomSheetBehavior.STATE_EXPANDED;
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                buttonUp.animate().alpha(0).setDuration(50).start();
-            });
-
-            bottom_sheet_btn.animate()
-                    .scaleX(0)
-                    .scaleY(0)
-                    .setDuration(0)
-                    .start();
-
-            bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-                @Override
-                public void onStateChanged(@NonNull View bottomSheet, int newState) {
-
-                    if (currentBottomSheetState == BottomSheetBehavior.STATE_EXPANDED && BottomSheetBehavior.STATE_DRAGGING == newState) {
-                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    } else if (BottomSheetBehavior.STATE_EXPANDED == newState) {
-                        buttonUp.setVisibility(View.INVISIBLE);
-                        bottom_sheet_btn.animate().scaleX(1).scaleY(1).setDuration(140).start();
-                        currentBottomSheetState = BottomSheetBehavior.STATE_EXPANDED;
-                    }
-
-                }
-
-                @Override
-                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                }
-            });
+            upSheetControl();
         }
     }
 
