@@ -114,7 +114,7 @@ public class AlarmEditActivity extends AppCompatActivity {
     private void recordingControls() {
         alarmOffMusic.setOnClickListener(view -> {
             AlertDialog.Builder builder;
-            final String[] controls = {"StartRec", "StopRec", "StartPlay", "StopPlay"};
+            final String[] controls = {"Start Recording", "Stop Recording", "Play record", "Stop playing"};
 
             builder = new AlertDialog.Builder(this);
             builder.setTitle("Choose method of alarm stopping")
@@ -124,21 +124,22 @@ public class AlarmEditActivity extends AppCompatActivity {
                     .setNeutralButton("Cancel",
                             (dialog, id) -> dialog.cancel())
                     .setPositiveButton("Done", (dialog, id) -> {
+                        alarmOffMusic.setText("Record №" + alarm.getId());
                         dialog.cancel();
                     })
                     // добавляем переключатели
                     .setSingleChoiceItems(controls, -1,
                             (dialog, item) -> {
-                                if (controls[item].equals("StartRec")) {
+                                if (controls[item].equals("Start Recording")) {
                                     mediaStartRec();
                                 }
-                                if (controls[item].equals("StopRec")) {
+                                if (controls[item].equals("Stop Recording")) {
                                     mediaStopRec();
                                 }
-                                if (controls[item].equals("StartPlay")) {
+                                if (controls[item].equals("Play record")) {
                                     mediaStartRead();
                                 }
-                                if (controls[item].equals("StopPlay")) {
+                                if (controls[item].equals("Stop playing")) {
                                     mediaStopRead();
                                 }
                             });
@@ -163,8 +164,6 @@ public class AlarmEditActivity extends AppCompatActivity {
 
 
     private void mediaStartRec() {
-        Toast.makeText(getApplicationContext(), "Chouse start rec: ",
-                Toast.LENGTH_SHORT).show();
         try {
             releaseRecorder();
 
@@ -180,39 +179,36 @@ public class AlarmEditActivity extends AppCompatActivity {
             mediaRecorder.setOutputFile(fileName);
             mediaRecorder.prepare();
             mediaRecorder.start();
-            Toast.makeText(this, "Запись пошла", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Recording started", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void mediaStopRec() {
-        Toast.makeText(getApplicationContext(), "Chouse stop rec: ",
-                Toast.LENGTH_SHORT).show();
         if (mediaRecorder != null) {
             mediaRecorder.stop();
+            Toast.makeText(this, "Recording stoped", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void mediaStartRead() {
-        Toast.makeText(getApplicationContext(), "Chouse start play: ",
-                Toast.LENGTH_SHORT).show();
         try {
             releasePlayer();
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(fileName);
             mediaPlayer.prepare();
             mediaPlayer.start();
+            Toast.makeText(this, "Playing started", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void mediaStopRead() {
-        Toast.makeText(getApplicationContext(), "Chouse stop play: ",
-                Toast.LENGTH_SHORT).show();
         if (mediaPlayer != null) {
             mediaPlayer.stop();
+            Toast.makeText(this, "Playing stoped", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -564,12 +560,11 @@ public class AlarmEditActivity extends AppCompatActivity {
         setToolBar();
         controlProcessing();
         if (checkPermRecord() == PackageManager.PERMISSION_GRANTED && checkWriteSD() == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Perm is granted", Toast.LENGTH_LONG).show();
             // perm granted
             fileName = Environment.getExternalStorageDirectory() + "/record.amr_nb";
             recordingControls();
         } else {
-            Toast.makeText(this, "Perm is not granted", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Permission is not granted. Some function may have errors", Toast.LENGTH_LONG).show();
             getPermission();
         }
     }
