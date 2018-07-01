@@ -20,7 +20,6 @@ import vivaladev.com.dirtyclocky.ui.activities.MainActivity;
 public abstract class AlarmHandler {
     //private static AlarmManager alarmManager;
     //private static PendingIntent pendingIntent;
-    public static Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
 
     public static List<Alarm> alarms = new ArrayList<>();
     public static void registerAlarm(AlarmManager alarmMgr, Context context, Alarm alarm){
@@ -30,7 +29,10 @@ public abstract class AlarmHandler {
 //                alarm.getRepeatTime(), alarm.getPendingIntent()); TODO: refactor this shit
         //(Intent) - это механизм для описания одной операции - выбрать фотографию, отправить письмо, сделать звонок, запустить браузер...
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
+        Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
+        intent.putExtra("requestCode", /*alarm.getId()*/ 5);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, /*alarm.getId()*/ 5, intent, 0);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis() + 5000);
@@ -52,17 +54,26 @@ public abstract class AlarmHandler {
         }
     }
 
-    public void unRegisterAll(AlarmManager alarmMgr){
+    public void unRegisterAll(AlarmManager alarmMgr, Context context){
         for (Alarm alarm : alarms) {
-            unRegisterAlarm(alarmMgr, alarm);
+            unRegisterAlarm(alarmMgr, alarm, context);
         }
     }
 
-    public static void unRegisterAlarm(AlarmManager alarmMgr, Alarm alarm) {
+    public static void unRegisterAlarm(AlarmManager alarmMgr, Alarm alarm, Context context) {
         //alarmMgr.cancel(alarm.);
         //Удаление будильника из Alarm Manager, коллекции и базы
-        throw new UnsupportedOperationException("Метод не реализован!");
+        Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
+        intent.putExtra("requestCode", alarm.getId());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
+        alarmMgr.cancel(pendingIntent);
 
+        try{
+            throw new RuntimeException("unRegisterAlarm = " + ""+ alarm.getId());
+        }
+        catch (RuntimeException e){
+            e.printStackTrace();
+        }
     }
 
     public static void loadAlarms(AlarmManager alarmMgr, Context context) {

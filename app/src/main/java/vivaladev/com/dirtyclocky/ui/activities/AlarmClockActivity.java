@@ -25,6 +25,10 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import vivaladev.com.dirtyclocky.R;
+import vivaladev.com.dirtyclocky.alarmcontrol.handler.AlarmHandler;
+import vivaladev.com.dirtyclocky.alarmcontrol.receive.AlarmReceiver;
+import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
+import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
 
 public class AlarmClockActivity extends Activity {
     public static boolean isActive = false;
@@ -36,6 +40,7 @@ public class AlarmClockActivity extends Activity {
     private AlarmThread alarmThread;
     private Vibrator vibrator;
     private MediaPlayer mMediaPlayer;
+    private int alarmID = -1;
 
     private final static int MAX_VOLUME = 100;
     private final static int VOLUME_STEP = 15;//Шаг увеличения
@@ -57,6 +62,10 @@ public class AlarmClockActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            alarmID = Integer.valueOf(savedInstanceState.getString("requestCode"));
+            Toast.makeText(this, ""+alarmID, Toast.LENGTH_SHORT).show();
+        }
         PowerManager pm=(PowerManager) getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
         //Осуществляем блокировку
@@ -78,6 +87,15 @@ public class AlarmClockActivity extends Activity {
         wl.release();
 
         findViewById(R.id.buttonOff).setOnClickListener((buttonOffAlarm)->{
+            if(alarmID != -1){
+                AlarmReceiver.setAlarmsOffByID(alarmID);
+                try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+                    Alarm alarm = dbw.getAlarm(alarmID);
+                    AlarmHandler.unRegisterAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), alarm, getApplicationContext());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             TextView textView = findViewById(R.id.textView);
             textView.setText("Ты проклят");
             cancelAlarm();
@@ -90,12 +108,14 @@ public class AlarmClockActivity extends Activity {
         });
 
         findViewById(R.id.buttonDefer).setOnClickListener((buttonIgnor)->{
+            if(alarmID != -1){
+                AlarmReceiver.setAlarmsOffByID(alarmID);
+            }
             TextView textView = findViewById(R.id.textView);
             textView.setText("Игнор");
             vibrator.vibrate(1000);
             if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
                 mMediaPlayer.stop();
-
             }
             alarmThread.interrupt();
             finish();
@@ -184,6 +204,9 @@ public class AlarmClockActivity extends Activity {
             }
             if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
                 mMediaPlayer.stop();
+            }
+            if(alarmID != -1){
+                AlarmReceiver.setAlarmsOffByID(alarmID);
             }
             finish();
         }
