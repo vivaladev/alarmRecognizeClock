@@ -445,12 +445,12 @@ public class AlarmEditActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_note_tool_bar, menu);
         toolbarMenu = menu;
-        setNoteData();
+        setAlarmData();
         return true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void setNoteData() {
+    private void setAlarmData() {
         Alarm note;
         //Tag[] allTags;
         //Tag[] noteTags;

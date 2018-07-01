@@ -57,12 +57,12 @@ public class NotesFragment extends Fragment implements View.OnClickListener {
 
         try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
             Alarm[] alarms = dbw.getAllAlarms();
-            try{
+            /*try{
                 throw new RuntimeException("noteId = " + alarms.length);
             }
             catch (RuntimeException e){
                 e.printStackTrace();
-            }
+            }*/
             for (int i = 0; i < alarms.length; i++) {
                 nf.addNoteToScreen(alarms[i].getId(), alarms[i].getTime(), alarms[i].getName(), alarms[i].getBody(), /*dbw.getTagsByNoteId(alarms[i].getId())*/ new Tag[]{});
             }

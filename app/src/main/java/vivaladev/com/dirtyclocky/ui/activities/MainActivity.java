@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import vivaladev.com.dirtyclocky.R;
+import vivaladev.com.dirtyclocky.alarmcontrol.service.AlarmService;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragmentAdapter.ImplFragmentPageAdapter;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.NotesFragment;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.TagsFragment;
@@ -85,6 +86,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(tool_bar);
         initializeScreenSize();
         initializeFragmentAdapter();
+
+        Intent intent = new Intent(getApplicationContext(), AlarmService.class);
+        startService(intent);
+
+        /*try {
+            throw new UnsupportedOperationException("Create AlarmService");
+        }
+        catch (UnsupportedOperationException ex){
+            ex.printStackTrace();
+        }*/
+        //startRepeatingTimer();
 
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
