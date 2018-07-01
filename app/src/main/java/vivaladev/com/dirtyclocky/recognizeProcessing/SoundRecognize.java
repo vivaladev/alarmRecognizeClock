@@ -53,23 +53,19 @@ public class SoundRecognize {
         dbFileByte = convertFileToByteArray(dbFile);
         newRecByte = convertFileToByteArray(newRec);
 
-        setCoincedenceCountOfSearchCoincidenceByte(dbFileByte.length / 1000);
+        setCoincedenceCountOfSearchCoincidenceByte(dbFileByte.length / 2000);
 
         int countError = 0;
-        boolean res = true;
 
         if (!firstCompareOnFullCoincidence()) {
-            return false;
+            countError++;
         }
 
         if (!checkCoincedenceByte()) {
-            return false; //TODO: не работают цепочки
+            countError++; //TODO: плохо работают цепочки, часто байты совпадают но новый индекс не берется
         }
 
-//        if (!(countError < 2)){
-//            return false;
-//        }
-        return res;
+        return countError < 2; // хотя бы 1 из алгоритмов удачно сравнил файлы
     }
 
     private static boolean firstCompareOnFullCoincidence() {
