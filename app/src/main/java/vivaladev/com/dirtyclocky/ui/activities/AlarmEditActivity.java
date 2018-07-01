@@ -1,14 +1,23 @@
 package vivaladev.com.dirtyclocky.ui.activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -23,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,14 +45,12 @@ import static vivaladev.com.dirtyclocky.ui.activities.activityHelper.ActivityHel
 
 public class AlarmEditActivity extends AppCompatActivity {
 
-    private String initialDate;
-    private String initialTitle;
-    private String initialBody;
-    private ArrayList<Integer> additionTags;
-    private ArrayList<Integer> removalTags;
-    private int clickedAlarmId;
-    private Menu toolbarMenu;
+    private ArrayList<Integer> additionTags;//del
+    private ArrayList<Integer> removalTags;//del
 
+    private Menu toolbarMenu;
+    private LinearLayout llBottomSheet;
+    private Button buttonUp;
     private TextView time_field;
     private EditText name_field;
     private EditText note_text_field;
@@ -50,22 +58,186 @@ public class AlarmEditActivity extends AppCompatActivity {
     private EditText alarmRepeat;
     private EditText alarmOffMethod;
     private CheckBox isIncreaseVolume;
+    private Toolbar edit_note_tool_bar;
+    private FloatingActionButton bottom_sheet_btn;
+    private BottomSheetBehavior bottomSheetBehavior;
+
+    private String initialDate;
+    private String initialTitle;
+    private String initialBody;
+    private int clickedAlarmId;
+    private Alarm alarm;
+    private int alarmHour, alarmMinute;
+    private int currentBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED;
     private boolean[] mCheckedDays = {false, false, false, false, false, false, false};
 
-    private LinearLayout llBottomSheet;
-    private Toolbar edit_note_tool_bar;
-    private Button buttonUp;
-    private FloatingActionButton bottom_sheet_btn;
-    private int currentBottomSheetState = BottomSheetBehavior.STATE_COLLAPSED;
-    private BottomSheetBehavior bottomSheetBehavior;
-    private Alarm alarm;
+    final int REQUEST_AUDIO_PERMISSION_RESULT = 1; // requestCode
+    private String fileName;
 
 
-    private int mHour, mMinute;
+    //    Recording
+    private AudioRecord audioRecord;
+    private MediaRecorder mediaRecorder;
+    private MediaPlayer mediaPlayer;
 
-    private void setDefaultData() {
-        //TODO: подтягивать аларм с бд
+
+    /* CHECK PERMISSION MODULE */
+    int checkPermRecord() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
     }
+
+    int checkWriteSD() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    void getPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                REQUEST_AUDIO_PERMISSION_RESULT);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_AUDIO_PERMISSION_RESULT:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    //perm granted
+                    fileName = Environment.getExternalStorageDirectory() + "/record.3gpp";
+                    recordingControls();
+                } else {
+                    getPermission();
+                }
+                return;
+        }
+    }
+
+    private void recordingControls() {
+        alarmOffMusic.setOnClickListener(view -> {
+            AlertDialog.Builder builder;
+            final String[] controls = {"StartRec", "StopRec", "StartPlay", "StopPlay"};
+
+            builder = new AlertDialog.Builder(this);
+            builder.setTitle("Choose method of alarm stopping")
+                    .setCancelable(false)
+
+                    // добавляем одну кнопку для закрытия диалога
+                    .setNeutralButton("Cancel",
+                            (dialog, id) -> dialog.cancel())
+                    .setPositiveButton("Done", (dialog, id) -> {
+                        dialog.cancel();
+                    })
+                    // добавляем переключатели
+                    .setSingleChoiceItems(controls, -1,
+                            (dialog, item) -> {
+                                if (controls[item].equals("StartRec")) {
+                                    mediaStartRec();
+                                }
+                                if (controls[item].equals("StopRec")) {
+                                    mediaStopRec();
+                                }
+                                if (controls[item].equals("StartPlay")) {
+                                    mediaStartRead();
+                                }
+                                if (controls[item].equals("StopPlay")) {
+                                    mediaStopRead();
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        });
+    }
+
+
+    void createAudioRecorder() {
+        int sampleRate = 8000;
+        int channelConfig = AudioFormat.CHANNEL_IN_MONO;
+        int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+
+        int minInternalBufferSize = AudioRecord.getMinBufferSize(sampleRate,
+                channelConfig, audioFormat);
+        int internalBufferSize = minInternalBufferSize * 4;
+
+        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,
+                sampleRate, channelConfig, audioFormat, internalBufferSize);
+    }
+
+
+    private void mediaStartRec() {
+        Toast.makeText(getApplicationContext(), "Chouse start rec: ",
+                Toast.LENGTH_SHORT).show();
+        try {
+            releaseRecorder();
+
+            File outFile = new File(fileName);
+            if (outFile.exists()) {
+                outFile.delete();
+            }
+
+            mediaRecorder = new MediaRecorder();
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mediaRecorder.setOutputFile(fileName);
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+            Toast.makeText(this, "Запись пошла", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void mediaStopRec() {
+        Toast.makeText(getApplicationContext(), "Chouse stop rec: ",
+                Toast.LENGTH_SHORT).show();
+        if (mediaRecorder != null) {
+            mediaRecorder.stop();
+        }
+    }
+
+    private void mediaStartRead() {
+        Toast.makeText(getApplicationContext(), "Chouse start play: ",
+                Toast.LENGTH_SHORT).show();
+        try {
+            releasePlayer();
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(fileName);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void mediaStopRead() {
+        Toast.makeText(getApplicationContext(), "Chouse stop play: ",
+                Toast.LENGTH_SHORT).show();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+    }
+
+    private void releaseRecorder() {
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
+    }
+
+    private void releasePlayer() {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        releasePlayer();
+        releaseRecorder();
+    }
+
+    /*END PERMISSION MODULE*/
 
     private void init() {
         time_field = findViewById(R.id.time_field);
@@ -81,6 +253,10 @@ public class AlarmEditActivity extends AppCompatActivity {
         alarmOffMethod = findViewById(R.id.alarmOffMethod);
         isIncreaseVolume = findViewById(R.id.alarmIncreaseVolume);
 
+    }
+
+    private void setDefaultData() {
+        //TODO: подтягивать аларм с бд
     }
 
     private void setInitialData() {
@@ -133,9 +309,6 @@ public class AlarmEditActivity extends AppCompatActivity {
             }
         });
 
-        alarmOffMusic.setOnClickListener(view -> {
-
-        });
         alarmOffMethod.setOnClickListener(view -> {
             AlertDialog.Builder builder;
             final String[] methodsOff = {"Image", "Sound"};
@@ -317,13 +490,13 @@ public class AlarmEditActivity extends AppCompatActivity {
 
         time_field.setInputType(InputType.TYPE_NULL);
         time_field.setOnClickListener(v -> {
-            mHour = calendar.get(java.util.Calendar.HOUR_OF_DAY); // set default time by current time
-            mMinute = calendar.get(java.util.Calendar.MINUTE);
+            alarmHour = calendar.get(java.util.Calendar.HOUR_OF_DAY); // set default time by current time
+            alarmMinute = calendar.get(java.util.Calendar.MINUTE);
 
             TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
                 alarm.setTime(String.valueOf(calendar.getTimeInMillis()));
                 time_field.setText(hourOfDay + " : " + minute);
-            }, mHour, mMinute, true);
+            }, alarmHour, alarmMinute, true);
             timePickerDialog.show();
         });
     }
@@ -385,11 +558,20 @@ public class AlarmEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.alarm_edit_activity);
         init();
-        controlProcessing();
         setDefaultData(); // default values
-
+        createAudioRecorder();
         setStatusBar(this, findViewById(R.id.edit_note_tool_bar));
         setToolBar();
+        controlProcessing();
+        if (checkPermRecord() == PackageManager.PERMISSION_GRANTED && checkWriteSD() == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Perm is granted", Toast.LENGTH_LONG).show();
+            // perm granted
+            fileName = Environment.getExternalStorageDirectory() + "/record.amr_nb";
+            recordingControls();
+        } else {
+            Toast.makeText(this, "Perm is not granted", Toast.LENGTH_LONG).show();
+            getPermission();
+        }
     }
 }
 

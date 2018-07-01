@@ -31,6 +31,11 @@
     <string name="en_alarm_message_back_btn">Do you want delete this alarm?</string>
     <string name="en_alarm_message_fill_fields">Please, specify time and name of this alarm</string>
 
+    <!--Dictaphone-->
+    <string name="record">Record</string>
+    <string name="play">Play</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
 
     <!--Ru-->
     <string name="ru_alarm_name">Будильник</string>
