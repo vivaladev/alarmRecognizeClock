@@ -25,6 +25,9 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import vivaladev.com.dirtyclocky.alarmcontrol.handler.AlarmHandler;
@@ -183,7 +186,7 @@ public class AlarmClockActivity extends Activity {
                 AlertDialog alert = builder.create();
                 alert.show();
             } else{
-                //обработка картинки
+                prepareToRecognizeImageTouch(alarm.getMusic());
             }
 
 
@@ -195,6 +198,34 @@ public class AlarmClockActivity extends Activity {
 
         alarmThread = new AlarmThread();
         alarmThread.start();
+    }
+
+    private static final int GOT_IMAGE_TOUCH = 111;
+
+    private void prepareToRecognizeImageTouch(String res){
+        Intent intent = new Intent(this, ImageRecognizeActivity.class);
+        List<String> resources = getResourcesFromDB(res);
+        intent.putExtra("uriImage", resources.get(0));
+        intent.putExtra("coords", resources.get(1));
+        startActivityForResult(intent, GOT_IMAGE_TOUCH);
+    }
+
+    private List<String> getResourcesFromDB(String fromDB) {
+        List<String> res = Arrays.asList("", "");
+        boolean toImagePath = true;
+        for(char item : fromDB.toCharArray()){
+            if(toImagePath){
+                res.set(0, new StringBuilder(res.get(0)).append(item).toString());
+            }
+            if(item == 'x'){
+                toImagePath = false;
+            }
+            if(toImagePath){
+                res.set(0, new StringBuilder(res.get(1)).append(item).toString());
+            }
+        }
+        
+        return res;
     }
 
     private boolean isFile(String method) {
