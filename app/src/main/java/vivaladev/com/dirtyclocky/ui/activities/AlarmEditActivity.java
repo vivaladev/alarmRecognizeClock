@@ -330,7 +330,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         if (requestCode == GOT_IMAGE_COORDS && resultCode == RESULT_OK) {
             Intent intent = getIntent();
             String coords = ImageRecognizeActivity.getFinalCoords(); //intent.getStringExtra("imageCoords");
-            alarmOffMusic.setText(coords);
+            alarmOffMusic.setText(selectedImagePath + "." + coords); //TODO: убрать
         }
     }
 

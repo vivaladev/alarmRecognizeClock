@@ -220,11 +220,11 @@ public class AlarmClockActivity extends Activity {
             if(item == 'x'){
                 toImagePath = false;
             }
-            if(toImagePath){
+            if(!toImagePath){
                 res.set(0, new StringBuilder(res.get(1)).append(item).toString());
             }
         }
-        
+
         return res;
     }
 
