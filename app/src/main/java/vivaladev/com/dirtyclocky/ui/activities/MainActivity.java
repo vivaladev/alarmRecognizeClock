@@ -1,5 +1,7 @@
 package vivaladev.com.dirtyclocky.ui.activities;
 
+import android.app.AlarmManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import vivaladev.com.dirtyclocky.R;
+import vivaladev.com.dirtyclocky.alarmcontrol.handler.AlarmHandler;
 import vivaladev.com.dirtyclocky.alarmcontrol.service.AlarmService;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragmentAdapter.ImplFragmentPageAdapter;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.NotesFragment;
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(getApplicationContext(), AlarmService.class);
         startService(intent);
 
-        //AlarmHandler.loadAlarms((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext());//TODO ВКЛЮЧИТЬ
+        AlarmHandler.loadAlarms((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext());//TODO ВКЛЮЧИТЬ
 
         /*try {
             throw new UnsupportedOperationException("Create AlarmService");

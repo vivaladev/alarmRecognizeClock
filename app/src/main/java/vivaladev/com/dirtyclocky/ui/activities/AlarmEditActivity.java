@@ -4,13 +4,11 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
@@ -43,7 +41,6 @@ import java.util.regex.Pattern;
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
-import vivaladev.com.dirtyclocky.recognizeProcessing.SoundRecognize;
 
 import static vivaladev.com.dirtyclocky.ui.activities.activityHelper.ActivityHelper.setStatusBar;
 
@@ -538,7 +535,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                 alarmRepeat.setText(alarm.getRepeatTime());
                 alarmOffMethod.setText(alarm.getAlarmOffMethod());
                 isIncreaseVolume.setChecked(alarm.isAlarmIncreaseVolume());
-                isAlarmOnOff.setChecked(alarm.isAlarmOnOff());
+                isAlarmOnOff.setChecked(alarm.isAlarmOn());
 
                 //TODO
 
