@@ -24,7 +24,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         Toast.makeText(context, "containts + "  + containsAlarmById(alarmID), Toast.LENGTH_LONG).show();
 
-        if(isNotRunningAlarm(alarmID) && !AlarmClockActivity.isActive){
+        if(isNotRunningAlarm(alarmID) && !AlarmClockActivity.isActive && !isRunningAlarms()){
             if(!containsAlarmById(alarmID)){
                 alarmsRunning.add(new MiniAlarm(alarmID));
             }
@@ -74,6 +74,14 @@ public class AlarmReceiver extends BroadcastReceiver {
                 break;
             }
         }
+    }
+    public static boolean isRunningAlarms(){
+        for(MiniAlarm alarm: alarmsRunning){
+            if(alarm.isRun()) {
+                return true;
+            }
+        }
+        return false;
     }
     public static boolean containsAlarmById(int alarmID){
         for(MiniAlarm alarm: alarmsRunning){
