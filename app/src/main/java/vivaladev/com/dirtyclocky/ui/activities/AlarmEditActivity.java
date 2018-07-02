@@ -524,7 +524,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         //Tag[] noteTags;
         clickedAlarmId = MainActivity.getInstance().getNotesFragment().getClickedNoteId();//TODO переименовать в Note Handler
         LinearLayout tags_linearLayout = (LinearLayout) findViewById(R.id.tags_linearLayout);
-        //TagsFactory tg = new TagsFactory(this, tags_linearLayout, this);
+        //RecordFactory tg = new RecordFactory(this, tags_linearLayout, this);
 
         if (clickedAlarmId != -1) {
             toolbarMenu.findItem(R.id.remove_btn).setVisible(true);

@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.ui.activities.MainActivity;
 import vivaladev.com.dirtyclocky.ui.activities.SoundProcessingActivity;
-import vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories.TagsFactory;
+import vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories.RecordFactory;
 
 public class RecordFragment extends Fragment implements View.OnClickListener {
 
@@ -58,15 +58,13 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View currentView = inflater.inflate(R.layout.all_sound_fragment, null);
-        LinearLayout tags_linearLayout = (LinearLayout) currentView.findViewById(R.id.tags_linearLayout);
-        TagsFactory tf = new TagsFactory(this.getContext(), tags_linearLayout, this);
+        LinearLayout tags_linearLayout = currentView.findViewById(R.id.tags_linearLayout);
+        RecordFactory tf = new RecordFactory(this.getContext(), tags_linearLayout, this);
 
-        File rootFolder = Environment.getExternalStorageDirectory();
-        File[] filesArray = rootFolder.listFiles();
-        filenames = Arrays.asList(getConvertedFileName(filesArray));
+        filenames = Arrays.asList(getConvertedFileName(Environment.getExternalStorageDirectory().listFiles()));
 
-        for (String filename : filenames) {
-            tf.addTagToScreen(filename, false);
+        for (int i = 0; i < filenames.size(); i++) {
+            tf.addTagToScreen(i+10, filenames.get(i), false);
         }
         return currentView;
     }
@@ -97,10 +95,10 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+
         MainActivity.getInstance().initializeFragments();
-        clickedFileName = view.getId();
+        setClickedFileName(view.getId());
         Intent intent = new Intent(MainActivity.getInstance(), SoundProcessingActivity.class);
         startActivity(intent);
     }
-
 }

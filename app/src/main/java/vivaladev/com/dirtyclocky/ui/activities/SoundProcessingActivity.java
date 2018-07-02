@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
@@ -227,22 +228,12 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
     /*END PERMISSION MODULE*/
 
     private void backBtnDialog() {
-        if (isNeedSave()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Do you want save or delete this record?");
-            builder.setPositiveButton(getResources().getString(R.string.en_alarm_done),
-                    (dialog, which) -> finish());
-            builder.setNeutralButton(getResources().getString(R.string.en_alarm_cancel), null);
-            builder.show();
-        } else {
-            finish();
-        }
+        finish();
     }
 
     @Override
     public void onClick(View view) {
         MainActivity.getInstance().initializeFragments();
-        MainActivity.getInstance().getNotesFragment().setClickedNoteId(view.getId());
         Intent intent = new Intent(MainActivity.getInstance(), AlarmEditActivity.class);
         startActivity(intent);
     }
@@ -337,10 +328,16 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
                         }).setNegativeButton(getResources().getString(R.string.en_alarm_cancel), null).show();
     }
 
+    private void showMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
     private void removeRecord() {
+        showMessage("Дошли до удаления файла");
         File filename = new File(getFileName(fileNameInCD));
         if (filename.exists()) {
             filename.delete();
+            showMessage("Удалили");
         }
     }
 
@@ -349,7 +346,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         for (int i = 0; i < filenames.length; i++) {
             if (isValidateMusicFile(filenames[i])) {
                 if (filenames[i].isFile()) {
-                    res.add(filenames[i].getName());
+                    res.add(getRecordName(filenames[i].getName().toCharArray()));
                 }
             }
         }
@@ -360,18 +357,24 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         return Pattern.matches(".*\\.amr_nb", file.getName());
     }
 
+    private String getRecordName(char[] name) {
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < name.length - 7; i++) {
+            res.append(name[i]);
+        }
+        return res.toString();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void setTagData() {
         clickedFileName = MainActivity.getInstance().getRecordFragment().getClickedFileName();
 
-        if (clickedFileName != -1){
-            try {
-                musicEditField.setText(clickedFileName);
+        if (clickedFileName != -1) {
+            List<String> filenames = Arrays.asList(getConvertedFileName(Environment.getExternalStorageDirectory().listFiles()));
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else{
+            musicEditField.setText(filenames.get(clickedFileName - 10));
+            fileNameInCD = filenames.get(clickedFileName - 10);
+        } else {
             musicEditField.setText("");
         }
         setInitialData();
