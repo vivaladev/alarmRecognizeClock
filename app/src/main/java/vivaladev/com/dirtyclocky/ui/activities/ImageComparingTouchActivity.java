@@ -27,7 +27,8 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
         init();
 
         Intent intent = getIntent();
-        String imageURI = intent.getStringExtra("uriImage");
+        String imageURI = intent.getStringExtra("uriImage").substring(0, intent.getStringExtra("uriImage").length() - 1);
+        Toast.makeText(this, "Uri:" + imageURI + "|", Toast.LENGTH_SHORT).show();
         String coords = intent.getStringExtra("coords");
         Uri uri = Uri.parse(imageURI);
         setImageFromURI(uri);
@@ -64,13 +65,13 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
 
     private boolean checkTouchZone(int x, int y, List<Integer> coords) { //coords XxY
 
-        if ((coords.get(0) + 100) <= x && ((coords.get(1) + 100) <= y)) {
+        if ((coords.get(0) + 30) <= x && ((coords.get(1) + 30) <= y)) {
             return true;
-        } else if ((coords.get(0) + 100) <= x && ((coords.get(1) - 100) <= y)) {
+        } else if ((coords.get(0) + 30) <= x && ((coords.get(1) - 30) <= y)) {
             return true;
-        } else if ((coords.get(0) - 100) <= x && ((coords.get(1) - 100) <= y)) {
+        } else if ((coords.get(0) - 30) <= x && ((coords.get(1) - 30) <= y)) {
             return true;
-        } else if ((coords.get(0) - 100) <= x && ((coords.get(1) - 100) <= y)) {
+        } else if ((coords.get(0) - 30) <= x && ((coords.get(1) - 30) <= y)) {
             return true;
         }
         return false;
@@ -79,18 +80,20 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
     private List<Integer> parseCoord(String coords) {
         List<String> temp = Arrays.asList("", "");
         boolean toX = true;
+        StringBuilder onX = new StringBuilder();
+        StringBuilder onY = new StringBuilder();
         for (char item : coords.toCharArray()) {
             if (toX) {
-                temp.set(0, new StringBuilder(temp.get(0)).append(item).toString());
+                onX.append(item);
             }
             if (item == 'x') {
                 toX = false;
             }
             if (!toX) {
-                temp.set(1, new StringBuilder(temp.get(1)).append(item).toString());
+                onY.append(item);
             }
         }
-        return Arrays.asList(Integer.parseInt(temp.get(0)), Integer.parseInt(temp.get(1)));
+        return Arrays.asList(Integer.parseInt(onX.toString().substring(0, onX.length() - 1)), Integer.parseInt(onY.toString().substring(1, onY.length())));
     }
 
     //    private void prepareToReturnImageZone(String finalMCoords) {
