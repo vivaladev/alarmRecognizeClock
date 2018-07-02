@@ -546,7 +546,15 @@ public class AlarmEditActivity extends AppCompatActivity {
 
             TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
                 millisecondsTime = String.valueOf(calendar.getTimeInMillis());
-                time_field.setText(hourOfDay + " : " + minute);
+                String hour = String.valueOf(hourOfDay);
+                if (hour.length() == 1){
+                    hour = "0" + hourOfDay;
+                }
+                String min = String.valueOf(minute);
+                if (min.length() == 1){
+                    min = "0" + min;
+                }
+                time_field.setText(hour + ":" + min);
             }, alarmHour, alarmMinute, true);
             timePickerDialog.show();
         });

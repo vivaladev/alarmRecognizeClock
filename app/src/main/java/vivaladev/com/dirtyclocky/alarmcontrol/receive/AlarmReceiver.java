@@ -22,10 +22,11 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         int alarmID= intent.getIntExtra("requestCode", 1);
 
+        Toast.makeText(context, "containts + "  + containsAlarmById(alarmID), Toast.LENGTH_LONG).show();
+
         if(isNotRunningAlarm(alarmID) && !AlarmClockActivity.isActive){
             if(!containsAlarmById(alarmID)){
                 alarmsRunning.add(new MiniAlarm(alarmID));
-                //Toast.makeText(context, "containts + "  + containsAlarmById(alarmID) + " " + getAlarmById(alarmID).getId(), Toast.LENGTH_LONG).show();
             }
             Intent intentone = new Intent(context.getApplicationContext(), AlarmClockActivity.class);//Старт активти
             intentone.putExtra("requestCode", String.valueOf(alarmID));

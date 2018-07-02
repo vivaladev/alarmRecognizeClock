@@ -64,7 +64,7 @@ public class NotesFragment extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
             }*/
             for (int i = 0; i < alarms.length; i++) {
-                nf.addNoteToScreen(alarms[i].getId(), alarms[i].getTime(), alarms[i].getName(), alarms[i].getBody(), /*dbw.getTagsByNoteId(alarms[i].getId())*/ new Tag[]{});
+                nf.addNoteToScreen(alarms[i].getId(), alarms[i].getTime(), alarms[i].getName(), alarms[i].getBody(), alarms[i].isAlarmOn(), /*dbw.getTagsByNoteId(alarms[i].getId())*/ alarms[i].getMusic());
             }
 
         } catch (Exception e) {
