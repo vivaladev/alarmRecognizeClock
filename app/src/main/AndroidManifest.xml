@@ -19,14 +19,6 @@
             android:name=".alarmcontrol.service.AlarmService"
             android:process=":alarmService"
             />
-            <!-- android:exported="true" android:process=":alarmService" android:stopWithTask="false" -->
-         <!--<receiver android:name=".alarmcontrol.receive.AlarmReceiver" android:process=":remote"/>-->
-         <!--<receiver android:process=":remote" android:name=".alarmcontrol.receive.AlarmReceiver"/>
-        <receiver android:name=".alarmcontrol.receive.AlarmReceiver">
-            <intent-filter>
-                <action android:name="ilku.ru.alarmclock.receive.ALARM" />
-            </intent-filter>
-        </receiver>-->
 
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
@@ -38,6 +30,7 @@
         <activity android:name=".ui.activities.AlarmEditActivity" />
         <activity android:name=".ui.activities.SoundProcessingActivity" />
         <activity android:name=".ui.activities.AlarmClockActivity"/>
+        <activity android:name=".ui.activities.ImageRecognizeActivity"/>
     </application>
 
 </manifest>
