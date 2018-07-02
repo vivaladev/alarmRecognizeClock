@@ -148,7 +148,7 @@ public class AlarmClockActivity extends Activity {
             }
             alarmThread.interrupt();
 
-            if(isFile(alarm.getMusic())){
+            if(isFile(alarm.getMusic()) && "Sound".equals(alarm.getMusic())){
                 AlertDialog.Builder builder;
                 final String[] controls = {"Start Recording", "Stop Recording", "Recognize"};
 
