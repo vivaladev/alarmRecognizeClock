@@ -40,7 +40,6 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
 
     @SuppressLint({"ClickableViewAccessibility", "ShowToast"})
     private void getClickedZone(String coords) {
-        Toast.makeText(this, "Touch alarm off zone", Toast.LENGTH_LONG).show();
         imageView.setOnTouchListener((view, motionEvent) -> {
             mX = motionEvent.getX();
             mY = motionEvent.getY();
@@ -50,10 +49,10 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN: // нажатие
                     if (checkTouchZone(Math.round(mX), Math.round(mY), parseCoord(coords))) {
-                        Toast.makeText(this, "Нажатие отловлено", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Done. Alarm off", Toast.LENGTH_LONG).show();
                         prepareToReturn();
                     } else {
-                        Toast.makeText(this, "Мимо", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Not right place", Toast.LENGTH_LONG).show();
                     }
 
                     break;

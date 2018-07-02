@@ -171,7 +171,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
             mediaRecorder.setOutputFile(fileName);
             mediaRecorder.prepare();
             mediaRecorder.start();
-            Toast.makeText(this, "Recording started", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -191,7 +191,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
             mediaPlayer.setDataSource(getFileName(fileNameInCD));
             mediaPlayer.prepare();
             mediaPlayer.start();
-            Toast.makeText(this, "Playing started", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Playing started", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(this, "Nothing to played. Record something :)", Toast.LENGTH_LONG).show();
             e.printStackTrace();
