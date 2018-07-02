@@ -52,6 +52,7 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
                 case MotionEvent.ACTION_DOWN: // нажатие
                     if (checkTouchZone(Math.round(mX), Math.round(mY), parseCoord(coords))) {
                         Toast.makeText(this, "Нажатие отловлено", Toast.LENGTH_LONG).show();
+                        prepareToReturn();
                     } else {
                         Toast.makeText(this, "Мимо", Toast.LENGTH_LONG).show();
                     }
@@ -61,6 +62,12 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
 
             return true;
         });
+    }
+
+    private void prepareToReturn(){
+        Intent data = new Intent();
+        setResult(RESULT_OK, data);
+        finish();
     }
 
     private boolean checkTouchZone(int x, int y, List<Integer> coords) { //coords XxY
