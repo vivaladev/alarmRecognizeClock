@@ -151,7 +151,7 @@ public class AlarmClockActivity extends Activity {
             }
             alarmThread.interrupt();
 
-            if(isFile(alarm.getMusic()) && "Sound".equals(alarm.getMusic())){
+            if (isFile(alarm.getMusic()) && "Sound".equals(alarm.getMusic())) {
                 AlertDialog.Builder builder;
                 final String[] controls = {"Start Recording", "Stop Recording", "Recognize"};
 
@@ -169,7 +169,7 @@ public class AlarmClockActivity extends Activity {
                                         mediaStopRec();
                                     }
                                     if (controls[item].equals("Recognize")) {
-                                        if (fileFromDB != null){
+                                        if (fileFromDB != null) {
                                             if (fileFromRec != null) {
                                                 if (SoundRecognize.recognizeSound(fileFromDB, fileFromRec)) {
                                                     showMessage("Files are the same");
@@ -179,13 +179,13 @@ public class AlarmClockActivity extends Activity {
                                             } else {
                                                 showMessage("Specify fileFromRec");
                                             }
-                                        }else
+                                        } else
                                             showMessage("Specify fileFromDB");
                                     }
                                 });
                 AlertDialog alert = builder.create();
                 alert.show();
-            } else{
+            } else {
                 prepareToRecognizeImageTouch(alarm.getMusic());
             }
 
@@ -200,31 +200,32 @@ public class AlarmClockActivity extends Activity {
 
     private static final int GOT_IMAGE_TOUCH = 111;
 
-    private void prepareToRecognizeImageTouch(String res){
+    private void prepareToRecognizeImageTouch(String res) {
         Intent intent = new Intent(this, ImageComparingTouchActivity.class);
         List<String> resources = getResourcesFromDB(res);
         intent.putExtra("uriImage", resources.get(0));
         intent.putExtra("coords", resources.get(1));
-        Toast.makeText(this, "uriImage "+resources.get(0) + " coords " + resources.get(1),Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "uriImage " + resources.get(0) + " coords " + resources.get(1), Toast.LENGTH_LONG).show();
 //        startActivityForResult(intent, GOT_IMAGE_TOUCH);
     }
 
     private List<String> getResourcesFromDB(String fromDB) {
-        List<String> res = Arrays.asList("", "");
         boolean toImagePath = true;
-        for(char item : fromDB.toCharArray()){
-            if(toImagePath){
-                res.set(0, new StringBuilder(res.get(0)).append(item).toString());
+        StringBuilder path = new StringBuilder();
+        StringBuilder coord = new StringBuilder();
+        for (char item : fromDB.toCharArray()) {
+            if (toImagePath) {
+                path.append(item);
             }
-            if(item == '.'){
+            if (item == '.') {
                 toImagePath = false;
             }
-            if(!toImagePath){
-                res.set(0, new StringBuilder(res.get(1)).append(item).toString());
-            }
+            if (!toImagePath) {
+                coord.append(item);
+            } 
         }
 
-        return res;
+        return Arrays.asList(path.toString(), coord.toString());
     }
 
     private boolean isFile(String method) {
