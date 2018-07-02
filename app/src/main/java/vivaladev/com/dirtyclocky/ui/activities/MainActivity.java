@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.alarmcontrol.handler.AlarmHandler;
 import vivaladev.com.dirtyclocky.alarmcontrol.service.AlarmService;
+import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragmentAdapter.ImplFragmentPageAdapter;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.NotesFragment;
 import vivaladev.com.dirtyclocky.ui.fragmentProcessing.fragments.RecordFragment;
@@ -89,7 +90,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(getApplicationContext(), AlarmService.class);
         startService(intent);
 
-        AlarmHandler.loadAlarms((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext());//TODO ВКЛЮЧИТЬ
+        AlarmHandler.registerAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext(), new Alarm());//TODO DELETE
+
+
+        //AlarmHandler.loadAlarms((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext());//TODO ВКЛЮЧИТЬ
 
         /*try {
             throw new UnsupportedOperationException("Create AlarmService");

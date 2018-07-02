@@ -445,8 +445,25 @@ public class AlarmEditActivity extends AppCompatActivity {
 
             if (clickedAlarmId != -1) {
                 dbw.updateAlarm(clickedAlarmId, time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume, alarmOnOff);
-                if (!"1".equals(initialalarmOnOff) && "1".equals(alarmOnOff)) {
-                    AlarmHandler.registerAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext(), alarm);
+
+                Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
+                intent.putExtra("offAlarm", String.valueOf(clickedAlarmId));
+                sendBroadcast(intent);
+
+                Alarm al = new Alarm();
+                al.setId(clickedAlarmId);
+                al.setTime(time);
+                al.setName(name);
+                al.setMusic(music);
+                al.setRepeatTime(repeatTime);
+                al.setAlarmOffMethod(offMethod);
+                al.setAlarmIncreaseVolume(alarmIncreaseVolume);
+                al.setAlarmOffMethod(alarmOnOff);
+                AlarmHandler.unRegisterAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), al, getApplicationContext());
+
+
+                if("1".equals(alarmOnOff)){
+                    AlarmHandler.registerAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext(), al);
                 }
                 /*for (int i = 0; i < removalTags.size(); i++) {
                     dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
@@ -456,8 +473,17 @@ public class AlarmEditActivity extends AppCompatActivity {
                 }*/
             } else {
                 int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume, alarmOnOff);
-                if ("1".equals(alarmOnOff)) {
-                    AlarmHandler.registerAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext(), alarm);
+                if("1".equals(alarmOnOff)){
+                    Alarm al = new Alarm();
+                    al.setId(alarmID);
+                    al.setTime(time);
+                    al.setName(name);
+                    al.setMusic(music);
+                    al.setRepeatTime(repeatTime);
+                    al.setAlarmOffMethod(offMethod);
+                    al.setAlarmIncreaseVolume(alarmIncreaseVolume);
+                    al.setAlarmOffMethod(alarmOnOff);
+                    AlarmHandler.registerAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext(), al);
                 }
                 /*for (int i = 0; i < additionTags.size(); i++) {
                     dbw.addTagToNote(additionTags.get(i), alarmID);//TODO добавление тегов к аларму

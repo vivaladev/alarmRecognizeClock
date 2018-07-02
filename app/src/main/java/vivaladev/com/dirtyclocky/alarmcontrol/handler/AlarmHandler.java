@@ -31,19 +31,21 @@ public abstract class AlarmHandler {
         alarms.add(alarm);
         //(Intent) - это механизм для описания одной операции - выбрать фотографию, отправить письмо, сделать звонок, запустить браузер...
 
-        Date date = getDate(alarm.getTime());
+        int TEMP_ID = 5;
+
+        /*Date date = getDate(alarm.getTime());
 
         if(date == null || date.getTime() < System.currentTimeMillis()) {return;}
-
+*/
         Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
-        intent.putExtra("requestCode", alarm.getId());
+        intent.putExtra("requestCode", TEMP_ID);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TEMP_ID, intent, 0);
 
         int repeatingTime = 1000 * 60;//TODO repeating 1 min
 
 
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, date.getTime(),
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+2000,
                 repeatingTime, pendingIntent);
     }
 
