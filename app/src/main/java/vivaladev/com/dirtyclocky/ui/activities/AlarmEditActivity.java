@@ -189,7 +189,6 @@ public class AlarmEditActivity extends AppCompatActivity {
                     bottom_sheet_btn.animate().scaleX(1).scaleY(1).setDuration(140).start();
                     currentBottomSheetState = BottomSheetBehavior.STATE_EXPANDED;
                 }
-
             }
 
             @Override
@@ -258,7 +257,12 @@ public class AlarmEditActivity extends AppCompatActivity {
                     .setPositiveButton("Done", (dialog, id) -> {
                         dialog.cancel();
                         if (choise.get(0).equals("Image")) {
+                            alarmOffMusic.setClickable(false);
+                            alarmOffMusic.setText("");
                             prepareToRecognizeImage();
+                        }
+                        if (choise.get(0).equals("Sound")) {
+                            alarmOffMusic.setClickable(true);
                         }
                         alarmOffMethod.setText(choise.get(0));
                     })
@@ -321,12 +325,13 @@ public class AlarmEditActivity extends AppCompatActivity {
             if (requestCode == SELECT_PICTURE) {
                 Uri selectedImageUri = data.getData();
                 selectedImagePath = getPath(selectedImageUri);
-                showMessage("Путь к картинке: " + selectedImagePath);
-
                 sendImageToNewActivity(selectedImageUri);
             }
 
             if(requestCode == GOT_IMAGE_COORDS){
+                Intent intent = getIntent();
+                String coords = intent.getStringExtra("imageCoords");
+                alarmOffMusic.setText(coords);
                 showMessage("МЫ ВЕРНУЛИСЬ");
             }
         }
