@@ -20,6 +20,8 @@ public class ImageRecognizeActivity extends AppCompatActivity {
     private float mY;
     private static final String TAG = "MyApp";
 
+    public static String urik;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +32,7 @@ public class ImageRecognizeActivity extends AppCompatActivity {
         String imageURI = intent.getStringExtra("uriImage");
         Toast.makeText(this, "Uri:" + imageURI + "|", Toast.LENGTH_SHORT).show();
         Uri uri = Uri.parse(imageURI);
+        urik = imageURI;
         setImageFromURI(uri);
         getClickedZone();
     }
