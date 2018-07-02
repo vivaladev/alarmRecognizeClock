@@ -388,7 +388,10 @@ public class AlarmEditActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Do you want to save or delete this alarm?");
             builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
-                    (dialog, which) -> finish());
+                    (dialog, which) ->{
+                        removeActiveAlarm();
+                        finish();
+                    });
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (isReadyToSave()) {
                     builder.setPositiveButton(getResources().getString(R.string.en_alarm_save),
@@ -400,6 +403,9 @@ public class AlarmEditActivity extends AppCompatActivity {
         } else {
             goToBack();
         }
+    }
+    private void delete(){
+
     }
 
     private void goToBack() {
