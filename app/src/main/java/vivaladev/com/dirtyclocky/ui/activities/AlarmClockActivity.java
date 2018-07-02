@@ -206,7 +206,7 @@ public class AlarmClockActivity extends Activity {
         intent.putExtra("uriImage", resources.get(0));
         intent.putExtra("coords", resources.get(1));
         Toast.makeText(this, "uriImage " + resources.get(0) + " coords " + resources.get(1), Toast.LENGTH_LONG).show();
-//        startActivityForResult(intent, GOT_IMAGE_TOUCH);
+        startActivityForResult(intent, GOT_IMAGE_TOUCH);
     }
 
     private List<String> getResourcesFromDB(String fromDB) {
@@ -226,7 +226,7 @@ public class AlarmClockActivity extends Activity {
             }
         }
 
-        return Arrays.asList(path.toString(), coord.toString());
+        return Arrays.asList(path.toString().substring(0, path.length()-1), coord.toString().substring(1, coord.length()));
     }
 
     private boolean isFile(String method) {
