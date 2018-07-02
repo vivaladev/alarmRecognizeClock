@@ -1,5 +1,6 @@
 package vivaladev.com.dirtyclocky.ui.activities;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import vivaladev.com.dirtyclocky.R;
+import vivaladev.com.dirtyclocky.alarmcontrol.handler.AlarmHandler;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
 
@@ -358,29 +360,39 @@ public class AlarmEditActivity extends AppCompatActivity {
         }
 
         private void backBtnDialog () {
+            if (!isReadyToSave()) {
+                goToBack();
+                return;
+            }
             if (!isLastVersionActive()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("Do you want to save or delete this alarm?");
                 builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
                         (dialog, which) -> finish());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    builder.setPositiveButton(getResources().getString(R.string.en_alarm_save),
-                            (dialog, which) -> saveChanges());
+                    if(isReadyToSave()){
+                        builder.setPositiveButton(getResources().getString(R.string.en_alarm_save),
+                                (dialog, which) -> saveChanges());
+                    }
                 }
                 builder.setNeutralButton(getResources().getString(R.string.en_alarm_cancel), null);
                 builder.show();
             } else {
-                if (getCurrentFocus() != null) {
-                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                            .hideSoftInputFromWindow(getCurrentFocus().
-                                    getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                }
-                finish();
+                goToBack();
             }
         }
 
+        private void goToBack(){
+            if (getCurrentFocus() != null) {
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(getCurrentFocus().
+                                getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+            finish();
+        }
+
         private void removeActiveAlarm () {
-            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDB")) {
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmBD")) {
                 dbw.removeNote(clickedAlarmId);
                 MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
 
@@ -406,7 +418,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             }
 
         Toast.makeText(this, "Saving", Toast.LENGTH_SHORT).show();
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmBD")) {
 
             String time = time_field.getText().toString();
             String name = name_field.getText().toString();
@@ -419,6 +431,9 @@ public class AlarmEditActivity extends AppCompatActivity {
 
             if (clickedAlarmId != -1) {
                 dbw.updateAlarm(clickedAlarmId, time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume, alarmOnOff);
+                if(!"1".equals(initialalarmOnOff) && "1".equals(alarmOnOff)){
+                    AlarmHandler.registerAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext(), alarm);
+                }
                 /*for (int i = 0; i < removalTags.size(); i++) {
                     dbw.removeTagFromNote(removalTags.get(i), clickedNoteId);
                 }
@@ -427,10 +442,8 @@ public class AlarmEditActivity extends AppCompatActivity {
                 }*/
             } else {
                 int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume, alarmOnOff);
-                try {
-                    throw new RuntimeException("noteId = " + alarmID);
-                } catch (RuntimeException e) {
-                    e.printStackTrace();
+                if("1".equals(alarmOnOff)){
+                    AlarmHandler.registerAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext(), alarm);
                 }
                 /*for (int i = 0; i < additionTags.size(); i++) {
                     dbw.addTagToNote(additionTags.get(i), alarmID);//TODO добавление тегов к аларму
@@ -449,6 +462,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+            goToBack();
     }
 
     private boolean isLastVersionActive() {
@@ -525,7 +539,7 @@ public class AlarmEditActivity extends AppCompatActivity {
 
         if (clickedAlarmId != -1) {
             toolbarMenu.findItem(R.id.remove_btn).setVisible(true);
-            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmBD")) {
                 alarm = dbw.getAlarm(clickedAlarmId);
                 time_field.setText(getUnderlinedText(alarm.getTime()));
                 name_field.setText(alarm.getName());
@@ -555,7 +569,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             }
         } else {
             toolbarMenu.findItem(R.id.remove_btn).setVisible(false);
-            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmBD")) {
                 time_field.setText("");
                 name_field.setText("");
                 note_text_field.setText("");

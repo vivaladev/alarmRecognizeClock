@@ -144,8 +144,10 @@ public class DatabaseWrapper implements AutoCloseable {
 
     public void removeNote(int alarmID) {
         //int delTagItemCount = db.delete("TagItem", "note_id = " + alarmID, null);
-        int delAlarmCount = db.delete("Alarms", "id = " + alarmID, null);
-        Log.d("Remove alarm", String.format("Количество удалённых строк %1$s (Alarm)", delAlarmCount));
+        //int delAlarmCount = db.delete("Alarms", "id = " + alarmID, null);
+        db.execSQL("DELETE FROM Alarms WHERE id='" +alarmID+"'");
+        db.close();
+        //Log.d("Remove alarm", String.format("Количество удалённых строк %1$s (Alarm)", delAlarmCount));
         //Log.d("Remove alarm", String.format("Количество удалённых строк %1$s (TagItem)", delTagItemCount));
     }
 
