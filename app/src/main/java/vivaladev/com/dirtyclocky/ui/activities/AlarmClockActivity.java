@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ public class AlarmClockActivity extends Activity {
     private MediaPlayer mMediaPlayer;
     private int alarmID = -1;
     private Alarm alarm;
+    private boolean longClick = false;
 
     private final static int MAX_VOLUME = 100;
     private final static int VOLUME_STEP = 15;//Шаг увеличения
@@ -135,6 +137,19 @@ public class AlarmClockActivity extends Activity {
             finish();
         });
 
+        findViewById(R.id.buttonOff).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // TODO Auto-generated method stub
+                Toast.makeText(getBaseContext(), "Long Clicked", Toast.LENGTH_SHORT).show();
+                if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
+                    mMediaPlayer.stop();
+                }
+                alarmThread.interrupt();
+                return true;
+            }
+        });
+
         playSound(this, getAlarmUri());
 
         alarmThread = new AlarmThread();
@@ -225,10 +240,12 @@ public class AlarmClockActivity extends Activity {
             if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
                 mMediaPlayer.stop();
             }
-            if(alarmID != -1){
-                sendToBroadcastReceiver(alarmID);
+            if(!longClick){
+                if(alarmID != -1){
+                    sendToBroadcastReceiver(alarmID);
+                }
+                finish();
             }
-            finish();
         }
     }
     private void setVolume(int volume){
