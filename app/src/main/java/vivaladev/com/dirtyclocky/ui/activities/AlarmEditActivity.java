@@ -492,7 +492,11 @@ public class AlarmEditActivity extends AppCompatActivity {
                     al.setId(alarmID);
                     al.setTime(time);
                     al.setName(name);
-                    al.setMusic(music);
+                    if ("Image".equals(offMethod)) {
+                        al.setMusic(getImageToSave(music)); // путь к картинке + координы \d*x\d*
+                    } else {
+                        al.setMusic(music); // путь к файлу музыки
+                    }
                     al.setRepeatTime(repeatTime);
                     al.setAlarmOffMethod(offMethod);
                     al.setAlarmIncreaseVolume(alarmIncreaseVolume);
