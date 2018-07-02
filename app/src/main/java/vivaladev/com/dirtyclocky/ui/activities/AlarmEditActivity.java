@@ -447,9 +447,6 @@ public class AlarmEditActivity extends AppCompatActivity {
             String body = note_text_field.getText().toString();
             String music = alarmOffMusic.getText().toString();
             String offMethod = alarmOffMethod.getText().toString();
-            if ("Image".equals(offMethod)) {
-                music = getImageToSave(music); // путь к картинке + координы \d*x\d*
-            }
             String repeatTime = alarmRepeat.getText().toString();
             String alarmIncreaseVolume = isIncreaseVolume.isChecked() ? "1" : "0";
             String alarmOnOff = isAlarmOnOff.isChecked() ? "1" : "0";
@@ -489,12 +486,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                     al.setId(alarmID);
                     al.setTime(time);
                     al.setName(name);
-                    if ("Image".equals(offMethod)) {
-                        String n = getImageToSave(music);
-                        al.setMusic(getImageToSave(music)); // путь к картинке + координы \d*x\d*
-                    } else {
-                        al.setMusic(music); // путь к файлу музыки
-                    }
+                    al.setMusic(music); // путь к файлу музыки
                     al.setRepeatTime(repeatTime);
                     al.setAlarmOffMethod(offMethod);
                     al.setAlarmIncreaseVolume(alarmIncreaseVolume);
