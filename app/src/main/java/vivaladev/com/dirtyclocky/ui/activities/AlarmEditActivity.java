@@ -699,8 +699,6 @@ public class AlarmEditActivity extends AppCompatActivity {
         setStatusBar(this, findViewById(R.id.edit_note_tool_bar));
         setToolBar();
         controlProcessing();
-        Intent intent = getIntent();
-        String imageCoords = intent.getStringExtra("imageCoords");
 
     }
 
