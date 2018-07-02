@@ -178,7 +178,7 @@ public class AlarmClockActivity extends Activity {
         }
     }
 
-    private void sendToBroadcastReceiver(int alarmID){
+    public void sendToBroadcastReceiver(int alarmID){
         Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
         intent.putExtra("offAlarm", String.valueOf(alarmID));
         sendBroadcast(intent);
