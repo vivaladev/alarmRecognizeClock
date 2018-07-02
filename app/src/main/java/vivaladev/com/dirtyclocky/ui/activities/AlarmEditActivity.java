@@ -426,8 +426,8 @@ public class AlarmEditActivity extends AppCompatActivity {
     }
 
     private String getImageToSave(String image){
-        StringBuilder str = new StringBuilder(selectedImagePath);
-        return str.append(".").append(image).toString();
+        String str = selectedImagePath + "." + image;
+        return str;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -446,8 +446,11 @@ public class AlarmEditActivity extends AppCompatActivity {
             String name = name_field.getText().toString();
             String body = note_text_field.getText().toString();
             String music = alarmOffMusic.getText().toString();
-            String repeatTime = alarmRepeat.getText().toString();
             String offMethod = alarmOffMethod.getText().toString();
+            if ("Image".equals(offMethod)) {
+                music = getImageToSave(music); // путь к картинке + координы \d*x\d*
+            }
+            String repeatTime = alarmRepeat.getText().toString();
             String alarmIncreaseVolume = isIncreaseVolume.isChecked() ? "1" : "0";
             String alarmOnOff = isAlarmOnOff.isChecked() ? "1" : "0";
 
@@ -462,17 +465,11 @@ public class AlarmEditActivity extends AppCompatActivity {
                 al.setId(clickedAlarmId);
                 al.setTime(time);
                 al.setName(name);
-
-                if ("Image".equals(offMethod)) {
-                    al.setMusic(getImageToSave(music)); // путь к картинке + координы \d*x\d*
-                } else {
-                    al.setMusic(music); // путь к файлу музыки
-                }
-
+                al.setMusic(music);
                 al.setRepeatTime(repeatTime);
                 al.setAlarmOffMethod(offMethod);
                 al.setAlarmIncreaseVolume(alarmIncreaseVolume);
-                al.setAlarmOffMethod(alarmOnOff);
+                al.setAlarmOnOff(alarmOnOff);
                 AlarmHandler.unRegisterAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), al, getApplicationContext());
 
 
@@ -493,6 +490,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                     al.setTime(time);
                     al.setName(name);
                     if ("Image".equals(offMethod)) {
+                        String n = getImageToSave(music);
                         al.setMusic(getImageToSave(music)); // путь к картинке + координы \d*x\d*
                     } else {
                         al.setMusic(music); // путь к файлу музыки
@@ -500,7 +498,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                     al.setRepeatTime(repeatTime);
                     al.setAlarmOffMethod(offMethod);
                     al.setAlarmIncreaseVolume(alarmIncreaseVolume);
-                    al.setAlarmOffMethod(alarmOnOff);
+                    al.setAlarmOnOff(alarmOnOff);
                     AlarmHandler.registerAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext(), al);
                 }
                 /*for (int i = 0; i < additionTags.size(); i++) {
