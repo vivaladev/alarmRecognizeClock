@@ -1,5 +1,8 @@
 package vivaladev.com.dirtyclocky.ui.activities;
 
+import android.app.AlertDialog;
+import android.media.MediaRecorder;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -18,18 +21,23 @@ import android.net.Uri;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.alarmcontrol.handler.AlarmHandler;
 import vivaladev.com.dirtyclocky.alarmcontrol.receive.AlarmReceiver;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
+import vivaladev.com.dirtyclocky.recognizeProcessing.SoundRecognize;
 
 public class AlarmClockActivity extends Activity {
     public static boolean isActive = false;
@@ -50,6 +58,11 @@ public class AlarmClockActivity extends Activity {
     private int CURRENT_VOLUME = 10;
     private boolean soundIncrease = true;//Нарастающий звук
 
+    //Recognizing
+    private String userInputName;
+    private MediaRecorder mediaRecorder;
+    private File fileFromDB, fileFromRec;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -68,8 +81,7 @@ public class AlarmClockActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             alarmID = Integer.parseInt(extras.getString("requestCode"));
-        }
-        else {
+        } else {
             alarmID = -1;
         }
 
@@ -81,8 +93,7 @@ public class AlarmClockActivity extends Activity {
         }
 
 
-
-        PowerManager pm=(PowerManager) getSystemService(Context.POWER_SERVICE);
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "tag");
         //Осуществляем блокировку
         wl.acquire();//Это нужно чтобы не погас экран
@@ -96,14 +107,14 @@ public class AlarmClockActivity extends Activity {
         setContentView(R.layout.activity_alarm_clock);
 
 
-        vibrator =(Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(1000);
 
         //Разблокируем поток.
         wl.release();
 
-        findViewById(R.id.buttonOff).setOnClickListener((buttonOffAlarm)->{
-            if(alarmID != -1){
+        findViewById(R.id.buttonOff).setOnClickListener((buttonOffAlarm) -> {
+            if (alarmID != -1) {
                 sendToBroadcastReceiver(alarmID);
                 try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmBD")) {
                     Alarm alarm = dbw.getAlarm(alarmID);
@@ -116,38 +127,70 @@ public class AlarmClockActivity extends Activity {
             textView.setText("Ты проклят");
             //cancelAlarm();
             vibrator.vibrate(1000);
-            if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
+            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
             }
             alarmThread.interrupt();
             finish();
         });
 
-        findViewById(R.id.buttonDefer).setOnClickListener((buttonIgnor)->{
-            if(alarmID != -1){
+        findViewById(R.id.buttonDefer).setOnClickListener((buttonIgnor) -> {
+            if (alarmID != -1) {
                 sendToBroadcastReceiver(alarmID);
             }
             TextView textView = findViewById(R.id.textView);
             textView.setText("Игнор");
             vibrator.vibrate(1000);
-            if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
+            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
             }
             alarmThread.interrupt();
             finish();
         });
 
-        findViewById(R.id.buttonOff).setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                // TODO Auto-generated method stub
-                Toast.makeText(getBaseContext(), "Long Clicked", Toast.LENGTH_SHORT).show();
-                if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
-                    mMediaPlayer.stop();
-                }
-                alarmThread.interrupt();
-                return true;
+        findViewById(R.id.buttonOff).setOnLongClickListener(v -> {
+            // TODO Auto-generated method stub
+            Toast.makeText(getBaseContext(), "Long Clicked", Toast.LENGTH_SHORT).show();
+            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
             }
+            alarmThread.interrupt();
+
+            AlertDialog.Builder builder;
+            final String[] controls = {"Start Recording", "Stop Recording", "Recognize"};
+
+            builder = new AlertDialog.Builder(this);
+            builder.setTitle("Media recording")
+                    .setCancelable(false)
+                    .setPositiveButton("Done", (dialog, id) -> dialog.cancel())
+                    .setSingleChoiceItems(controls, -1,
+                            (dialog, item) -> {
+                                if (controls[item].equals("Start Recording")) {
+                                    fileFromRec = new File(getFileName("RecordForRecognize"));
+                                    mediaStartRec(fileFromRec);
+                                }
+                                if (controls[item].equals("Stop Recording")) {
+                                    mediaStopRec();
+                                }
+                                if (controls[item].equals("Recognize")) {
+                                    if (fileFromDB != null){
+                                        if (fileFromRec != null) {
+                                            if (SoundRecognize.recognizeSound(fileFromDB, fileFromRec)) {
+                                                showMessage("Files are the same");
+                                            } else {
+                                                showMessage("Files are different");
+                                            }
+                                        } else {
+                                            showMessage("Specify fileFromRec");
+                                        }
+                                    }else
+                                        showMessage("Specify fileFromDB");
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
+
+            return true;
         });
 
         playSound(this, getAlarmUri());
@@ -156,13 +199,72 @@ public class AlarmClockActivity extends Activity {
         alarmThread.start();
     }
 
+    private void showMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    private File getFileByName(String filename) {
+        File[] filesArray = Environment.getExternalStorageDirectory().listFiles();
+        File res = null;
+
+        for (File item : filesArray) {
+            if (item.isFile()) {
+                if (item.getName().equals(filename)) {
+                    res = item;
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private String getFileName(String userInputName) {
+        return Environment.getExternalStorageDirectory() + "/" + userInputName + ".amr_nb";
+    }
+
+    private void mediaStartRec(File file) {
+        try {
+            releaseRecorder();
+
+            if (file.exists()) {
+                file.delete();
+            }
+
+            mediaRecorder = new MediaRecorder();
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mediaRecorder.setOutputFile(file.getPath());
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+            Toast.makeText(this, "Recording started", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void mediaStopRec() {
+        if (mediaRecorder != null) {
+            mediaRecorder.stop();
+            Toast.makeText(this, "Recording stoped", Toast.LENGTH_SHORT).show();
+        }
+        fileFromDB = getFileByName(alarm.getMusic());
+    }
+
+    private void releaseRecorder() {
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
+    }
+
+
     public static AlarmClockActivity getInstance() {
         return instance;
     }
 
-    public void cancelAlarm()
-    {
-        alarmMgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+    public void cancelAlarm() {
+        alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         //(Intent) - это механизм для описания одной операции - выбрать фотографию, отправить письмо, сделать звонок, запустить браузер...
         Intent intent = new Intent("ilku.ru.alarmclock.receive.ALARM");
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
@@ -193,7 +295,7 @@ public class AlarmClockActivity extends Activity {
         }
     }
 
-    public void sendToBroadcastReceiver(int alarmID){
+    public void sendToBroadcastReceiver(int alarmID) {
         Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
         intent.putExtra("offAlarm", String.valueOf(alarmID));
         sendBroadcast(intent);
@@ -213,17 +315,17 @@ public class AlarmClockActivity extends Activity {
         return alert;
     }
 
-    private class AlarmThread extends Thread{
+    private class AlarmThread extends Thread {
         @Override
         public void run() {
             //isActive = true;
             final long[] pattern = {0, 2000, 1000};
-            for(int i = 0; i < 20; i++){
-                if(!isInterrupted()){
+            for (int i = 0; i < 20; i++) {
+                if (!isInterrupted()) {
                     vibrator.vibrate(pattern, -1);
-                    if (soundIncrease && CURRENT_VOLUME < MAX_VOLUME){
+                    if (soundIncrease && CURRENT_VOLUME < MAX_VOLUME) {
                         CURRENT_VOLUME += VOLUME_STEP;
-                        if(CURRENT_VOLUME > MAX_VOLUME) CURRENT_VOLUME = MAX_VOLUME;
+                        if (CURRENT_VOLUME > MAX_VOLUME) CURRENT_VOLUME = MAX_VOLUME;
                     }
                     setVolume(CURRENT_VOLUME);
                     try {
@@ -234,21 +336,21 @@ public class AlarmClockActivity extends Activity {
                         //Toast.makeText(AlarmClockActivity.this,"Поток завершен аварийно", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                }
-                else return;
+                } else return;
             }
-            if(mMediaPlayer != null && mMediaPlayer.isPlaying()){
+            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
             }
-            if(!longClick){
-                if(alarmID != -1){
+            if (!longClick) {
+                if (alarmID != -1) {
                     sendToBroadcastReceiver(alarmID);
                 }
                 finish();
             }
         }
     }
-    private void setVolume(int volume){
+
+    private void setVolume(int volume) {
         float vol = (float) (1 - (Math.log(MAX_VOLUME - volume) / Math.log(MAX_VOLUME)));
         mMediaPlayer.setVolume(vol, vol);
     }

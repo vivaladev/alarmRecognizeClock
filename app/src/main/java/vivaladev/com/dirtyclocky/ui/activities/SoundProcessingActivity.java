@@ -99,7 +99,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
             final String[] controls = {"Start Recording", "Stop Recording", "Play record", "Stop playing"};
 
             builder = new AlertDialog.Builder(this);
-            builder.setTitle("Choose method of alarm stopping")
+            builder.setTitle("Media recording")
                     .setCancelable(false)
                     .setPositiveButton("Done", (dialog, id) -> dialog.cancel())
                     .setSingleChoiceItems(controls, -1,

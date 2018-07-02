@@ -53,7 +53,7 @@ public class SoundRecognize {
         dbFileByte = convertFileToByteArray(dbFile);
         newRecByte = convertFileToByteArray(newRec);
 
-        setCoincedenceCountOfSearchCoincidenceByte(dbFileByte.length / 2000);
+        setCoincedenceCountOfSearchCoincidenceByte(dbFileByte.length / 1000);
 
         int countError = 0;
 
