@@ -32,8 +32,10 @@ public abstract class AlarmHandler {
         //(Intent) - это механизм для описания одной операции - выбрать фотографию, отправить письмо, сделать звонок, запустить браузер...
 
         Date date = getDate(alarm.getTime());
+        long alarmTime = date.getTime() - 4000;
+        long currentTime = Calendar.getInstance().getTimeInMillis();
 
-        if(date == null || date.getTime() < System.currentTimeMillis()) {return;}
+        if(date == null || !alarm.isAlarmOn() || alarmTime < currentTime || !containsDay(alarm.getRepeatTime())) {return;}
 
         Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
         intent.putExtra("requestCode", alarm.getId());
@@ -43,7 +45,7 @@ public abstract class AlarmHandler {
         int repeatingTime = 1000 * 60;//TODO repeating 1 min
 
 
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, date.getTime() - 10,
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, alarmTime,
                 repeatingTime, pendingIntent);
     }
 
@@ -95,5 +97,46 @@ public abstract class AlarmHandler {
             ex.printStackTrace();
         }
         return  dates;
+    }
+
+    public static boolean containsDay(String days){
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+        String currentDay = "";
+        switch (day) {
+            case Calendar.SUNDAY:
+                currentDay = "Sun";
+                break;
+            case Calendar.MONDAY:
+                currentDay = "Mon";
+                break;
+            case Calendar.TUESDAY:
+                currentDay = "Tue";
+                break;
+            case Calendar.WEDNESDAY:
+                currentDay = "Wed";
+                break;
+            case Calendar.THURSDAY:
+                currentDay = "Thu";
+                break;
+            case Calendar.FRIDAY:
+                currentDay = "Fri";
+                break;
+            case Calendar.SATURDAY:
+                currentDay = "Sat";
+                break;
+        }
+        String[] subStr;
+        String delimeter = " "; // Разделитель
+        subStr = days.split(delimeter); // Разделения строки str с помощью метода split()
+        // Вывод результата на экран
+        for(int i = 0; i < subStr.length; i++) {
+            if(currentDay.equals(subStr[i])){
+                return true;
+            }
+        }
+        return false;
+
     }
 }
