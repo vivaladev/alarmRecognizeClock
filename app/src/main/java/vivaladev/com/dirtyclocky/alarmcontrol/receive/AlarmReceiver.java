@@ -22,8 +22,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         int alarmID= intent.getIntExtra("requestCode", 1);
 
-        Toast.makeText(context, "containts + "  + containsAlarmById(alarmID), Toast.LENGTH_LONG).show();
-
         if(isNotRunningAlarm(alarmID) && !AlarmClockActivity.isActive && !isRunningAlarms()){
             if(!containsAlarmById(alarmID)){
                 alarmsRunning.add(new MiniAlarm(alarmID));

@@ -20,6 +20,8 @@ public class ImageRecognizeActivity extends AppCompatActivity {
     private float mY;
     private static final String TAG = "MyApp";
 
+    public static String urik;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,8 +30,8 @@ public class ImageRecognizeActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String imageURI = intent.getStringExtra("uriImage");
-        Toast.makeText(this, "Uri:" + imageURI + "|", Toast.LENGTH_SHORT).show();
         Uri uri = Uri.parse(imageURI);
+        urik = imageURI;
         setImageFromURI(uri);
         getClickedZone();
     }
@@ -40,7 +42,7 @@ public class ImageRecognizeActivity extends AppCompatActivity {
 
     @SuppressLint({"ClickableViewAccessibility", "ShowToast"})
     private void getClickedZone() {
-        Toast.makeText(this, "Touch alarm off zone", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Touch the shutdown zone", Toast.LENGTH_LONG).show();
         imageView.setOnTouchListener((view, motionEvent) -> {
             mX = motionEvent.getX();
             mY = motionEvent.getY();
