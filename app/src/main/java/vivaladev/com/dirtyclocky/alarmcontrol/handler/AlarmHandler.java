@@ -65,7 +65,7 @@ public abstract class AlarmHandler {
     public static void loadAlarms(AlarmManager alarmMgr, Context context) {
         // Загрузка будильников из базы
 
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmBD")) {
             Alarm[] alarms = dbw.getAllAlarms();
             for (int i = 0; i < alarms.length; i++) {
                 if(alarms[i].isAlarmOn()){

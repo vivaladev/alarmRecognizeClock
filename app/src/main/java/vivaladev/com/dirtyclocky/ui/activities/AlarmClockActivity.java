@@ -71,7 +71,7 @@ public class AlarmClockActivity extends Activity {
             alarmID = -1;
         }
 
-        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
+        try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmBD")) {
             alarm = dbw.getAlarm(alarmID);
             soundIncrease = alarm.isAlarmIncreaseVolume();
         } catch (Exception e) {
@@ -103,7 +103,7 @@ public class AlarmClockActivity extends Activity {
         findViewById(R.id.buttonOff).setOnClickListener((buttonOffAlarm)->{
             if(alarmID != -1){
                 sendToBroadcastReceiver(alarmID);
-                try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmDBB")) {
+                try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmBD")) {
                     Alarm alarm = dbw.getAlarm(alarmID);
                     AlarmHandler.unRegisterAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), alarm, getApplicationContext());
                 } catch (Exception e) {
