@@ -210,6 +210,7 @@ public class AlarmClockActivity extends Activity {
     }
 
     private List<String> getResourcesFromDB(String fromDB) {
+        Toast.makeText(this, fromDB, Toast.LENGTH_LONG).show();
         boolean toImagePath = true;
         StringBuilder path = new StringBuilder();
         StringBuilder coord = new StringBuilder();
@@ -217,12 +218,12 @@ public class AlarmClockActivity extends Activity {
             if (toImagePath) {
                 path.append(item);
             }
-            if (item == '.') {
+            if (item == '|') {
                 toImagePath = false;
             }
             if (!toImagePath) {
                 coord.append(item);
-            } 
+            }
         }
 
         return Arrays.asList(path.toString(), coord.toString());
