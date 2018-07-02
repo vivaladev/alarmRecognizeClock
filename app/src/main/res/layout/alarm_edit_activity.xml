@@ -50,6 +50,7 @@
 
             <EditText
                 android:id="@+id/time_field"
+                android:focusableInTouchMode="false"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="20dp"
