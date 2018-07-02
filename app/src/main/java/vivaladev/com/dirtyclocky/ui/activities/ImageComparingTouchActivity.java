@@ -27,8 +27,7 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
         init();
 
         Intent intent = getIntent();
-        String imageURI = intent.getStringExtra("uriImage").substring(0, intent.getStringExtra("uriImage").length() - 1);
-        Toast.makeText(this, "Uri:" + imageURI + "|", Toast.LENGTH_SHORT).show();
+        String imageURI = intent.getStringExtra("uriImage");
         String coords = intent.getStringExtra("coords");
         Uri uri = Uri.parse(imageURI);
         setImageFromURI(uri);
@@ -103,14 +102,6 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
         return Arrays.asList(Integer.parseInt(onX.toString().substring(0, onX.length() - 1)), Integer.parseInt(onY.toString().substring(1, onY.length())));
     }
 
-    //    private void prepareToReturnImageZone(String finalMCoords) {
-//        Intent data = new Intent();
-//        data.putExtra("", "");
-//        setResult(RESULT_OK, data);
-////        setFinalCoords(finalMCoords);
-//        finish();
-//    }
-//
     private void init() {
         imageView = findViewById(R.id.comparingImage);
     }

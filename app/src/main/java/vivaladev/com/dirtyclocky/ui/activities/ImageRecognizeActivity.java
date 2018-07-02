@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ public class ImageRecognizeActivity extends AppCompatActivity {
     private ImageView imageView;
     private float mX;
     private float mY;
+    private static final String TAG = "MyApp";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,7 @@ public class ImageRecognizeActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String imageURI = intent.getStringExtra("uriImage");
+        Toast.makeText(this, "Uri:" + imageURI + "|", Toast.LENGTH_SHORT).show();
         Uri uri = Uri.parse(imageURI);
         setImageFromURI(uri);
         getClickedZone();

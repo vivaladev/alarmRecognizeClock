@@ -319,10 +319,12 @@ public class AlarmEditActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent,
                 "Select Picture"), SELECT_PICTURE);
     }
+    Uri selectedImageUri;
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
-            Uri selectedImageUri = data.getData();
+            selectedImageUri = data.getData();
             selectedImagePath = getPath(selectedImageUri);
             sendImageToNewActivity(selectedImageUri);
         }
@@ -330,7 +332,7 @@ public class AlarmEditActivity extends AppCompatActivity {
         if (requestCode == GOT_IMAGE_COORDS && resultCode == RESULT_OK) {
             Intent intent = getIntent();
             String coords = ImageRecognizeActivity.getFinalCoords(); //intent.getStringExtra("imageCoords");
-            alarmOffMusic.setText(selectedImagePath + "|" + coords);
+            alarmOffMusic.setText(selectedImageUri + "|" + coords);
         }
     }
 
