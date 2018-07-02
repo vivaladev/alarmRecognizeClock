@@ -441,7 +441,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(this, "Saving", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Saving", Toast.LENGTH_SHORT).show();
         try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmBD")) {
 
             String time = time_field.getText().toString();
@@ -499,7 +499,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                     dbw.addTagToNote(additionTags.get(i), alarmID);//TODO добавление тегов к аларму
                 }*/
             }
-            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
 
             setInitialData(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume, alarmOnOff);
             showMessage(getResources().getString(R.string.en_alarm_message_save_changes));

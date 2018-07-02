@@ -34,6 +34,10 @@ public abstract class AlarmHandler {
         Date date = getDate(alarm.getTime());
         long alarmTime = date.getTime() - 4000;
         long currentTime = Calendar.getInstance().getTimeInMillis();
+         boolean l1 = date == null;
+         boolean l2 = !alarm.isAlarmOn();
+         boolean l3 = !(alarmTime < currentTime);
+         boolean l4 =!containsDay(alarm.getRepeatTime());
 
         if(date == null || !alarm.isAlarmOn() || alarmTime < currentTime || !containsDay(alarm.getRepeatTime())) {return;}
 
@@ -73,9 +77,7 @@ public abstract class AlarmHandler {
                 if(alarms[i].isAlarmOn()){
                     registerAlarm(alarmMgr, context, alarms[i]);
                 }
-                break;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
