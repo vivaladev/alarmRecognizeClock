@@ -5,14 +5,11 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
@@ -34,11 +31,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -93,7 +87,7 @@ public class AlarmEditActivity extends AppCompatActivity {
 
     private void init() {
         time_field = findViewById(R.id.time_field);
-        name_field = findViewById(R.id.title_field);
+        name_field = findViewById(R.id.name_field);
         note_text_field = findViewById(R.id.note_text_field);
         edit_note_tool_bar = findViewById(R.id.edit_note_tool_bar);
         bottom_sheet_btn = findViewById(R.id.bottom_sheet_btn);
@@ -389,7 +383,6 @@ public class AlarmEditActivity extends AppCompatActivity {
             builder.setMessage("Do you want to save or delete this alarm?");
             builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
                     (dialog, which) ->{
-                        removeActiveAlarm();
                         finish();
                     });
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -403,9 +396,6 @@ public class AlarmEditActivity extends AppCompatActivity {
         } else {
             goToBack();
         }
-    }
-    private void delete(){
-
     }
 
     private void goToBack() {

@@ -50,6 +50,58 @@
 
             <EditText
                 android:id="@+id/time_field"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginRight="15dp"
+                android:layout_centerVertical="true"
+                android:textSize="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:hint="Time"
+                android:inputType="text"
+                android:background="@drawable/edit_text_style"/>
+
+
+            <EditText
+                android:id="@+id/name_field"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:textSize="30dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginRight="15dp"
+                android:layout_centerVertical="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:hint="Name"
+                android:inputType="text"
+                android:background="@drawable/edit_text_style"/>
+
+            <EditText
+                android:id="@+id/note_text_field"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:textSize="30dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginRight="15dp"
+                android:layout_centerVertical="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:hint="Description"
+                android:inputType="textMultiLine"
+                android:lines="8"
+                android:minLines="6"
+                android:maxLines="10"
+                android:background="@drawable/edit_text_style"/>
+
+            <!--<EditText
+                android:id="@+id/time_field"
                 android:layout_width="180dp"
                 android:layout_height="0dp"
                 android:layout_marginBottom="5dp"
@@ -71,9 +123,9 @@
                 card_view:layout_constraintBottom_toTopOf="@+id/note_text_field"
                 card_view:layout_constraintEnd_toEndOf="parent"
                 card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintTop_toTopOf="parent" />
+                card_view:layout_constraintTop_toTopOf="parent" />-->
 
-            <EditText
+            <!--<EditText
                 android:id="@+id/title_field"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
@@ -92,9 +144,9 @@
                 card_view:layout_constraintBottom_toTopOf="@+id/scrollView2"
                 card_view:layout_constraintEnd_toEndOf="parent"
                 card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintTop_toTopOf="parent" />
+                card_view:layout_constraintTop_toTopOf="parent" />-->
 
-            <EditText
+            <!--<EditText
                 android:id="@+id/note_text_field"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
@@ -113,7 +165,7 @@
                 card_view:layout_constraintBottom_toTopOf="@+id/scrollView2"
                 card_view:layout_constraintEnd_toEndOf="parent"
                 card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintTop_toTopOf="parent" />
+                card_view:layout_constraintTop_toTopOf="parent" />-->
         </LinearLayout>
     </ScrollView>
 
