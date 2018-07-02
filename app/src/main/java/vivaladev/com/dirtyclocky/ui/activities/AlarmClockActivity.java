@@ -200,6 +200,19 @@ public class AlarmClockActivity extends Activity {
 
     private static final int GOT_IMAGE_TOUCH = 111;
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GOT_IMAGE_TOUCH && resultCode == RESULT_OK) {
+            try (DatabaseWrapper dbw = new DatabaseWrapper(MainActivity.getInstance(), "alarmBD")) {
+                Alarm alarm = dbw.getAlarm(alarmID);
+                AlarmHandler.unRegisterAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), alarm, getApplicationContext());
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void prepareToRecognizeImageTouch(String res) {
         Intent intent = new Intent(this, ImageComparingTouchActivity.class);
         List<String> resources = getResourcesFromDB(res);
