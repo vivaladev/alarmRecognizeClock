@@ -31,6 +31,7 @@ import java.util.Random;
 import java.util.regex.Pattern;
 
 import vivaladev.com.dirtyclocky.R;
+import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
 
 import static vivaladev.com.dirtyclocky.ui.activities.activityHelper.ActivityHelper.setStatusBar;
 
@@ -228,6 +229,7 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
     /*END PERMISSION MODULE*/
 
     private void backBtnDialog() {
+        MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
         finish();
     }
 
@@ -295,14 +297,6 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
         notes_linearLayout.removeAllViews();
     }
 
-    private boolean isNeedSave() {
-        String name = musicEditField.getText().toString();
-        if (name.equals(initialName)) {
-            return false;
-        }
-        return true;
-    }
-
     private void setActivitiesItems() {
 
         musicEditField = findViewById(R.id.tag_edit_field);
@@ -333,13 +327,13 @@ public class SoundProcessingActivity extends AppCompatActivity implements View.O
     }
 
     private void removeRecord() {
-        showMessage("Дошли до удаления файла");
         File filename = new File(getFileName(fileNameInCD));
         if (filename.exists()) {
             filename.delete();
-            showMessage("Удалили");
         }
+        MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
     }
+
 
     private String[] getConvertedFileName(File[] filenames) {
         List<String> res = new ArrayList<>();
