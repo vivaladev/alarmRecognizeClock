@@ -69,6 +69,8 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
         return currentView;
     }
 
+
+
     private String[] getConvertedFileName(File[] filenames) {
         List<String> res = new ArrayList<>();
         for (int i = 0; i < filenames.length; i++) {
