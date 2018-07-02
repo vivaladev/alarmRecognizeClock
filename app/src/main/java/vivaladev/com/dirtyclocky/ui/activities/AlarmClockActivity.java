@@ -218,7 +218,7 @@ public class AlarmClockActivity extends Activity {
         List<String> resources = getResourcesFromDB(res);
         intent.putExtra("uriImage", resources.get(0));
         intent.putExtra("coords", resources.get(1));
-        Toast.makeText(this, "uriImage " + resources.get(0) + " coords " + resources.get(1), Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "uriImage " + resources.get(0) + " coords " + resources.get(1), Toast.LENGTH_LONG).show();
         startActivityForResult(intent, GOT_IMAGE_TOUCH);
     }
 

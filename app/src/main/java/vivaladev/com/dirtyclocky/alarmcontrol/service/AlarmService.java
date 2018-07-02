@@ -35,7 +35,7 @@ public class AlarmService extends Service {
         intentFilter.setPriority(100);
         alarmReceiver = new AlarmReceiver();
         registerReceiver(alarmReceiver, intentFilter);
-        Toast.makeText(this, "service onCreate", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "service onCreate", Toast.LENGTH_SHORT).show();
         //AlarmHandler.loadAlarms((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext());
     }
 
@@ -47,7 +47,7 @@ public class AlarmService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Destroy AlarmService", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Destroy AlarmService", Toast.LENGTH_SHORT).show();
         super.onDestroy();
         if (alarmReceiver != null) {
             unregisterReceiver(alarmReceiver);
