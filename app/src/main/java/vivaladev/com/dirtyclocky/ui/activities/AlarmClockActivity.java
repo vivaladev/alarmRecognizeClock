@@ -189,8 +189,6 @@ public class AlarmClockActivity extends Activity {
                 prepareToRecognizeImageTouch(alarm.getMusic());
             }
 
-
-
             return true;
         });
 
@@ -203,11 +201,12 @@ public class AlarmClockActivity extends Activity {
     private static final int GOT_IMAGE_TOUCH = 111;
 
     private void prepareToRecognizeImageTouch(String res){
-        Intent intent = new Intent(this, ImageRecognizeActivity.class);
+        Intent intent = new Intent(this, ImageComparingTouchActivity.class);
         List<String> resources = getResourcesFromDB(res);
         intent.putExtra("uriImage", resources.get(0));
         intent.putExtra("coords", resources.get(1));
-        startActivityForResult(intent, GOT_IMAGE_TOUCH);
+        Toast.makeText(this, "uriImage "+resources.get(0) + " coords " + resources.get(1),Toast.LENGTH_LONG).show();
+//        startActivityForResult(intent, GOT_IMAGE_TOUCH);
     }
 
     private List<String> getResourcesFromDB(String fromDB) {
@@ -217,7 +216,7 @@ public class AlarmClockActivity extends Activity {
             if(toImagePath){
                 res.set(0, new StringBuilder(res.get(0)).append(item).toString());
             }
-            if(item == 'x'){
+            if(item == '.'){
                 toImagePath = false;
             }
             if(!toImagePath){

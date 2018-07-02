@@ -4,13 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,7 +23,7 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.recognize_image_layout);
+        setContentView(R.layout.activity_to_comparing_touch);
         init();
 
         Intent intent = getIntent();
@@ -51,7 +49,11 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
 
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN: // нажатие
-                    checkTouchZone(Math.round(mX), Math.round(mY), parseCoord(coords));
+                    if (checkTouchZone(Math.round(mX), Math.round(mY), parseCoord(coords))) {
+                        Toast.makeText(this, "Нажатие отловлено", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "Мимо", Toast.LENGTH_LONG).show();
+                    }
 
                     break;
             }
@@ -60,13 +62,18 @@ public class ImageComparingTouchActivity extends AppCompatActivity {
         });
     }
 
-    private void checkTouchZone(int x, int y, List<Integer> coords) { //coords XxY
+    private boolean checkTouchZone(int x, int y, List<Integer> coords) { //coords XxY
 
         if ((coords.get(0) + 100) <= x && ((coords.get(1) + 100) <= y)) {
-
+            return true;
         } else if ((coords.get(0) + 100) <= x && ((coords.get(1) - 100) <= y)) {
-
+            return true;
+        } else if ((coords.get(0) - 100) <= x && ((coords.get(1) - 100) <= y)) {
+            return true;
+        } else if ((coords.get(0) - 100) <= x && ((coords.get(1) - 100) <= y)) {
+            return true;
         }
+        return false;
     }
 
     private List<Integer> parseCoord(String coords) {
