@@ -43,7 +43,7 @@ public abstract class AlarmHandler {
         int repeatingTime = 1000 * 60;//TODO repeating 1 min
 
 
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, date.getTime(),
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, date.getTime() - 10,
                 repeatingTime, pendingIntent);
     }
 
