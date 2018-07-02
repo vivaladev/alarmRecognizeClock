@@ -189,7 +189,6 @@ public class AlarmEditActivity extends AppCompatActivity {
                     bottom_sheet_btn.animate().scaleX(1).scaleY(1).setDuration(140).start();
                     currentBottomSheetState = BottomSheetBehavior.STATE_EXPANDED;
                 }
-
             }
 
             @Override
@@ -258,7 +257,12 @@ public class AlarmEditActivity extends AppCompatActivity {
                     .setPositiveButton("Done", (dialog, id) -> {
                         dialog.cancel();
                         if (choise.get(0).equals("Image")) {
+                            alarmOffMusic.setClickable(false);
+                            alarmOffMusic.setText("");
                             prepareToRecognizeImage();
+                        }
+                        if (choise.get(0).equals("Sound")) {
+                            alarmOffMusic.setClickable(true);
                         }
                         alarmOffMethod.setText(choise.get(0));
                     })
@@ -317,20 +321,17 @@ public class AlarmEditActivity extends AppCompatActivity {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == SELECT_PICTURE) {
-                Uri selectedImageUri = data.getData();
-                selectedImagePath = getPath(selectedImageUri);
-                showMessage("Путь к картинке: " + selectedImagePath);
-
-                sendImageToNewActivity(selectedImageUri);
-            }
-
-            if(requestCode == GOT_IMAGE_COORDS){
-                showMessage("МЫ ВЕРНУЛИСЬ");
-            }
+        if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
+            Uri selectedImageUri = data.getData();
+            selectedImagePath = getPath(selectedImageUri);
+            sendImageToNewActivity(selectedImageUri);
         }
 
+        if (requestCode == GOT_IMAGE_COORDS && resultCode == RESULT_OK) {
+            Intent intent = getIntent();
+            String coords = ImageRecognizeActivity.getFinalCoords(); //intent.getStringExtra("imageCoords");
+            alarmOffMusic.setText(coords);
+        }
     }
 
     private void sendImageToNewActivity(Uri image) {
@@ -382,7 +383,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Do you want to save or delete this alarm?");
             builder.setNegativeButton(getResources().getString(R.string.en_alarm_del),
-                    (dialog, which) ->{
+                    (dialog, which) -> {
                         finish();
                     });
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -464,7 +465,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                 AlarmHandler.unRegisterAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), al, getApplicationContext());
 
 
-                if("1".equals(alarmOnOff)){
+                if ("1".equals(alarmOnOff)) {
                     AlarmHandler.registerAlarm((AlarmManager) getSystemService(Context.ALARM_SERVICE), getApplicationContext(), al);
                 }
                 /*for (int i = 0; i < removalTags.size(); i++) {
@@ -475,7 +476,7 @@ public class AlarmEditActivity extends AppCompatActivity {
                 }*/
             } else {
                 int alarmID = dbw.addAlarm(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume, alarmOnOff);
-                if("1".equals(alarmOnOff)){
+                if ("1".equals(alarmOnOff)) {
                     Alarm al = new Alarm();
                     al.setId(alarmID);
                     al.setTime(time);
@@ -543,11 +544,11 @@ public class AlarmEditActivity extends AppCompatActivity {
             TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
                 millisecondsTime = String.valueOf(calendar.getTimeInMillis());
                 String hour = String.valueOf(hourOfDay);
-                if (hour.length() == 1){
+                if (hour.length() == 1) {
                     hour = "0" + hourOfDay;
                 }
                 String min = String.valueOf(minute);
-                if (min.length() == 1){
+                if (min.length() == 1) {
                     min = "0" + min;
                 }
                 time_field.setText(hour + ":" + min);

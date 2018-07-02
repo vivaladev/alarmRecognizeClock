@@ -46,8 +46,7 @@ public class ImageRecognizeActivity extends AppCompatActivity {
 
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN: // нажатие
-                    mCoords = "Coords: x = " + mX + ", y = " + mY;
-                    Toast.makeText(this, mCoords, Toast.LENGTH_LONG).show();
+                    mCoords = Math.round(mX)+ "x" + Math.round(mY);
 
                     AlertDialog.Builder builder;
                     builder = new AlertDialog.Builder(this);
@@ -64,22 +63,28 @@ public class ImageRecognizeActivity extends AppCompatActivity {
                     alert.show();
 
                     break;
-                case MotionEvent.ACTION_MOVE: // движение
-                    break;
-                case MotionEvent.ACTION_UP: // отпускание
-                case MotionEvent.ACTION_CANCEL:
-                    // ничего не делаем
-                    break;
             }
 
             return true;
         });
     }
 
+    private static String finalCoords;
+
+    public static String getFinalCoords() {
+        return finalCoords;
+    }
+
+    public static void setFinalCoords(String finalCoords) {
+        ImageRecognizeActivity.finalCoords = finalCoords;
+    }
+
     private void prepareToReturnImageZone(String finalMCoords) {
-        Intent intent = new Intent(this, AlarmEditActivity.class);
-        intent.putExtra("imageCoords", finalMCoords);
-        startActivity(intent);
+        Intent data = new Intent();
+        data.putExtra("imageCoords", finalMCoords);
+        setResult(RESULT_OK, data);
+        setFinalCoords(finalMCoords);
+        finish();
     }
 
     private void init() {
