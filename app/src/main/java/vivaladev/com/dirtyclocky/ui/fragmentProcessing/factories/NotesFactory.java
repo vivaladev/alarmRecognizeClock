@@ -39,7 +39,7 @@ public class NotesFactory {
         TextView timeTV = createNameTextView(name);
         TextView nameTV = createTimeTextView(time);
         //TextView bodyTV = createBodyTextView(body);
-        TextView tagsTV = createMusicTextView(music);
+        TextView tagsTV = createDaysTextView(music);
 
         cardView.addView(noteLayout);
         noteLayout.addView(timeTV);
@@ -161,7 +161,7 @@ public class NotesFactory {
         return newTextView;
     }
 
-    private TextView createMusicTextView(String music) {
+    private TextView createDaysTextView(String days) {
         int PXpadding = convertDpToPixel(5);
         int PXmargin = convertDpToPixel(10);
         int PXmargin_bottom = convertDpToPixel(7);
@@ -181,7 +181,7 @@ public class NotesFactory {
         newTextView.setGravity(Gravity.CENTER | Gravity.LEFT);
         newTextView_params.setMargins(PXmargin, PXmargin, PXmargin, PXmargin_bottom);
         newTextView.setPadding(PXpadding, 0, 0, 0);
-        newTextView.setText(("MusicForEqual: " + music));
+        newTextView.setText(("Days: " + days));
 
         newTextView.setLayoutParams(newTextView_params);
         return newTextView;

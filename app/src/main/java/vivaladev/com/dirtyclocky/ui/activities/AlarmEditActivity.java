@@ -511,16 +511,19 @@ public class AlarmEditActivity extends AppCompatActivity {
 
             setInitialData(time, name, body, music, repeatTime, offMethod, alarmIncreaseVolume, alarmOnOff);
             showMessage(getResources().getString(R.string.en_alarm_message_save_changes));
-            MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
 
-            SoundProcessingActivity soundProcessingActivity = SoundProcessingActivity.getInstance();
+
+           /* SoundProcessingActivity soundProcessingActivity = SoundProcessingActivity.getInstance();
             if (soundProcessingActivity != null) {
                 soundProcessingActivity.reload();
-            }
+            }*/
         } catch (Exception e) {
             e.printStackTrace();
         }
-        goToBack();
+        finally {
+            MainActivity.getInstance().getPagerAdapter().notifyDataSetChanged();
+            goToBack();
+        }
     }
 
     private boolean isLastVersionActive() {
