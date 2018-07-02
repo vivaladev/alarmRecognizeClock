@@ -3,7 +3,6 @@ package vivaladev.com.dirtyclocky.ui.activities;
 import android.app.AlertDialog;
 import android.media.MediaRecorder;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import vivaladev.com.dirtyclocky.R;
@@ -20,21 +19,15 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.PowerManager;
 import android.os.Vibrator;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
+import java.util.regex.Pattern;
 
-import vivaladev.com.dirtyclocky.R;
 import vivaladev.com.dirtyclocky.alarmcontrol.handler.AlarmHandler;
-import vivaladev.com.dirtyclocky.alarmcontrol.receive.AlarmReceiver;
 import vivaladev.com.dirtyclocky.databaseProcessing.dao.DatabaseWrapper;
 import vivaladev.com.dirtyclocky.databaseProcessing.entities.Alarm;
 import vivaladev.com.dirtyclocky.recognizeProcessing.SoundRecognize;
@@ -150,45 +143,50 @@ public class AlarmClockActivity extends Activity {
 
         findViewById(R.id.buttonOff).setOnLongClickListener(v -> {
             // TODO Auto-generated method stub
-            Toast.makeText(getBaseContext(), "Long Clicked", Toast.LENGTH_SHORT).show();
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
             }
             alarmThread.interrupt();
 
-            AlertDialog.Builder builder;
-            final String[] controls = {"Start Recording", "Stop Recording", "Recognize"};
+            if(isFile(alarm.getMusic())){
+                AlertDialog.Builder builder;
+                final String[] controls = {"Start Recording", "Stop Recording", "Recognize"};
 
-            builder = new AlertDialog.Builder(this);
-            builder.setTitle("Media recording")
-                    .setCancelable(false)
-                    .setPositiveButton("Done", (dialog, id) -> dialog.cancel())
-                    .setSingleChoiceItems(controls, -1,
-                            (dialog, item) -> {
-                                if (controls[item].equals("Start Recording")) {
-                                    fileFromRec = new File(getFileName("RecordForRecognize"));
-                                    mediaStartRec(fileFromRec);
-                                }
-                                if (controls[item].equals("Stop Recording")) {
-                                    mediaStopRec();
-                                }
-                                if (controls[item].equals("Recognize")) {
-                                    if (fileFromDB != null){
-                                        if (fileFromRec != null) {
-                                            if (SoundRecognize.recognizeSound(fileFromDB, fileFromRec)) {
-                                                showMessage("Files are the same");
+                builder = new AlertDialog.Builder(this);
+                builder.setTitle("Media recording")
+                        .setCancelable(false)
+                        .setPositiveButton("Done", (dialog, id) -> dialog.cancel())
+                        .setSingleChoiceItems(controls, -1,
+                                (dialog, item) -> {
+                                    if (controls[item].equals("Start Recording")) {
+                                        fileFromRec = new File(getFileName("RecordForRecognize"));
+                                        mediaStartRec(fileFromRec);
+                                    }
+                                    if (controls[item].equals("Stop Recording")) {
+                                        mediaStopRec();
+                                    }
+                                    if (controls[item].equals("Recognize")) {
+                                        if (fileFromDB != null){
+                                            if (fileFromRec != null) {
+                                                if (SoundRecognize.recognizeSound(fileFromDB, fileFromRec)) {
+                                                    showMessage("Files are the same");
+                                                } else {
+                                                    showMessage("Files are different");
+                                                }
                                             } else {
-                                                showMessage("Files are different");
+                                                showMessage("Specify fileFromRec");
                                             }
-                                        } else {
-                                            showMessage("Specify fileFromRec");
-                                        }
-                                    }else
-                                        showMessage("Specify fileFromDB");
-                                }
-                            });
-            AlertDialog alert = builder.create();
-            alert.show();
+                                        }else
+                                            showMessage("Specify fileFromDB");
+                                    }
+                                });
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else{
+                //обработка картинки
+            }
+
+
 
             return true;
         });
@@ -197,6 +195,10 @@ public class AlarmClockActivity extends Activity {
 
         alarmThread = new AlarmThread();
         alarmThread.start();
+    }
+
+    private boolean isFile(String method) {
+        return !Pattern.matches(".*\\d[x]\\d.*]", method); // если не проходит по регексе на картинку, то это файл
     }
 
     private void showMessage(String message) {

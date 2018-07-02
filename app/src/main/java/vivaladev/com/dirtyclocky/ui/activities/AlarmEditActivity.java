@@ -425,6 +425,11 @@ public class AlarmEditActivity extends AppCompatActivity {
         return true;
     }
 
+    private String getImageToSave(String image){
+        StringBuilder str = new StringBuilder(selectedImagePath);
+        return str.append(".").append(image).toString();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void saveChanges() {
         if (!isReadyToSave()) {
@@ -440,7 +445,7 @@ public class AlarmEditActivity extends AppCompatActivity {
             String time = time_field.getText().toString();
             String name = name_field.getText().toString();
             String body = note_text_field.getText().toString();
-            String music = alarmOffMusic.getText().toString(); //TODO: вернуть музыку
+            String music = alarmOffMusic.getText().toString();
             String repeatTime = alarmRepeat.getText().toString();
             String offMethod = alarmOffMethod.getText().toString();
             String alarmIncreaseVolume = isIncreaseVolume.isChecked() ? "1" : "0";
@@ -457,7 +462,13 @@ public class AlarmEditActivity extends AppCompatActivity {
                 al.setId(clickedAlarmId);
                 al.setTime(time);
                 al.setName(name);
-                al.setMusic(music);
+
+                if ("Image".equals(offMethod)) {
+                    al.setMusic(getImageToSave(music)); // путь к картинке + координы \d*x\d*
+                } else {
+                    al.setMusic(music); // путь к файлу музыки
+                }
+
                 al.setRepeatTime(repeatTime);
                 al.setAlarmOffMethod(offMethod);
                 al.setAlarmIncreaseVolume(alarmIncreaseVolume);
