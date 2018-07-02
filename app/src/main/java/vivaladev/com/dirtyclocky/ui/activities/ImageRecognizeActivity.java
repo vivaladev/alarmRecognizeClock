@@ -1,16 +1,22 @@
 package vivaladev.com.dirtyclocky.ui.activities;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import vivaladev.com.dirtyclocky.R;
 
 public class ImageRecognizeActivity extends AppCompatActivity {
 
     private ImageView imageView;
+    private float mX;
+    private float mY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +35,51 @@ public class ImageRecognizeActivity extends AppCompatActivity {
         imageView.setImageURI(uri);
     }
 
+    @SuppressLint({"ClickableViewAccessibility", "ShowToast"})
     private void getClickedZone() {
+        Toast.makeText(this, "Touch alarm off zone", Toast.LENGTH_LONG).show();
+        imageView.setOnTouchListener((view, motionEvent) -> {
+            mX = motionEvent.getX();
+            mY = motionEvent.getY();
+
+            String mCoords = null;
+
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN: // нажатие
+                    mCoords = "Coords: x = " + mX + ", y = " + mY;
+                    Toast.makeText(this, mCoords, Toast.LENGTH_LONG).show();
+
+                    AlertDialog.Builder builder;
+                    builder = new AlertDialog.Builder(this);
+                    String finalMCoords = mCoords;
+                    builder.setTitle("Are you sure you want to select this zone?")
+                            .setCancelable(false)
+                            // добавляем одну кнопку для закрытия диалога
+                            .setNegativeButton("No", null)
+                            .setPositiveButton("Yes", (dialog, id) -> {
+                                prepareToReturnImageZone(finalMCoords);
+                                dialog.cancel();
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                    break;
+                case MotionEvent.ACTION_MOVE: // движение
+                    break;
+                case MotionEvent.ACTION_UP: // отпускание
+                case MotionEvent.ACTION_CANCEL:
+                    // ничего не делаем
+                    break;
+            }
+
+            return true;
+        });
+    }
+
+    private void prepareToReturnImageZone(String finalMCoords) {
+        Intent intent = new Intent(this, AlarmEditActivity.class);
+        intent.putExtra("imageCoords", finalMCoords);
+        startActivity(intent);
     }
 
     private void init() {

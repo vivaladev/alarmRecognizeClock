@@ -311,6 +311,7 @@ public class AlarmEditActivity extends AppCompatActivity {
      * Image processing
      */
     private static final int SELECT_PICTURE = 1;
+    private static final int GOT_IMAGE_COORDS = 2;
     private String selectedImagePath;
 
     private void prepareToRecognizeImage() {
@@ -330,13 +331,18 @@ public class AlarmEditActivity extends AppCompatActivity {
 
                 sendImageToNewActivity(selectedImageUri);
             }
+
+            if(requestCode == GOT_IMAGE_COORDS){
+                showMessage("МЫ ВЕРНУЛИСЬ");
+            }
         }
+
     }
 
     private void sendImageToNewActivity(Uri image) {
         Intent intent = new Intent(this, ImageRecognizeActivity.class);
         intent.putExtra("uriImage", image.toString());
-        startActivity(intent);
+        startActivityForResult(intent, GOT_IMAGE_COORDS);
     }
 
     public String getPath(Uri uri) {
@@ -672,6 +678,8 @@ public class AlarmEditActivity extends AppCompatActivity {
         setStatusBar(this, findViewById(R.id.edit_note_tool_bar));
         setToolBar();
         controlProcessing();
+        Intent intent = getIntent();
+        String imageCoords = intent.getStringExtra("imageCoords");
 
     }
 
