@@ -31,21 +31,19 @@ public abstract class AlarmHandler {
         alarms.add(alarm);
         //(Intent) - это механизм для описания одной операции - выбрать фотографию, отправить письмо, сделать звонок, запустить браузер...
 
-        int TEMP_ID = 5;
-
-        /*Date date = getDate(alarm.getTime());
+        Date date = getDate(alarm.getTime());
 
         if(date == null || date.getTime() < System.currentTimeMillis()) {return;}
-*/
-        Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
-        intent.putExtra("requestCode", TEMP_ID);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, TEMP_ID, intent, 0);
+        Intent intent = new Intent("ilku.ru.alarmclock.alarmcontrol.receive.ALARM");
+        intent.putExtra("requestCode", alarm.getId());
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
 
         int repeatingTime = 1000 * 60;//TODO repeating 1 min
 
 
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+2000,
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, date.getTime(),
                 repeatingTime, pendingIntent);
     }
 
@@ -85,7 +83,7 @@ public abstract class AlarmHandler {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         Date date = new Date();
         String dateDay = dateFormat.format(date);
-        String fullDate = dateDay + " " +  time.replaceAll("\\s","") +":00";
+        String fullDate = dateDay + " " +  time +":00";
 
 
         DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH);

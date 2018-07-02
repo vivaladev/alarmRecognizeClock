@@ -1,6 +1,7 @@
 package vivaladev.com.dirtyclocky.ui.fragmentProcessing.factories;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -31,25 +32,25 @@ public class NotesFactory {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void addNoteToScreen(int id, String date, String title, String body, Tag[] tags) {
+    public void addNoteToScreen(int id, String time, String name, String body, boolean isOn, String music) {//TODO можно на дни заменить
 
-        CardView cardView = createCardView();
+        CardView cardView = createCardView(isOn);
         LinearLayout noteLayout = createLinearLayout(id);
-        TextView dateTV = createDateTextView(date);
-        TextView titleTV = createTitleTextView(title);
-        TextView bodyTV = createBodyTextView(body);
-        TextView tagsTV = createTagsTextView(tags);
+        TextView timeTV = createNameTextView(name);
+        TextView nameTV = createTimeTextView(time);
+        //TextView bodyTV = createBodyTextView(body);
+        TextView tagsTV = createMusicTextView(music);
 
         cardView.addView(noteLayout);
-        noteLayout.addView(dateTV);
-        noteLayout.addView(titleTV);
-        noteLayout.addView(bodyTV);
+        noteLayout.addView(timeTV);
+        noteLayout.addView(nameTV);
+        //noteLayout.addView(bodyTV);
         noteLayout.addView(tagsTV);
 
         notes_linearLayout.addView(cardView);
     }
 
-    private CardView createCardView() {
+    private CardView createCardView(boolean isOn) {
         int PXmargin_top_bottom = convertDpToPixel(5);
         int PXmargin = convertDpToPixel(10);
 
@@ -60,6 +61,9 @@ public class NotesFactory {
                         convertDpToPixel(182),
                         1
                 );
+        if(isOn){
+            noteCardView.setCardBackgroundColor(Color.parseColor("#43859c"));
+        }
         noteCardView.setRadius(convertDpToPixel(4));
         noteCardView.setCardElevation(convertDpToPixel(2));
         noteLayout_params.setMargins(PXmargin, PXmargin_top_bottom, PXmargin, PXmargin_top_bottom);
@@ -86,7 +90,7 @@ public class NotesFactory {
         return noteLayout;
     }
 
-    private TextView createDateTextView(String date) {
+    private TextView createNameTextView(String name) {
         int PXpadding = convertDpToPixel(5);
         int PXmargin = convertDpToPixel(10);
 
@@ -98,18 +102,18 @@ public class NotesFactory {
                         1
                 );
         newTextView.setTypeface(Typeface.SANS_SERIF);
-        newTextView.setTextSize(12);
+        newTextView.setTextSize(16);
         newTextView.setBackground(ContextCompat.getDrawable(context, R.drawable.bottom_border));
         newTextView.setGravity(Gravity.CENTER | Gravity.LEFT);
         newTextView_params.setMargins(PXmargin, PXmargin, PXmargin, PXmargin);
         newTextView.setPadding(PXpadding, 0, 0, 0);
-        newTextView.setText(date);
+        newTextView.setText(("Name: " + name));
 
         newTextView.setLayoutParams(newTextView_params);
         return newTextView;
     }
 
-    private TextView createTitleTextView(String text) {
+    private TextView createTimeTextView(String time) {
         int PXpadding = convertDpToPixel(5);
         int PXmargin_bottom = PXpadding;
         int PXmargin_left_right = convertDpToPixel(10);
@@ -123,12 +127,13 @@ public class NotesFactory {
                 );
         newTextView.setEllipsize(TextUtils.TruncateAt.END);
         newTextView.setMaxLines(1);
+        newTextView.setTextSize(30);
         newTextView.setTypeface(null, Typeface.BOLD);
         newTextView.setTextColor(ContextCompat.getColor(context, android.R.color.black));
         newTextView.setGravity(Gravity.CENTER | Gravity.LEFT);
         newTextView_params.setMargins(PXmargin_left_right, 0, PXmargin_left_right, PXmargin_bottom);
         newTextView.setPadding(PXpadding, 0, 0, 0);
-        newTextView.setText(text);
+        newTextView.setText(("Time: " + time));
 
         newTextView.setLayoutParams(newTextView_params);
         return newTextView;
@@ -156,7 +161,7 @@ public class NotesFactory {
         return newTextView;
     }
 
-    private TextView createTagsTextView(Tag[] tags) {
+    private TextView createMusicTextView(String music) {
         int PXpadding = convertDpToPixel(5);
         int PXmargin = convertDpToPixel(10);
         int PXmargin_bottom = convertDpToPixel(7);
@@ -169,14 +174,14 @@ public class NotesFactory {
                         1
                 );
         newTextView.setTypeface(Typeface.SANS_SERIF);
-        newTextView.setTextSize(12);
+        newTextView.setTextSize(16);
         newTextView.setEllipsize(TextUtils.TruncateAt.END);
         newTextView.setMaxLines(1);
         newTextView.setBackground(ContextCompat.getDrawable(context, R.drawable.top_border));
         newTextView.setGravity(Gravity.CENTER | Gravity.LEFT);
         newTextView_params.setMargins(PXmargin, PXmargin, PXmargin, PXmargin_bottom);
         newTextView.setPadding(PXpadding, 0, 0, 0);
-        newTextView.setText(getTagsString(tags));
+        newTextView.setText(("MusicForEqual: " + music));
 
         newTextView.setLayoutParams(newTextView_params);
         return newTextView;
