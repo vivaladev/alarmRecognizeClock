@@ -120,7 +120,7 @@ public class AlarmClockActivity extends Activity {
                 }
             }
             TextView textView = findViewById(R.id.textView);
-            textView.setText("Ты проклят");
+            textView.setText("Do not sleep");
             //cancelAlarm();
             vibrator.vibrate(1000);
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
@@ -135,7 +135,7 @@ public class AlarmClockActivity extends Activity {
                 sendToBroadcastReceiver(alarmID);
             }
             TextView textView = findViewById(R.id.textView);
-            textView.setText("Игнор");
+            textView.setText("I'll be back");
             vibrator.vibrate(1000);
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
